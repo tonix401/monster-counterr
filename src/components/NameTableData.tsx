@@ -1,46 +1,55 @@
-import React, { useState } from 'react';
-import type { Monster } from '../types/Monster';
-import { useMonsterStore } from '../store';
-import MonsterInfoPopup from './MonsterInfoPopup';
+import React, { useState } from "react";
+import type { Monster } from "@/types/Monster";
+import { useMonsterStore } from "@/store";
+import MonsterInfoPopup from "@/components/popups/MonsterInfoPopup";
 
 interface NameTableDataProps {
-  monster: Monster;
+    monster: Monster;
 }
 
 const NameTableData: React.FC<NameTableDataProps> = ({ monster }) => {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  
-  const isMonsterDetailsAvailable = useMonsterStore((state) => state.isMonsterDetailsAvailable);
-  const getMonsterDetails = useMonsterStore((state) => state.getMonsterDetails);
-  
-  const hasDetails = isMonsterDetailsAvailable(monster.detailIndex);
-  const monsterDetails = hasDetails ? getMonsterDetails(monster.detailIndex) : null;
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  const handleClick = () => {
-    if (hasDetails) {
-      setIsPopupOpen(true);
-    }
-  };
+    const isMonsterDetailsAvailable = useMonsterStore(
+        (state) => state.isMonsterDetailsAvailable
+    );
+    const getMonsterDetails = useMonsterStore(
+        (state) => state.getMonsterDetails
+    );
 
-  return (
-    <>
-      <td
-        className="name-cell"
-        style={{ color: monster.hp > 0 ? 'inherit' : 'gray' }}
-        title={`Monster Sheet: ${monster.name}`}
-      >
-        <span className={hasDetails ? 'clickable' : ''} onClick={handleClick}>
-          {monster.hp > 0 ? '' : '💀  '}
-          {monster.name}
-        </span>
-      </td>
-      <MonsterInfoPopup
-        isOpen={isPopupOpen}
-        onClose={() => setIsPopupOpen(false)}
-        monsterDetails={monsterDetails}
-      />
-    </>
-  );
+    const hasDetails = isMonsterDetailsAvailable(monster.detailIndex);
+    const monsterDetails = hasDetails
+        ? getMonsterDetails(monster.detailIndex)
+        : null;
+
+    const handleClick = () => {
+        if (hasDetails) {
+            setIsPopupOpen(true);
+        }
+    };
+
+    return (
+        <>
+            <td
+                className="name-cell"
+                style={{ color: monster.hp > 0 ? "inherit" : "gray" }}
+                title={`Monster Sheet: ${monster.name}`}
+            >
+                <span
+                    className={hasDetails ? "clickable" : ""}
+                    onClick={handleClick}
+                >
+                    {monster.hp > 0 ? "" : "💀  "}
+                    {monster.name}
+                </span>
+                <MonsterInfoPopup
+                    isOpen={isPopupOpen}
+                    onClose={() => setIsPopupOpen(false)}
+                    monsterDetails={monsterDetails}
+                />
+            </td>
+        </>
+    );
 };
 
 export default NameTableData;

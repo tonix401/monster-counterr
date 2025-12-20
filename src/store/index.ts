@@ -77,7 +77,7 @@ export const useMonsterStore = create<MonsterCounterState>()(
             (set, get) =>
                 ({
                     // Initial State
-                    isLoading: true,
+                    isLoading: false,
 
                     // Slices
                     ...createMonsterSlice(set, get),
@@ -134,9 +134,7 @@ export const useMonsterStore = create<MonsterCounterState>()(
 
                     // Initialization
                     initialize: async () => {
-                        set({ isLoading: true });
                         await get().updateMonsterIndex();
-                        set({ isLoading: false });
                     },
 
                     setLoading: (loading: boolean) => {

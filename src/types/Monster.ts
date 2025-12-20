@@ -6,6 +6,7 @@ export interface Monster {
   maxhp: number;
   hasDiedAlready: boolean;
   conditions: string[];
+  number: number;
 }
 
 export class MonsterClass implements Monster {
@@ -16,14 +17,16 @@ export class MonsterClass implements Monster {
   maxhp: number;
   hasDiedAlready: boolean;
   conditions: string[];
+  number: number;
 
-  constructor(name: string, hp: number, detailIndex: string) {
-    this.id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+  constructor(name: string, hp: number, detailIndex: string, number: number) {
+    this.id = Date.now().toString() + Math.random().toString(36).slice(2, 11);
     this.name = name;
     this.detailIndex = detailIndex;
     this.hp = hp;
     this.maxhp = hp;
     this.hasDiedAlready = false;
     this.conditions = [];
+    this.number = number;
   }
 }

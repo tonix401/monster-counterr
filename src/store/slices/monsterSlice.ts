@@ -24,11 +24,11 @@ export const createMonsterSlice = (set: any, get: any): MonsterSlice => ({
         const detailIndex = name.toLowerCase().trim().replace(/\s+/g, "-");
 
         if (amount === 1) {
-            newMonsters.push(new MonsterClass(name, hp, detailIndex));
+            newMonsters.push(new MonsterClass(name, hp, detailIndex, 0));
         } else {
             for (let i = 0; i < amount; i++) {
                 newMonsters.push(
-                    new MonsterClass(`${name} ${i + 1}`, hp, detailIndex)
+                    new MonsterClass(name, hp, detailIndex, i + 1)
                 );
             }
         }

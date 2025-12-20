@@ -1,12 +1,12 @@
 import React from "react";
 import type { Monster } from "@/types/Monster";
 import type { Settings } from "@/types/Settings";
-import NameTableData from "@/components/NameTableData";
-import StatusTableData from "@/components/StatusTableData";
-import HpTableData from "@/components/HpTableData";
-import ChangeHpTableData from "@/components/ChangeHpTableData";
-import ConditionsTableData from "@/components/ConditionsTableData";
-import QuickActionsTableData from "@/components/QuickActionsTableData";
+import NameTableData from "@/components/table/NameTableData";
+import StatusTableData from "@/components/table/StatusTableData";
+import HpTableData from "@/components/table/HpTableData";
+import ChangeHpTableData from "@/components/table/ChangeHpTableData";
+import ConditionsTableData from "@/components/table/ConditionsTableData";
+import QuickActionsTableData from "@/components/table/QuickActionsTableData";
 
 interface MonsterTableRowProps {
     monster: Monster;

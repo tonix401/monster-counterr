@@ -59,8 +59,13 @@ header > div {
     display: none;
 }
 
+.popup-window span {
+    text-align: left;
+}
+
 table {
     width: 100%;
+    text-align: center;
     table-layout: fixed;
     border-collapse: separate;
     border-spacing: 0;
@@ -71,7 +76,6 @@ table {
 
 th, td {
     padding: 12px 10px;
-    text-align: center;
     border-bottom: 1px solid var(--border);
     color: var(--text);
     height: 100%;
@@ -253,8 +257,7 @@ option:hover {
     margin-top: 8px;
     width: 100%;
 }
-
-.settings-row > input[type="checkbox"] {
+input[type="checkbox"] {
     width: 24px;
     height: 24px;
     cursor: pointer;
@@ -269,12 +272,12 @@ option:hover {
     transition: all 0.2s ease;
 }
 
-.settings-row > input[type="checkbox"]:hover {
+input[type="checkbox"]:hover {
     border-color: var(--accent);
     box-shadow: 0 0 12px rgba(124, 77, 255, 0.3);
 }
 
-.settings-row > input[type="checkbox"]:checked {
+input[type="checkbox"]:checked {
     background: var(--accent);
     border-color: var(--accent);
 }

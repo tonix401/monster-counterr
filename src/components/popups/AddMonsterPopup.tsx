@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Popup from "@/components/popups/Popup";
-import MonsterSuggestionInput from "@/components/MonsterSuggestionInput";
+import MonsterSuggestionInput from "@/components/ui/MonsterSuggestionInput";
 import { useMonsterStore } from "@/store";
 
 interface AddMonsterPopupProps {

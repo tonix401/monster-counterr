@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import MonsterTable from "@/components/MonsterTable";
+import MonsterTable from "@/components/table/MonsterTable";
 import AddMonsterPopup from "@/components/popups/AddMonsterPopup";
 import SettingsPopup from "@/components/popups/SettingsPopup";
 import Header from "@/components/Header";
@@ -43,8 +43,6 @@ function App() {
             <div id="monsterList">
                 <MonsterTable monsters={monsters} />
             </div>
-
-            {/* Popups */}
             <AddMonsterPopup
                 isOpen={isAddPopupOpen}
                 onClose={() => setIsAddPopupOpen(false)}

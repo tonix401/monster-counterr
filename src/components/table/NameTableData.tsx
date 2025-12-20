@@ -11,10 +11,10 @@ const NameTableData: React.FC<NameTableDataProps> = ({ monster }) => {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
     const isMonsterDetailsAvailable = useMonsterStore(
-        (state) => state.isMonsterDetailsAvailable
+        (state) => state.isMonsterDetailsAvailable,
     );
     const getMonsterDetails = useMonsterStore(
-        (state) => state.getMonsterDetails
+        (state) => state.getMonsterDetails,
     );
 
     const hasDetails = isMonsterDetailsAvailable(monster.detailIndex);
@@ -33,15 +33,25 @@ const NameTableData: React.FC<NameTableDataProps> = ({ monster }) => {
             <td
                 className="name-cell"
                 style={{ color: monster.hp > 0 ? "inherit" : "gray" }}
-                title={`Monster Sheet: ${monster.name}`}
             >
-                <span
-                    className={hasDetails ? "clickable" : ""}
-                    onClick={handleClick}
-                >
+                <div onClick={handleClick} style={{ display: "flex", alignItems: "center" }}>
                     {monster.hp > 0 ? "" : "💀  "}
-                    {monster.name}
-                </span>
+                    <span
+                        style={{
+                            display: "inline-block",
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
+                            textOverflow: "ellipsis",
+                            width: "90%",
+                        }}
+                        className={hasDetails ? "clickable" : ""}
+                    >
+                        {monster.name}
+                    </span>
+                    <span style={{ display: "inline-block" }}>
+                        {monster.number ? `${monster.number}` : ""}
+                    </span>
+                </div>
                 <MonsterInfoPopup
                     isOpen={isPopupOpen}
                     onClose={() => setIsPopupOpen(false)}

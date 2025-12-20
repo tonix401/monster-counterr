@@ -1,8 +1,10 @@
 import React from "react";
 import Popup from "@/components/popups/Popup";
 import SettingsRow from "@/components/SettingsRow";
+import ImportFileButton from "@/components/ui/ImportFileButton";
 import type { Settings } from "@/types/Settings";
 import { useMonsterStore } from "@/store";
+import ExportFileButton from "../ui/ExportFileButton";
 
 interface SettingsPopupProps {
     isOpen: boolean;
@@ -13,32 +15,15 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose }) => {
     const settings = useMonsterStore((state) => state.settings);
     const setSetting = useMonsterStore((state) => state.setSetting);
     const getSettingName = useMonsterStore((state) => state.getSettingName);
-    const importData = useMonsterStore((state) => state.importData);
-
     const handleSettingChange = (key: keyof Settings, value: boolean) => {
         setSetting(key, value);
     };
 
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            try {
-                const data = JSON.parse(event.target?.result as string);
-                importData(data);
-                onClose();
-            } catch (error) {
-                console.error("Failed to load save file:", error);
-                alert("Failed to load save file");
-            }
-        };
-        reader.readAsText(file);
-    };
-
     return (
-        <Popup isOpen={isOpen} onClose={onClose} title="Settings" width={400}>
+        <Popup isOpen={isOpen} onClose={onClose} width={500}>
+            <div style={{ marginBottom: "20px", textAlign: "center" }}>
+                <strong>Visual Settings</strong>
+            </div>
             <SettingsRow
                 settingKey="showConditions"
                 label={getSettingName("showConditions")}
@@ -75,19 +60,30 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose }) => {
                 value={settings.showQuickActions}
                 onChange={handleSettingChange}
             />
-            <hr />
+            <hr style={{ margin: "24px 0" }} />
+            <div style={{ marginBottom: "20px", textAlign: "center" }}>
+                <strong>Behavioural Settings</strong>
+            </div>
             <SettingsRow
                 settingKey="autoRemoveDead"
                 label={getSettingName("autoRemoveDead")}
                 value={settings.autoRemoveDead}
                 onChange={handleSettingChange}
             />
-            <hr />
-            <input
-                type="file"
-                accept="application/json"
-                onChange={handleFileUpload}
-            />
+            <hr style={{ margin: "24px 0" }} />
+            <div style={{ marginBottom: "20px", textAlign: "center" }}>
+                <strong>Manage Save Files</strong>
+            </div>
+            <div
+                style={{
+                    display: "flex",
+                    gap: "10px",
+                    justifyContent: "center",
+                }}
+            >
+                <ImportFileButton />
+                <ExportFileButton />
+            </div>
         </Popup>
     );
 };

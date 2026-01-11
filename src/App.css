@@ -52,11 +52,35 @@ header > div {
     list-style: none;
     overflow: scroll;
     max-height: 87.5vh;
-    scrollbar-width: none;
 }
 
-#monsterList::-webkit-scrollbar {
-    display: none;
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(124, 77, 255, 0.32);
+}
+
+*::-webkit-scrollbar-corner {
+    background: transparent;
 }
 
 .popup-window span {
@@ -162,9 +186,13 @@ button:active {
     background: transparent;
     border-radius: 50%;
     min-width: 80px;
-    margin-bottom: 2px;
+    margin-bottom: 8px;
     border: 1px solid var(--border);
     border-radius: 6px;
+}
+
+.add-condition-tag {
+    width: 100%;
 }
 
 .tag-list-item {
@@ -201,15 +229,6 @@ select {
     color: var(--text);
     text-align: center;
     cursor: pointer;
-}
-
-option {
-    color: var(--card);
-}
-
-option:hover {
-    background: var(--accent);
-    color: var(--text);
 }
 
 .popup-window {
@@ -284,27 +303,6 @@ input[type="checkbox"]:checked {
 
 .settings-row > label {
     user-select: none;
-}
-
-.suggestions-container {
-    position: fixed;
-    width: 250px;
-    z-index: 1000;
-    max-height: 500px;
-    overflow-y: auto;
-}
-
-.suggestion-item {
-    width: 100%;
-    padding: 6px 8px;
-    border: 1px solid var(--border);
-    background: var(--card);
-    color: var(--text);
-    cursor: pointer;
-}
-
-.suggestion-item:hover {
-    background-color: var(--accent);
 }
 
 .highlighted {

@@ -1,7 +1,7 @@
 import type { Settings } from "@/types/Settings";
 import { SETTING_SCHEMA } from "@/types/Settings";
 
-interface SettingsSlice {
+export type SettingsSlice = {
     settings: Settings;
     getSetting: (key: keyof Settings) => boolean;
     getSettingName: (key: keyof Settings) => string;

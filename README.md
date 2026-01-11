@@ -1,0 +1,141 @@
+# 💀 Monster Counter
+
+A web application for D&D Dungeon Masters to track enemy health, conditions, and encounter information during encounters.
+
+![License](https://img.shields.io/badge/license-MIT-green)
+
+## ✨ Features
+
+- **📚 Official Monster Database**: Access the full D&D 5e SRD monster library through a free external API
+- **🎨 Custom Monsters**: Create and add your own custom enemies
+- **💚 Health Tracking**: Easily monitor and update HP for multiple creatures during combat
+- **🎯 Condition Management**: Track status conditions applied to monsters
+- **⭐ XP Total**: Automagically adding xp to the big total as your players are killing enemies
+- **🔧 Customizable Display**: Show or hide specific columns
+- **📄 Full Monster Sheets**: View complete stat blocks for any official D&D monster
+- **💾 Save System**: Import and export your encounter data to share
+- **🌐 No Backend Required**: Runs entirely in your browser - no server, no account, nothing to distract from the campaign!
+
+## 🚀 Quick Start
+
+Don't worry if you're not familiar with coding! Follow these simple steps to get Monster Counter running on your computer.
+
+### Prerequisites
+
+Before you begin, you'll need to install **Node.js**. This will be responsible for actually running the code:
+
+1. Go to [nodejs.org](https://nodejs.org/)
+2. Download the **LTS version** (long term support)
+3. Run the installer and follow the installation wizard
+4. A restart might or might not be needed
+
+### Step 1: Download the Project
+
+**Option A: Using Git**
+
+If you have Git installed, run these two commands using a terminal:
+```
+git clone https://github.com/tonix401/monster-counterr.git
+```
+```
+cd monster-counterr
+```
+
+**Option B: Download as ZIP**
+
+1. Click the green **Code** button at the top of this page
+2. Select **Download ZIP**
+3. Extract the ZIP file to a folder on your computer
+4. Open a terminal/command prompt in that folder:
+   - **Windows**: Open the folder, then type `cmd` in the address bar and press Enter
+   - **Mac**: Right-click the folder while holding Control, select "New Terminal at Folder"
+   - **Linux**: I don't think I need to tell you
+
+### Step 2: Install Dependencies
+
+In your terminal/command prompt, type this command and press Enter:
+
+```bash
+npm install
+```
+
+This will download all the necessary files. It might take a few minutes.
+
+### Step 3: Start the Application
+
+Once installation is complete, run:
+
+```bash
+npm run start
+```
+
+I added some fluff for the ✨ aestetics ✨, but essentially you should see a message like:
+```
+➜  Local:   http://localhost:14120/
+```
+
+### Step 4: Open in Your Browser
+
+1. Open your browser (Chrome has some nice features for dropdowns, so I recommend it. Any other should also work fine though)
+2. Go to: **http://localhost:14120/**
+3. Do not close the terminal, that would kill it
+3. Start managing your encounters! 🎲
+
+### Stopping the Application
+
+When you're done destroying your players hopes and dreams:
+- Press `Ctrl + C` in the terminal to stop the server
+- Now you can close it
+
+### Running It Again Later
+
+Next time you want to use Monster Counter:
+1. Open a terminal in the project folder
+2. Run `npm run start`
+3. Open **http://localhost:14120/** in your browser
+
+## 🛠️ For Developers
+
+### Tech Stack
+
+- **Frontend**: React 19 with TypeScript
+- **State Management**: Zustand
+- **Build Tool**: Vite
+- **Styling**: CSS
+- **API**: D&D 5e SRD API (free, no token or anything required)
+
+### Development Scripts
+
+```bash
+# Start development server on port 14120
+npm run dev
+
+# Build run the site in production
+npm run start
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to:
+- Report bugs
+- Suggest new features
+- Submit pull requests
+
+## 📝 License
+
+This project is open source and available under the [MIT License](https://mit-license.org/).
+
+## 🙏 Acknowledgments
+
+- Monster data provided by the [D&D 5e API](https://www.dnd5eapi.co/)
+- Built with ❤️ for Dungeon Masters everywhere
+
+## 📞 Support
+
+If you encounter any issues or have questions:
+- Open an issue on GitHub
+- Check existing issues for solutions
+
+---
+
+🎲 **Happy DMing!** 🎲

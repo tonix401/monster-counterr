@@ -1,7 +1,7 @@
 import type { MonsterDetails, MonsterIndex } from "@/types/MonsterDetails";
 import { API_URL } from "@/constants";
 
-interface InfoSlice {
+export type InfoSlice = {
     monsterIndex: Record<string, MonsterIndex>;
     monsterDetails: Record<string, MonsterDetails>;
     updateMonsterIndex: () => Promise<void>;

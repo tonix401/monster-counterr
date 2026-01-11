@@ -27,7 +27,7 @@ Before you begin, you'll need to install **Node.js**. This will be responsible f
 1. Go to [nodejs.org](https://nodejs.org/)
 2. Download the **LTS version** (long term support)
 3. Run the installer and follow the installation wizard
-4. A restart might or might not be needed
+4. You might need to restart
 
 ### Step 1: Download the Project
 
@@ -110,32 +110,16 @@ Next time you want to use Monster Counter:
 # Start development server on port 14120
 npm run dev
 
-# Build run the site in production
+# Build and run the site in production
 npm run start
 ```
 
-## 🤝 Contributing
+## 📝 Misc
 
-Contributions are welcome! Feel free to:
-- Report bugs
-- Suggest new features
-- Submit pull requests
+- I am happy to receive any feedback and feature suggestions
 
-## 📝 License
-
-This project is open source and available under the [MIT License](https://mit-license.org/).
-
-## 🙏 Acknowledgments
+- This project is open source and available under the [MIT License](https://mit-license.org/).
 
 - Monster data provided by the [D&D 5e API](https://www.dnd5eapi.co/)
-- Built with ❤️ for Dungeon Masters everywhere
-
-## 📞 Support
-
-If you encounter any issues or have questions:
-- Open an issue on GitHub
-- Check existing issues for solutions
-
----
 
 🎲 **Happy DMing!** 🎲

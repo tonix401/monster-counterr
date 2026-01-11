@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 14120 --strictPort",
-    "start": "node ./start.js"
+    "start": "node ./start.js",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\""
   },
   "dependencies": {
     "react": "19.2.0",
@@ -19,9 +21,11 @@
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "5.1.1",
     "eslint": "9.39.1",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react-hooks": "7.0.1",
     "eslint-plugin-react-refresh": "0.4.24",
     "globals": "16.5.0",
+    "prettier": "^3.7.4",
     "typescript": "~5.9.3",
     "typescript-eslint": "8.46.4",
     "vite": "7.2.4"

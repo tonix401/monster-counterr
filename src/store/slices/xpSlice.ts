@@ -1,4 +1,4 @@
-interface XpSlice {
+export type XpSlice = {
   xp: number;
   updateXp: (amount: number) => void;
   resetXp: () => void;

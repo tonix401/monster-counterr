@@ -12,7 +12,7 @@ export interface SaveData {
     monsterDetails: Record<string, MonsterDetails>;
 }
 
-interface DataManagementSlice {
+export type DataManagementSlice = {
     exportData: () => void;
     importData: (data: unknown) => boolean;
 }

@@ -1,7 +1,7 @@
 import type { Monster } from "@/types/Monster";
 import { MonsterClass } from "@/types/Monster";
 
-interface MonsterSlice {
+export type MonsterSlice = {
     monsters: Monster[];
     addMonster: (name: string, hp: number, amount?: number) => Monster[];
     removeMonster: (monsterId: string) => void;

@@ -22,12 +22,6 @@ const AddMonsterPopup: React.FC<AddMonsterPopupProps> = ({
         const trimmedName = name.trim();
         const hpValue = parseInt(hp) || 1;
         const amountValue = parseInt(amount) || 1;
-
-        if (trimmedName === "") {
-            alert("Cannot save a monster without a name");
-            return;
-        }
-
         addMonster(trimmedName, hpValue, amountValue);
         setName("");
         setHp("");
@@ -35,29 +29,14 @@ const AddMonsterPopup: React.FC<AddMonsterPopupProps> = ({
         onClose();
     };
 
-    const handleKeyDown = (
-        e: React.KeyboardEvent,
-        nextField: "hp" | "amount" | "add"
-    ) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            if (nextField === "add") {
-                handleAdd();
-            } else {
-                const fieldId =
-                    nextField === "hp" ? "hp-input" : "amount-input";
-                document.getElementById(fieldId)?.focus();
-            }
-        }
-    };
-
     return (
         <Popup
             isOpen={isOpen}
-            onClose={onClose}
+            onClose={() => { setAmount(""); setHp(""); setName(""); onClose(); }}
             title="Add Monster"
             width={300}
         >
+            <form onSubmit={(e) => { e.preventDefault(); handleAdd(); }}>
             <MonsterSuggestionInput
                 onHpChange={(newHp) => setHp(newHp.toString())}
                 value={name}
@@ -65,11 +44,11 @@ const AddMonsterPopup: React.FC<AddMonsterPopupProps> = ({
             />
             <input
                 id="hp-input"
+                required
                 type="number"
                 placeholder="HP"
                 value={hp}
                 onChange={(e) => setHp(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, "amount")}
             />
             <input
                 id="amount-input"
@@ -77,11 +56,11 @@ const AddMonsterPopup: React.FC<AddMonsterPopupProps> = ({
                 placeholder="Amount"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, "add")}
             />
-            <button className="green-button" onClick={handleAdd}>
+            <button type="submit" className="green-button">
                 Add Monster
             </button>
+            </form>
         </Popup>
     );
 };

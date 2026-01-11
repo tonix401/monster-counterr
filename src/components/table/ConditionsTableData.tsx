@@ -51,20 +51,27 @@ const ConditionsTableData: React.FC<ConditionsTableDataProps> = ({
                     </button>
                 ))}
                 {remainingConditions.length > 0 && (
-                    <select
+                    <><input
                         className="add-condition-tag"
-                        onChange={handleAddCondition}
-                        defaultValue=""
-                    >
-                        <option value="" disabled>
-                            Add Condition
-                        </option>
+                        list={`conditions-datalist-${monster.id}`}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            if (remainingConditions.includes(value)) {
+                                handleAddCondition({
+                                    target: { value },
+                                } as React.ChangeEvent<HTMLSelectElement>);
+                                e.target.value = "";
+                            }
+                        }}
+                        placeholder="Add Condition"
+                    />
+                    <datalist id={`conditions-datalist-${monster.id}`}>
                         {remainingConditions.map((condition: string) => (
                             <option key={condition} value={condition}>
                                 {condition}
                             </option>
                         ))}
-                    </select>
+                    </datalist></>
                 )}
             </div>
         </td>

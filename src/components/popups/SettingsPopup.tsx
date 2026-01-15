@@ -3,7 +3,7 @@ import Popup from '@/components/popups/Popup'
 import SettingsRow from '@/components/SettingsRow'
 import ImportFileButton from '@/components/ui/ImportFileButton'
 import type { Settings } from '@/types/Settings'
-import { useMonsterStore } from '@/store'
+import { useMonsterStore, useTerm } from '@/store'
 import ExportFileButton from '../ui/ExportFileButton'
 
 interface SettingsPopupProps {
@@ -12,6 +12,7 @@ interface SettingsPopupProps {
 }
 
 const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose }) => {
+  const getTerm = useTerm();
   const settings = useMonsterStore((state) => state.settings)
   const setSetting = useMonsterStore((state) => state.setSetting)
   const getSettingName = useMonsterStore((state) => state.getSettingName)
@@ -24,6 +25,12 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose }) => {
       <div style={{ marginBottom: '20px', textAlign: 'center' }}>
         <strong>Visual Settings</strong>
       </div>
+      <SettingsRow
+        settingKey="showQuickActions"
+        label={getSettingName('showQuickActions')}
+        value={settings.showQuickActions}
+        onChange={handleSettingChange}
+      />
       <SettingsRow
         settingKey="showConditions"
         label={getSettingName('showConditions')}
@@ -52,12 +59,6 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose }) => {
         settingKey="showXpCounter"
         label={getSettingName('showXpCounter')}
         value={settings.showXpCounter}
-        onChange={handleSettingChange}
-      />
-      <SettingsRow
-        settingKey="showQuickActions"
-        label={getSettingName('showQuickActions')}
-        value={settings.showQuickActions}
         onChange={handleSettingChange}
       />
       <hr style={{ margin: '24px 0' }} />

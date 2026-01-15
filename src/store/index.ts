@@ -12,13 +12,15 @@ import {
 import { temporal, type TemporalState, type TemporalActions } from '@/store/middleware/temporal'
 import { STORAGE_KEYS, ANIMATION_DURATION } from '@/constants'
 import type { ConditionsSlice } from './slices/conditionsSlice'
+import { createTermSlice, type TermSlice } from './slices/termSlice'
 
 type MonsterCounterCoreState = MonsterSlice &
   SettingsSlice &
   InfoSlice &
   XpSlice &
   DataManagementSlice &
-  ConditionsSlice & {
+  ConditionsSlice &
+  TermSlice & {
     isLoading: boolean
 
     // Complex Actions
@@ -46,6 +48,7 @@ export const useMonsterStore = create<MonsterCounterState>()(
           ...createInfoSlice(set, get),
           ...createXpSlice(set),
           ...createDataManagementSlice(set, get),
+          ...createTermSlice(set, get),
 
           // Complex Actions (combine multiple slices)
           killMonster: (monsterId: string) => {
@@ -97,7 +100,7 @@ export const useMonsterStore = create<MonsterCounterState>()(
       }
     ),
     {
-      name: STORAGE_KEYS.MONSTER_COUNTER, // persist under this key
+      name: STORAGE_KEYS.MONSTER_COUNTER,
       partialize: (state) => ({
         monsters: state.monsters,
         monsterDetails: state.monsterDetails,
@@ -117,3 +120,5 @@ export const useIsLoading = () => useMonsterStore((state) => state.isLoading)
 export const useCanUndo = () => useMonsterStore((state) => state.canUndo())
 export const useCanRedo = () => useMonsterStore((state) => state.canRedo())
 export const useConditions = () => useMonsterStore((state) => state.conditions)
+export const useTerm = () => useMonsterStore((state) => state.getTerm)
+export const useLanguage = () => useMonsterStore((state) => state.language)

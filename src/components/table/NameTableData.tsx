@@ -23,10 +23,11 @@ const NameTableData: React.FC<NameTableDataProps> = ({ monster }) => {
   }
 
   return (
-    <td className="name-cell" style={{ color: monster.hp > 0 ? 'inherit' : 'gray' }}>
+    <td className="name-cell" >
       <div
         onClick={handleClick}
         style={{
+          color: monster.hp > 0 ? 'inherit' : 'gray',
           display: 'flex',
           justifyContent: 'center',
         }}

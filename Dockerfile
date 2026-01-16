@@ -12,8 +12,8 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Build the application
-RUN npm run build
+# Build the application with base path
+RUN npm run build -- --base=/app/
 
 # Production stage - Caddy server
 FROM caddy:2-alpine

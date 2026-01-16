@@ -1,6 +1,8 @@
 import React from 'react'
 import { useMonsterStore, useCanUndo, useCanRedo } from '@/store'
 import { useUndoRedoShortcuts } from '@/hooks/useKeyboardShortcut'
+import undoSvg from '@/assets/undo.svg'
+import redoSvg from '@/assets/redo.svg'
 
 interface HeaderProps {
   xpDisplay: number
@@ -43,7 +45,7 @@ const Header: React.FC<HeaderProps> = ({
             cursor: canUndo ? 'pointer' : 'not-allowed',
           }}
         >
-          <img src="/undo.svg" alt="Undo" style={{ width: '16px', height: '16px' }} />
+          <img src={undoSvg} alt="Undo" style={{ width: '16px', height: '16px' }} />
         </button>
         <button
           className="green-button"
@@ -55,7 +57,7 @@ const Header: React.FC<HeaderProps> = ({
             cursor: canRedo ? 'pointer' : 'not-allowed',
           }}
         >
-          <img src="/redo.svg" alt="Redo" style={{ width: '16px', height: '16px' }} />
+          <img src={redoSvg} alt="Redo" style={{ width: '16px', height: '16px' }} />
         </button>
         {settings.showXpCounter && (
           <button

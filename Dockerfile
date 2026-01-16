@@ -15,14 +15,11 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Production stage
-FROM nginx:alpine
+# Production stage - Caddy server
+FROM caddy:2-alpine
 
-# Copy built files to nginx
-COPY --from=build /app/dist /usr/share/nginx/html
+# Copy built files
+COPY --from=build /app/dist /usr/share/caddy
 
-# Expose port 80
+# Caddy auto-serves from /usr/share/caddy on port 80
 EXPOSE 80
-
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]

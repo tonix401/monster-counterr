@@ -11,7 +11,7 @@ import {
 } from '@/store/slices/dataManagementSlice'
 import { temporal, type TemporalState, type TemporalActions } from '@/store/middleware/temporal'
 import { STORAGE_KEYS, ANIMATION_DURATION } from '@/constants'
-import type { ConditionsSlice } from './slices/conditionsSlice'
+import { createConditionsSlice, type ConditionsSlice } from './slices/conditionsSlice'
 import { createTermSlice, type TermSlice } from './slices/termSlice'
 
 type MonsterCounterCoreState = MonsterSlice &
@@ -30,6 +30,7 @@ type MonsterCounterCoreState = MonsterSlice &
     // Initialization
     initialize: () => Promise<void>
     setLoading: (loading: boolean) => void
+    loadLanguagePack: (language: string) => Promise<void>
   }
 
 type MonsterCounterState = MonsterCounterCoreState & TemporalState<any> & TemporalActions
@@ -48,6 +49,7 @@ export const useMonsterStore = create<MonsterCounterState>()(
           ...createInfoSlice(set, get),
           ...createXpSlice(set),
           ...createDataManagementSlice(set, get),
+          ...createConditionsSlice(set),
           ...createTermSlice(set, get),
 
           // Complex Actions (combine multiple slices)
@@ -83,11 +85,32 @@ export const useMonsterStore = create<MonsterCounterState>()(
 
           // Initialization
           initialize: async () => {
+            set({ isLoading: true })
             await get().updateMonsterIndex()
+            await get().loadLanguagePack('en')
+            set({ isLoading: false })
           },
 
-          setLoading: (loading: boolean) => {
-            set({ isLoading: loading })
+          loadLanguagePack: async (language: string) => {
+            try {
+              // Fetch the language pack from assets
+              const response = await fetch(`/src/assets/locales/${language}.json`)
+
+              if (!response.ok) {
+                throw new Error(`Failed to load language pack for "${language}"`)
+              }
+
+              const languagePack = await response.json()
+
+              set((state: any) => ({
+                ...state,
+                terms: languagePack.terms,
+                language: languagePack.lang,
+              }))
+            } catch (error) {
+              console.error(`Error loading language pack for "${language}":`, error)
+              console.warn(`Falling back to term keys for display.`)
+            }
           },
         }) as any,
       {
@@ -120,5 +143,6 @@ export const useIsLoading = () => useMonsterStore((state) => state.isLoading)
 export const useCanUndo = () => useMonsterStore((state) => state.canUndo())
 export const useCanRedo = () => useMonsterStore((state) => state.canRedo())
 export const useConditions = () => useMonsterStore((state) => state.conditions)
-export const useTerm = () => useMonsterStore((state) => state.getTerm)
 export const useLanguage = () => useMonsterStore((state) => state.language)
+export const useSetLanguage = () => useMonsterStore((state) => state.setLanguage)
+export const useLoadLanguagePack = () => useMonsterStore((state) => state.loadLanguagePack)

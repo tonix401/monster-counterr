@@ -1,30 +1,40 @@
-import type { Term } from "@/types/Term"
-import { TERMS } from "@/constants/terms"
+import type { Term } from '@/types/Term'
 
 export type TermSlice = {
-  terms: {
-    [key: string]: Term
-  },
-  language: keyof Term,
-  getTerm: (key: string) => Term | undefined,
-  setLanguage: (language: keyof Term) => void,
+  terms: Term
+  language: string
+  availableLanguages: string[]
+  getTerm: (key: string) => string
+  setLanguage: (language: string) => Promise<void>
 }
 
-export const createTermSlice = (get: any, set: any): TermSlice => ({
-    terms: TERMS,
-    language: 'en',
-    getTerm: (key: string) => {
-      const terms = get().terms
-      const term = terms[key]
-      if (!term) {
-        throw new Error(`Term with key "${key}" not found.`)
-      }
-      return term
-    },
-    setLanguage: (language: keyof Term) => {
-      set((state: TermSlice) => ({
-        ...state,
-        language,
-      }))
+export const createTermSlice = (_set: any, get: any): TermSlice => ({
+  terms: {},
+  language: 'en',
+  availableLanguages: ['en'],
+
+  getTerm: (key: string) => {
+    const state = get()
+    const isLoading = state.isLoading
+    const term = state.terms[key]
+
+    if (!term && !isLoading) {
+      console.warn(
+        `Term with key "${key}" not found in language "${state.language}". Displaying key instead.`
+      )
+      return key
     }
+
+    return term
+  },
+
+  setLanguage: async (language: string) => {
+    const state = get()
+
+    if (state.language === language) {
+      return
+    }
+
+    await get().loadLanguagePack(language)
+  },
 })

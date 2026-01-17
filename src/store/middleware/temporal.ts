@@ -28,13 +28,10 @@ interface TemporalOptions<T> {
   partialize?: (state: T & TemporalState<Partial<T>> & TemporalActions) => Partial<T>
 }
 
-type TemporalImpl = <T>(
+const temporalImpl = <T>(
   config: StateCreator<T, [], []>,
-  options?: TemporalOptions<T>
-) => StateCreator<T & TemporalState<T> & TemporalActions, [], []>
-
-const temporalImpl: TemporalImpl =
-  (config, options = {}) =>
+  options: TemporalOptions<T> = {}
+): StateCreator<T & TemporalState<T> & TemporalActions, [], []> =>
   (set, get, api) => {
     const {
       limit = 50,
@@ -56,10 +53,7 @@ const temporalImpl: TemporalImpl =
         const next = partialize(newState)
 
         if (!equality(current, next)) {
-          const past = [...currentState.past, current]
-          if (past.length > limit) {
-            past.shift()
-          }
+          const past = [...currentState.past, current].slice(-limit)
           set({ past, future: [] } as Partial<TFull>)
         }
       },

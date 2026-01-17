@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { useMonsterStore } from '@/store'
+import { useTerm } from '@/hooks/useTerm'
 
 interface MonsterSuggestionInputProps {
   onHpChange: (hp: number) => void
@@ -17,6 +18,8 @@ const MonsterSuggestionInput: React.FC<MonsterSuggestionInputProps> = ({
   const isMonsterDetailsAvailable = useMonsterStore((state) => state.isMonsterDetailsAvailable)
   const addMonsterDetails = useMonsterStore((state) => state.addMonsterDetails)
   const getMonsterDetails = useMonsterStore((state) => state.getMonsterDetails)
+
+  const t_name = useTerm('name')
 
   const monsterNames = getMonsterNames()
 
@@ -59,7 +62,7 @@ const MonsterSuggestionInput: React.FC<MonsterSuggestionInputProps> = ({
     <div className="suggestion-input-container">
       <input
         id="monster-suggestion-input"
-        placeholder="Name"
+        placeholder={t_name}
         required
         value={value}
         onChange={handleInputChange}

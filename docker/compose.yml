@@ -1,0 +1,26 @@
+name: monster-counterr
+services:
+  frontend:
+    image: moonlightgecko/monster-counterr:latest
+    ports:
+      - "8001:80"
+    restart: unless-stopped
+    networks:
+      - monster-net
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-configs:/etc/nginx/conf.d
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - frontend
+    restart: unless-stopped
+    networks:
+      - monster-net
+networks:
+  monster-net:
+    name: monster-net
+    driver: bridge

@@ -1,0 +1,15 @@
+:80 {
+	root * /usr/share/caddy
+	
+	# Handle /app path
+	handle /app* {
+		uri strip_prefix /app
+		try_files {path} /index.html
+		file_server
+	}
+	
+	# Redirect root to /app/
+	handle / {
+		redir /app/ permanent
+	}
+}

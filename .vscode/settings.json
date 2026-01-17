@@ -1,0 +1,16 @@
+{
+  "window.title": "💀 Monster Counterr ${separator}${activeEditorShort}",
+  "workbench.colorTheme": "Default Dark Modern",
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#2c1b5a",
+    "activityBar.foreground": "#f4f6fb",
+    "statusBar.background": "#2c1b5a",
+    "statusBar.foreground": "#f4f6fb",
+    "titleBar.activeBackground": "#27135d",
+    "titleBar.activeForeground": "#f4f6fb",
+    "titleBar.inactiveBackground": "#2c1b5a",
+    "titleBar.inactiveForeground": "#f4f6fb"
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "prettier.prettier-vscode"
+}

@@ -1,5 +1,6 @@
 import React from 'react'
 import Popup from '@/components/popups/Popup'
+import { useTerm } from '@/hooks/useTerm'
 import type { MonsterDetails } from '@/types/MonsterDetails'
 
 interface MonsterInfoPopupProps {
@@ -9,10 +10,28 @@ interface MonsterInfoPopupProps {
 }
 
 const MonsterInfoPopup: React.FC<MonsterInfoPopupProps> = ({ isOpen, onClose, monsterDetails }) => {
+  const t_monsterDetailsNotFound = useTerm('monsterDetailsNotFound')
+  const t_monsterDetailsCouldNotBeLoaded = useTerm('monsterDetailsCouldNotBeLoaded')
+  const t_armorClass = useTerm('armorClass')
+  const t_hitPoints = useTerm('hitPoints')
+  const t_speed = useTerm('speed')
+  const t_proficiencies = useTerm('proficiencies')
+  const t_damageVulnerabilities = useTerm('damageVulnerabilities')
+  const t_damageResistances = useTerm('damageResistances')
+  const t_damageImmunities = useTerm('damageImmunities')
+  const t_conditionImmunities = useTerm('conditionImmunities')
+  const t_senses = useTerm('senses')
+  const t_languages = useTerm('languages')
+  const t_challengeRating = useTerm('challengeRating')
+  const t_specialAbilities = useTerm('specialAbilities')
+  const t_actions = useTerm('actions')
+  const t_legendaryActions = useTerm('legendaryActions')
+  const t_xp = useTerm('xp')
+
   if (!monsterDetails) {
     return (
-      <Popup isOpen={isOpen} onClose={onClose} title="Monster details not found" width={400}>
-        <p>Monster details could not be loaded.</p>
+      <Popup isOpen={isOpen} onClose={onClose} title={t_monsterDetailsNotFound} width={400}>
+        <p>{t_monsterDetailsCouldNotBeLoaded}</p>
       </Popup>
     )
   }
@@ -21,7 +40,9 @@ const MonsterInfoPopup: React.FC<MonsterInfoPopupProps> = ({ isOpen, onClose, mo
     if (attrValue !== 0 && !attrValue) return null
     return (
       <div className={`attribute-row ${column ? 'attribute-column' : ''}`} key={attrName}>
-        <strong><i>{attrName}</i></strong>
+        <strong>
+          <i>{attrName}</i>
+        </strong>
         <span>{attrValue}</span>
       </div>
     )
@@ -31,7 +52,7 @@ const MonsterInfoPopup: React.FC<MonsterInfoPopupProps> = ({ isOpen, onClose, mo
     <Popup isOpen={isOpen} onClose={onClose} width={1100}>
       <div className="monster-name-picture-area">
         <div className="monster-name-area">
-          <h2 style={{ textAlign: "left" }}>{monsterDetails.name}</h2>
+          <h2 style={{ textAlign: 'left' }}>{monsterDetails.name}</h2>
           <span>
             {monsterDetails.size} {monsterDetails.type}, {monsterDetails.alignment}
           </span>
@@ -46,10 +67,10 @@ const MonsterInfoPopup: React.FC<MonsterInfoPopupProps> = ({ isOpen, onClose, mo
 
       {/* Main Info */}
       <div>
-        {createAttributeRow('Armor Class:', monsterDetails.armor_class[0].value)}
-        {createAttributeRow('Hit Points:', monsterDetails.hit_points)}
+        {createAttributeRow(t_armorClass, monsterDetails.armor_class[0].value)}
+        {createAttributeRow(t_hitPoints, monsterDetails.hit_points)}
         {createAttributeRow(
-          'Speed:',
+          t_speed,
           Object.entries(monsterDetails.speed)
             .map(([type, val]) => `${type}: ${val}`)
             .join(', ')
@@ -86,42 +107,42 @@ const MonsterInfoPopup: React.FC<MonsterInfoPopupProps> = ({ isOpen, onClose, mo
       {/* More Info */}
       {monsterDetails.proficiencies.length > 0 &&
         createAttributeRow(
-          'Proficiencies: ',
+          t_proficiencies,
           monsterDetails.proficiencies
             .map((prof) => `${prof.proficiency.name}: +${prof.value}`)
             .join(', ')
         )}
       {monsterDetails.damage_vulnerabilities.length > 0 &&
         createAttributeRow(
-          'Damage Vulnerabilities: ',
+          t_damageVulnerabilities,
           monsterDetails.damage_vulnerabilities.join(', ')
         )}
       {monsterDetails.damage_resistances.length > 0 &&
-        createAttributeRow('Damage Resistances: ', monsterDetails.damage_resistances.join(', '))}
+        createAttributeRow(t_damageResistances, monsterDetails.damage_resistances.join(', '))}
       {monsterDetails.damage_immunities.length > 0 &&
-        createAttributeRow('Damage Immunities: ', monsterDetails.damage_immunities.join(', '))}
+        createAttributeRow(t_damageImmunities, monsterDetails.damage_immunities.join(', '))}
       {monsterDetails.condition_immunities.length > 0 &&
         createAttributeRow(
-          'Condition Immunities: ',
+          t_conditionImmunities,
           monsterDetails.condition_immunities.map((ci) => ci.name).join(', ')
         )}
       {createAttributeRow(
-        'Senses: ',
+        t_senses,
         Object.entries(monsterDetails.senses)
           .map(([sense, val]) => `${sense.replace(/_/g, ' ')}: ${val}`)
           .join(', ')
       )}
-      {createAttributeRow('Languages: ', monsterDetails.languages)}
+      {createAttributeRow(t_languages, monsterDetails.languages)}
       {createAttributeRow(
-        'Challenge Rating: ',
-        `${monsterDetails.challenge_rating} (${monsterDetails.xp} XP)`
+        t_challengeRating,
+        `${monsterDetails.challenge_rating} (${monsterDetails.xp} ${t_xp})`
       )}
 
       {/* Special Abilities */}
       {monsterDetails.special_abilities.length > 0 && (
         <>
           <hr />
-          <h3>Special Abilities</h3>
+          <h3>{t_specialAbilities}</h3>
           {monsterDetails.special_abilities.map((ability) =>
             createAttributeRow(ability.name, ability.desc)
           )}
@@ -132,7 +153,7 @@ const MonsterInfoPopup: React.FC<MonsterInfoPopupProps> = ({ isOpen, onClose, mo
       {monsterDetails.actions.length > 0 && (
         <>
           <hr />
-          <h3>Actions</h3>
+          <h3>{t_actions}</h3>
           {monsterDetails.actions.map((action) => createAttributeRow(action.name, action.desc))}
         </>
       )}
@@ -141,7 +162,7 @@ const MonsterInfoPopup: React.FC<MonsterInfoPopupProps> = ({ isOpen, onClose, mo
       {monsterDetails.legendary_actions.length > 0 && (
         <>
           <hr />
-          <h3>Legendary Actions</h3>
+          <h3>{t_legendaryActions}</h3>
           {monsterDetails.legendary_actions.map((action) =>
             createAttributeRow(action.name, action.desc)
           )}

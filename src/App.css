@@ -46,6 +46,79 @@ header > div {
   gap: 12px;
 }
 
+/* Loading Skeleton Styles */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-header {
+  padding: 24px 28px;
+  background: linear-gradient(135deg, rgba(124, 77, 255, 0.18), rgba(124, 77, 255, 0.05));
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.skeleton-header-left {
+  display: flex;
+  gap: 12px;
+}
+
+.skeleton-header-title {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 32px;
+}
+
+.skeleton-header-button {
+  width: 100px;
+  height: 40px;
+}
+
+.skeleton-table {
+  padding: 28px;
+}
+
+.skeleton-table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 2fr 1fr;
+  gap: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.skeleton-table-cell {
+  height: 24px;
+}
+
+.skeleton-table-cell.small {
+  height: 20px;
+  width: 60%;
+}
+
 #monsterList {
   margin: 0;
   padding: 24px 28px 32px;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import MonsterTable from '@/components/table/MonsterTable'
 import AddMonsterPopup from '@/components/popups/AddMonsterPopup'
@@ -10,23 +10,43 @@ function App() {
   const [isAddPopupOpen, setIsAddPopupOpen] = useState(false)
   const [isSettingsPopupOpen, setIsSettingsPopupOpen] = useState(false)
 
-  // Optimized selectors
-  const monsters = useMonsters()
-  const xp = useXp()
-  const isLoading = useIsLoading()
-
-  const resetXp = useMonsterStore((state) => state.resetXp)
   const initialize = useMonsterStore((state) => state.initialize)
 
   useEffect(() => {
     initialize()
   }, [initialize])
 
+  const xp = useXp()
+  const monsters = useMonsters()
+  const isLoading = useIsLoading()
+
+  const resetXp = useMonsterStore((state) => state.resetXp)
+
   if (isLoading) {
     return (
       <div className="app">
-        <div style={{ padding: '24px', textAlign: 'center' }}>
-          <h2>Loading Monster Counter...</h2>
+        <div className="skeleton-header">
+          <div className="skeleton-header-left">
+            <div className="skeleton skeleton-header-button"></div>
+            <div className="skeleton skeleton-header-button"></div>
+          </div>
+          <div className="skeleton skeleton-header-title"></div>
+          <div className="skeleton-header-left">
+            <div className="skeleton skeleton-header-button"></div>
+            <div className="skeleton skeleton-header-button"></div>
+          </div>
+        </div>
+        <div className="skeleton-table">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="skeleton-table-row">
+              <div className="skeleton skeleton-table-cell"></div>
+              <div className="skeleton skeleton-table-cell small"></div>
+              <div className="skeleton skeleton-table-cell small"></div>
+              <div className="skeleton skeleton-table-cell small"></div>
+              <div className="skeleton skeleton-table-cell"></div>
+              <div className="skeleton skeleton-table-cell small"></div>
+            </div>
+          ))}
         </div>
       </div>
     )

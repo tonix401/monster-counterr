@@ -86,9 +86,9 @@ export const useMonsterStore = create<MonsterCounterState>()(
           // Initialization
           initialize: async () => {
             set({ isLoading: true })
-            await get().updateMonsterIndex()
             await get().loadLanguagePack('en')
             set({ isLoading: false })
+            await get().updateMonsterIndex()
           },
 
           loadLanguagePack: async (language: string) => {

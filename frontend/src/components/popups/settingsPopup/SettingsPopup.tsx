@@ -3,10 +3,10 @@ import Popup from '@/components/popups/Popup'
 import BinarySettingsRow from '@/components/popups/settingsPopup/BinarySettingsRow'
 import ImportFileButton from '@/components/ui/ImportFileButton'
 import type { Settings } from '@/types/Settings'
-import { useLanguage, useMonsterStore } from '@/store'
+import { useMonsterStore } from '@/store'
 import { useTerm } from '@/hooks/useTerm'
 import ExportFileButton from '../../ui/ExportFileButton'
-import MultiSettingsRow from './MultiSettingsRow'
+import LanguageSelectionRow from './LanguageSelectionRow'
 
 interface SettingsPopupProps {
   isOpen: boolean
@@ -21,7 +21,6 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose }) => {
   const t_showChangeHp = useTerm('showChangeHp')
   const t_showXpCounter = useTerm('showXpCounter')
   const t_autoRemoveDead = useTerm('autoRemoveDead')
-  const t_language = useTerm('language')
   const t_visualSettings = useTerm('visualSettings')
   const t_behaviouralSettings = useTerm('behaviouralSettings')
   const t_manageSaveFiles = useTerm('manageSaveFiles')
@@ -83,12 +82,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose }) => {
         value={settings.autoRemoveDead}
         onChange={handleSettingChange}
       />
-      <MultiSettingsRow
-        settingTerm="language"
-        label={t_language}
-        value={useLanguage()}
-        onChange={() => {}}
-      />
+      <LanguageSelectionRow />
       <hr style={{ margin: '24px 0' }} />
       <div style={{ marginBottom: '20px', textAlign: 'center' }}>
         <strong>{t_manageSaveFiles}</strong>

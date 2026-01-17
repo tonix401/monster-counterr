@@ -86,7 +86,8 @@ export const useMonsterStore = create<MonsterCounterState>()(
           // Initialization
           initialize: async () => {
             set({ isLoading: true })
-            await get().loadLanguagePack('en')
+            await get().loadAvailableLanguages()
+            await get().loadLanguagePack(get().language)
             set({ isLoading: false })
             get().updateMonsterIndex()
           },
@@ -113,6 +114,28 @@ export const useMonsterStore = create<MonsterCounterState>()(
               console.warn(`Falling back to term keys for display.`)
             }
           },
+          loadAvailableLanguages: async () => {
+            try {
+              const response = await fetch(`${ASSETS_URL}/locales/locales.json`)
+
+              if (!response.ok) {
+                throw new Error(
+                  `Failed to load available languages, ${response.status} ${response.statusText}`
+                )
+              }
+
+              const availableLanguages = await response.json()
+
+              set(() => ({
+                availableLanguages,
+              }))
+            } catch (error) {
+              console.error('Error loading available languages:', error)
+              set(() => ({
+                availableLanguages: ['en'],
+              }))
+            }
+          }
         }) as any,
       {
         limit: 50,
@@ -130,6 +153,7 @@ export const useMonsterStore = create<MonsterCounterState>()(
         monsterDetails: state.monsterDetails,
         monsterIndex: state.monsterIndex,
         settings: state.settings,
+        language: state.language,
         xp: state.xp,
       }),
     }
@@ -147,3 +171,4 @@ export const useConditions = () => useMonsterStore((state) => state.conditions)
 export const useLanguage = () => useMonsterStore((state) => state.language)
 export const useSetLanguage = () => useMonsterStore((state) => state.setLanguage)
 export const useLoadLanguagePack = () => useMonsterStore((state) => state.loadLanguagePack)
+export const useAvailableLanguages = () => useMonsterStore((state) => state.availableLanguages)

@@ -481,3 +481,14 @@ hr {
 #col-actions {
   width: 120px;
 }
+
+.language-selection-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.language-selection-row > select{
+  width: 120px;
+}

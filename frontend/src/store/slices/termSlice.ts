@@ -3,16 +3,16 @@ import type { Term } from '@/types/Term'
 export type TermSlice = {
   terms: Term
   language: string
-  availableLanguages: string[]
+  availableLanguages: { key: string; name: string }[]
   getTerm: (key: string) => string
   setLanguage: (language: string) => Promise<void>
-  addLanguage: (language: string) => void
+  addLanguage: (language: { key: string; name: string }) => void
 }
 
 export const createTermSlice = (set: any, get: any): TermSlice => ({
   terms: {},
   language: 'en',
-  availableLanguages: ['en'],
+  availableLanguages: [{ key: 'en', name: 'English' }],
 
   getTerm: (key: string) => {
     const state = get()
@@ -38,12 +38,16 @@ export const createTermSlice = (set: any, get: any): TermSlice => ({
 
     await get().loadLanguagePack(language)
   },
-  addLanguage: (language: string) => {
+  addLanguage: (language: { key: string; name: string }) => {
     const state = get()
-    if (!state.availableLanguages.includes(language)) {
+    if (
+      !state.availableLanguages
+        .map((lang: { key: string; name: string }) => lang.key)
+        .includes(language.key)
+    ) {
       set({
         availableLanguages: [...state.availableLanguages, language],
       })
     }
-  }
+  },
 })

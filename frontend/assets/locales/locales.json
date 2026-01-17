@@ -1,10 +1,62 @@
 [
   {
+    "key": "de",
+    "name": "Deutsch"
+  },
+  {
+    "key": "dwv",
+    "name": "Dwarvish"
+  },
+  {
     "key": "en",
     "name": "English"
   },
   {
-    "key": "de",
-    "name": "Deutsch"
+    "key": "eo",
+    "name": "Esperanto"
+  },
+  {
+    "key": "es",
+    "name": "Español"
+  },
+  {
+    "key": "fil",
+    "name": "Filipino"
+  },
+  {
+    "key": "fr",
+    "name": "Français"
+  },
+  {
+    "key": "it",
+    "name": "Italiano"
+  },
+  {
+    "key": "pt",
+    "name": "Português"
+  },
+  {
+    "key": "ru",
+    "name": "Русский"
+  },
+  {
+    "key": "sv",
+    "name": "Svenska"
+  },
+  {
+    "key": "tok",
+    "name": "toki pona"
+  },
+  {
+    "key": "ja",
+    "name": "日本語"
+  },
+  {
+    "key": "ko",
+    "name": "한국어"
+  },
+  {
+    "key": "zh",
+    "name": "中文"
   }
 ]

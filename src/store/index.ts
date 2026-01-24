@@ -146,7 +146,7 @@ export const useMonsterStore = create<MonsterCounterState>()(
                 availableLanguages: ['en'],
               }))
             }
-          }
+          },
         }) as any,
       {
         limit: 50,

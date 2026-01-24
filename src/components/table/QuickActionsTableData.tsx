@@ -1,8 +1,9 @@
 import React from 'react'
 import { useMonsterStore } from '@/store'
 import { useTerm } from '@/hooks/useTerm'
-import skullSvg from '@/public/skull.svg'
-import binSvg from '@/public/bin.svg'
+
+const skullSvg = '/monster-counterr/skull.svg'
+const binSvg = '/monster-counterr/bin.svg'
 
 interface QuickActionsTableDataProps {
   monsterId: string

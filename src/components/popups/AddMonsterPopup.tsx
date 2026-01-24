@@ -13,12 +13,14 @@ const AddMonsterPopup: React.FC<AddMonsterPopupProps> = ({ isOpen, onClose }) =>
   const [name, setName] = useState('')
   const [hp, setHp] = useState('')
   const [amount, setAmount] = useState('')
+  const [xp, setXp] = useState('')
 
   const addMonster = useMonsterStore((state) => state.addMonster)
 
   const t_addMonster = useTerm('addMonster')
   const t_hp = useTerm('hp')
   const t_amount = useTerm('amount')
+  const t_xp = useTerm('xp')
 
   const handleAdd = () => {
     const trimmedName = name.trim()
@@ -51,6 +53,7 @@ const AddMonsterPopup: React.FC<AddMonsterPopupProps> = ({ isOpen, onClose }) =>
       >
         <MonsterSuggestionInput
           onHpChange={(newHp) => setHp(newHp.toString())}
+          onXpChange={(newXp) => setXp(newXp.toString())}
           value={name}
           onChange={setName}
         />
@@ -68,6 +71,13 @@ const AddMonsterPopup: React.FC<AddMonsterPopupProps> = ({ isOpen, onClose }) =>
           placeholder={t_amount}
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
+        />
+        <input
+          id="xp-input"
+          type="number"
+          placeholder={t_xp}
+          value={xp}
+          onChange={(e) => setXp(e.target.value)}
         />
         <button type="submit" className="green-button">
           {t_addMonster}

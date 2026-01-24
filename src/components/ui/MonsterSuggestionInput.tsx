@@ -4,12 +4,14 @@ import { useTerm } from '@/hooks/useTerm'
 
 interface MonsterSuggestionInputProps {
   onHpChange: (hp: number) => void
+  onXpChange: (xp: number) => void
   value: string
   onChange: (value: string) => void
 }
 
 const MonsterSuggestionInput: React.FC<MonsterSuggestionInputProps> = ({
   onHpChange,
+  onXpChange,
   value,
   onChange,
 }) => {
@@ -37,6 +39,7 @@ const MonsterSuggestionInput: React.FC<MonsterSuggestionInputProps> = ({
       const details = getMonsterDetails(id)
       if (details) {
         onHpChange(details.hit_points)
+        onXpChange(details.xp)
       }
     }
   }
@@ -53,6 +56,7 @@ const MonsterSuggestionInput: React.FC<MonsterSuggestionInputProps> = ({
         const details = getMonsterDetails(id)
         if (details) {
           onHpChange(details.hit_points)
+          onXpChange(details.xp)
         }
       })()
     }

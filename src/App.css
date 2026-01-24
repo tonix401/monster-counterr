@@ -308,6 +308,11 @@ select {
   cursor: pointer;
 }
 
+select option {
+  background: var(--card);
+  color: var(--text);
+}
+
 .popup-window {
   position: fixed;
   display: flex;

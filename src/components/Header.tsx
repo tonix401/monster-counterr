@@ -3,8 +3,8 @@ import { useMonsterStore, useCanUndo, useCanRedo } from '@/store'
 import { useUndoRedoShortcuts } from '@/hooks/useKeyboardShortcut'
 import { useTerm } from '@/hooks/useTerm'
 
-import undoSvg from '@/public/undo.svg'
-import redoSvg from '@/public/redo.svg'
+const undoSvg = '/monster-counterr/undo.svg'
+const redoSvg = '/monster-counterr/redo.svg'
 
 interface HeaderProps {
   xpDisplay: number

@@ -1,9 +1,0 @@
-{
-  "name": "monster-counterr-docker",
-  "type": "module",
-  "scripts": {
-    "up": "node scripts/start.js",
-    "up:pull": "node scripts/start.js -- pull",
-    "down": "node scripts/stop.js"
-  }
-}

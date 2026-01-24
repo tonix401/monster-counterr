@@ -34,9 +34,11 @@ Before you begin, you'll need to install **Node.js**. This will be responsible f
 **Option A: Using Git**
 
 If you have Git installed, run these two commands using a terminal:
+
 ```
 git clone https://github.com/tonix401/monster-counterr.git
 ```
+
 ```
 cd monster-counterr
 ```
@@ -51,9 +53,17 @@ cd monster-counterr
    - **Mac**: Right-click the folder while holding Control, select "New Terminal at Folder"
    - **Linux**: I don't think I need to tell you
 
-### Step 2: Install Dependencies
+### Step 2: Navigate to Frontend Directory
 
 In your terminal/command prompt, type this command and press Enter:
+
+```bash
+cd frontend
+```
+
+### Step 3: Install Dependencies
+
+Now install the necessary files:
 
 ```bash
 npm install
@@ -61,7 +71,7 @@ npm install
 
 This will download all the necessary files. It might take a few minutes.
 
-### Step 3: Start the Application
+### Step 4: Start the Application
 
 Once installation is complete, run:
 
@@ -70,29 +80,72 @@ npm run start
 ```
 
 I added some fluff for the ✨ aestetics ✨, but essentially you should see a message like:
+
 ```
 ➜  Local:   http://localhost:14120/
 ```
 
-### Step 4: Open in Your Browser
+### Step 5: Open in Your Browser
 
 1. Open your browser (Chrome has some nice features for dropdowns, so I recommend it. Any other should also work fine though)
 2. Go to: **http://localhost:14120/**
 3. Do not close the terminal, that would kill it
-3. Start managing your encounters! 🎲
+4. Start managing your encounters! 🎲
 
 ### Stopping the Application
 
 When you're done destroying your players hopes and dreams:
+
 - Press `Ctrl + C` in the terminal to stop the server
 - Now you can close it
 
 ### Running It Again Later
 
 Next time you want to use Monster Counter:
+
 1. Open a terminal in the project folder
-2. Run `npm run start`
-3. Open **http://localhost:14120/** in your browser
+2. Navigate to frontend: `cd frontend`
+3. Run `npm run start`
+4. Open **http://localhost:14120/** in your browser
+
+## 🐳 Docker Setup
+
+If you prefer using Docker, there are two options:
+
+### Simple Setup (Recommended)
+
+Quickest way to get started with Docker:
+
+```bash
+cd docker/simple_setup
+docker compose up -d
+```
+
+Then open **http://localhost:8001** in your browser.
+
+To stop:
+
+```bash
+docker compose down
+```
+
+### Full Setup (with Nginx)
+
+For a complete setup with Nginx reverse proxy:
+
+```bash
+cd docker
+npm install
+npm run up
+```
+
+This will start the application with Nginx on ports 80 (HTTP) and 443 (HTTPS).
+
+To stop:
+
+```bash
+npm run down
+```
 
 ## 🛠️ For Developers
 
@@ -106,12 +159,20 @@ Next time you want to use Monster Counter:
 
 ### Development Scripts
 
+All commands should be run from the `frontend/` directory:
+
 ```bash
 # Start development server on port 14120
 npm run dev
 
+# Build for production
+npm run build
+
 # Build and run the site in production
 npm run start
+
+# Preview production build
+npm run preview
 ```
 
 ## 📝 Misc

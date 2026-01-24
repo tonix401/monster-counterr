@@ -11,8 +11,8 @@ export default defineConfig({
     },
   },
   root: './',
-  base: '/app/',
-  publicDir: './assets',
+  base: '/monster-counterr/',
+  publicDir: './src/public',
   build: {
     outDir: 'dist',
   },

@@ -9,12 +9,13 @@ interface ChangeHpTableDataProps {
 const ChangeHpTableData: React.FC<ChangeHpTableDataProps> = ({ monster }) => {
   const [value, setValue] = useState('')
   const updateMonsterHealth = useMonsterStore((state) => state.updateMonsterHealth)
+  const getOnDeathCallback = useMonsterStore((state) => state.getOnDeathCallback)
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       const amount = parseInt(value, 10)
       if (!isNaN(amount)) {
-        updateMonsterHealth(monster.id, event.shiftKey ? amount : -amount)
+        updateMonsterHealth(monster.id, event.shiftKey ? amount : -amount, getOnDeathCallback())
         setValue('')
       }
     }
@@ -23,20 +24,20 @@ const ChangeHpTableData: React.FC<ChangeHpTableDataProps> = ({ monster }) => {
   const handleDamage = () => {
     const amount = parseInt(value, 10)
     if (!isNaN(amount)) {
-      updateMonsterHealth(monster.id, -amount)
+      updateMonsterHealth(monster.id, -amount, getOnDeathCallback())
       setValue('')
     } else if (value === '') {
-      updateMonsterHealth(monster.id, -1)
+      updateMonsterHealth(monster.id, -1, getOnDeathCallback())
     }
   }
 
   const handleHeal = () => {
     const amount = parseInt(value, 10)
     if (!isNaN(amount)) {
-      updateMonsterHealth(monster.id, amount)
+      updateMonsterHealth(monster.id, amount, getOnDeathCallback())
       setValue('')
     } else if (value === '') {
-      updateMonsterHealth(monster.id, 1)
+      updateMonsterHealth(monster.id, 1, getOnDeathCallback())
     }
   }
 

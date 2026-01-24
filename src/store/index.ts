@@ -26,6 +26,7 @@ type MonsterCounterCoreState = MonsterSlice &
     // Complex Actions
     killMonster: (monsterId: string) => void
     killAllMonsters: () => void
+    getOnDeathCallback: () => (monster: Monster) => void
 
     // Initialization
     initialize: () => Promise<void>
@@ -66,6 +67,16 @@ export const useMonsterStore = create<MonsterCounterState>()(
             }
 
             state.updateMonsterHealth(monsterId, -monster.hp, onDeath)
+          },
+
+          getOnDeathCallback: () => {
+            const state = get()
+            return (deadMonster: Monster) => {
+              const details = state.monsterDetails[deadMonster.detailIndex]
+              if (details) {
+                state.updateXp(details.xp)
+              }
+            }
           },
 
           killAllMonsters: () => {

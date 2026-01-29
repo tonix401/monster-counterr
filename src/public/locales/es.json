@@ -1,6 +1,7 @@
 {
   "lang": "es",
   "terms": {
+    "customMonsters": "Monstruos Personalizados",
     "__thisLanguage": "Español",
     "showQuickActions": "Mostrar Acciones Rápidas",
     "showStatus": "Mostrar Estado",
@@ -12,6 +13,7 @@
     "visualSettings": "Configuración Visual",
     "behaviouralSettings": "Configuración de Comportamiento",
     "manageSaveFiles": "Administrar Archivos de Guardado",
+    "manageData": "Administrar Datos",
     "settings": "Configuración",
     "openSettings": "Abrir Configuración",
     "undo": "Deshacer",

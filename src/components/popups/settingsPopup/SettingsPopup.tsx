@@ -32,7 +32,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose }) => {
   }
 
   return (
-    <Popup isOpen={isOpen} onClose={onClose} width={500}>
+    <Popup onClose={onClose} width={500}>
       <div style={{ marginBottom: '20px', textAlign: 'center' }}>
         <strong>{t_visualSettings}</strong>
       </div>
@@ -83,20 +83,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose }) => {
         onChange={handleSettingChange}
       />
       <LanguageSelectionRow />
-      <hr style={{ margin: '24px 0' }} />
-      <div style={{ marginBottom: '20px', textAlign: 'center' }}>
-        <strong>{t_manageSaveFiles}</strong>
-      </div>
-      <div
-        style={{
-          display: 'flex',
-          gap: '10px',
-          justifyContent: 'center',
-        }}
-      >
-        <ImportFileButton />
-        <ExportFileButton />
-      </div>
+      {/* Savefile management moved to Manage Data popup */}
     </Popup>
   )
 }

@@ -1,6 +1,7 @@
 {
   "lang": "fil",
   "terms": {
+    "customMonsters": "Custom na Halimaw",
     "__thisLanguage": "Filipino",
     "showQuickActions": "Ipakita ang Mabilis na Aksyon",
     "showStatus": "Ipakita ang Katayuan",
@@ -12,6 +13,7 @@
     "visualSettings": "Mga Setting ng Paningin",
     "behaviouralSettings": "Mga Setting ng Pag-uugali",
     "manageSaveFiles": "Pamahalaan ang mga Save File",
+    "manageData": "Pamahalaan ang Data",
     "settings": "Mga Setting",
     "openSettings": "Buksan ang Mga Setting",
     "undo": "Ibalik",

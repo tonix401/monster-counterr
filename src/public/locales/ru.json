@@ -1,6 +1,7 @@
 {
   "lang": "ru",
   "terms": {
+    "customMonsters": "Пользовательские монстры",
     "__thisLanguage": "Русский",
     "showQuickActions": "Показать Быстрые Действия",
     "showStatus": "Показать Статус",
@@ -12,6 +13,7 @@
     "visualSettings": "Визуальные Настройки",
     "behaviouralSettings": "Поведенческие Настройки",
     "manageSaveFiles": "Управление Файлами Сохранения",
+    "manageData": "Управление Данными",
     "settings": "Настройки",
     "openSettings": "Открыть Настройки",
     "undo": "Отменить",

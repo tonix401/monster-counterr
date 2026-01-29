@@ -6,11 +6,8 @@ A web application for D&D Dungeon Masters to track enemy health, conditions, and
 
 ## ✨ Features
 
-- **📚 Official Monster Database**: Access the full D&D 5e SRD monster library through a free external API
-- **🎨 Custom Monsters**: Create and add your own custom enemies
-- **💚 Health Tracking**: Easily monitor and update HP for multiple creatures during combat
-- **🎯 Condition Management**: Track status conditions applied to monsters
-- **⭐ XP Total**: Automagically adding xp to the big total as your players are killing enemies
+**🎨 Custom Monsters**: Create and add your own custom enemies (now accessible from the main menu)
+
 - **🔧 Customizable Display**: Show or hide specific columns
 - **📄 Full Monster Sheets**: View complete stat blocks for any official D&D monster
 - **💾 Save System**: Import and export your encounter data to share
@@ -148,6 +145,18 @@ npm run down
 ```
 
 ## 🛠️ For Developers
+
+## 🗂️ App Structure (Popups & Menu)
+
+- The main view now features a **Menu** button instead of a Settings button.
+- The Menu opens a popup/modal with options:
+  - Settings
+  - Manage Data
+  - Custom Monsters
+- Each option opens its own popup/modal overlay (using React Router routes):
+  - **Settings**: App settings
+  - **Manage Data**: Import/export and data management
+  - **Custom Monsters**: Manage your own monsters
 
 ### Tech Stack
 

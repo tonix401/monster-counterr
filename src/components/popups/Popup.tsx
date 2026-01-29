@@ -1,16 +1,13 @@
 import React from 'react'
 
 interface PopupProps {
-  isOpen: boolean
   onClose: () => void
   title?: string
   width?: number
   children: React.ReactNode
 }
 
-const Popup: React.FC<PopupProps> = ({ isOpen, onClose, title, width = 400, children }) => {
-  if (!isOpen) return null
-
+const Popup: React.FC<PopupProps> = ({ onClose, title, width = 400, children }) => {
   return (
     <>
       <div className="popup-after" onClick={onClose}></div>

@@ -1,4 +1,5 @@
 import React from 'react'
+import { useNavigate } from 'react-router'
 import { useMonsterStore, useCanUndo, useCanRedo } from '@/store'
 import { useUndoRedoShortcuts } from '@/hooks/useKeyboardShortcut'
 import { useTerm } from '@/hooks/useTerm'
@@ -9,16 +10,10 @@ const redoSvg = '/monster-counterr/redo.svg'
 interface HeaderProps {
   xpDisplay: number
   onResetXp: () => void
-  onOpenSettings: () => void
-  onOpenAddMonster: () => void
 }
 
-const Header: React.FC<HeaderProps> = ({
-  xpDisplay,
-  onResetXp,
-  onOpenSettings,
-  onOpenAddMonster,
-}) => {
+const Header: React.FC<HeaderProps> = ({ xpDisplay, onResetXp }) => {
+  const navigate = useNavigate()
   const settings = useMonsterStore((state) => state.settings)
   const clearMonsters = useMonsterStore((state) => state.clearMonsters)
   const killAllMonsters = useMonsterStore((state) => state.killAllMonsters)
@@ -29,8 +24,8 @@ const Header: React.FC<HeaderProps> = ({
   const canRedo = useCanRedo()
 
   // Translations
-  const t_settings = useTerm('settings')
-  const t_openSettings = useTerm('openSettings')
+  const t_menu = useTerm('menu')
+  const t_openMenu = useTerm('openMenu')
   const t_undo = useTerm('undo')
   const t_undoShortcut = useTerm('undoShortcut')
   const t_redo = useTerm('redo')
@@ -53,8 +48,8 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header>
       <div>
-        <button className="green-button" onClick={onOpenSettings} title={t_openSettings}>
-          {t_settings}
+        <button className="green-button" onClick={() => navigate('/menu')} title={t_openMenu}>
+          {t_menu}
         </button>
         <button
           className="green-button"
@@ -102,7 +97,7 @@ const Header: React.FC<HeaderProps> = ({
         <button className="red-button" onClick={removeDead} title={t_removeDeadTooltip}>
           {t_removeDead}
         </button>
-        <button className="green-button" onClick={onOpenAddMonster} title={t_addNewMonsters}>
+        <button className="green-button" onClick={() => navigate('/add')} title={t_addNewMonsters}>
           {t_add}
         </button>
       </div>

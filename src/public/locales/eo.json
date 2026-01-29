@@ -1,6 +1,7 @@
 {
   "lang": "eo",
   "terms": {
+    "customMonsters": "Propraj Monstroj",
     "__thisLanguage": "Esperanto",
     "showQuickActions": "Montri Rapidajn Agojn",
     "showStatus": "Montri Staton",
@@ -12,6 +13,7 @@
     "visualSettings": "Vidaj Agordoj",
     "behaviouralSettings": "Kondutaj Agordoj",
     "manageSaveFiles": "Administri Konservdosierojn",
+    "manageData": "Administri Datumojn",
     "settings": "Agordoj",
     "openSettings": "Malfermi Agordojn",
     "undo": "Malfari",

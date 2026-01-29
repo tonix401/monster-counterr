@@ -1,6 +1,7 @@
 {
   "lang": "zh",
   "terms": {
+    "customMonsters": "自定义怪物",
     "__thisLanguage": "中文",
     "showQuickActions": "显示快速操作",
     "showStatus": "显示状态",
@@ -12,6 +13,7 @@
     "visualSettings": "视觉设置",
     "behaviouralSettings": "行为设置",
     "manageSaveFiles": "管理存档文件",
+    "manageData": "管理数据",
     "settings": "设置",
     "openSettings": "打开设置",
     "undo": "撤销",

@@ -1,29 +1,26 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { useNavigate } from 'react-router'
 import type { Monster } from '@/types/Monster'
 import { useMonsterStore } from '@/store'
-import MonsterInfoPopup from '@/components/popups/MonsterInfoPopup'
 
 interface NameTableDataProps {
   monster: Monster
 }
 
 const NameTableData: React.FC<NameTableDataProps> = ({ monster }) => {
-  const [isPopupOpen, setIsPopupOpen] = useState(false)
-
+  const navigate = useNavigate()
   const isMonsterDetailsAvailable = useMonsterStore((state) => state.isMonsterDetailsAvailable)
-  const getMonsterDetails = useMonsterStore((state) => state.getMonsterDetails)
 
   const hasDetails = isMonsterDetailsAvailable(monster.detailIndex)
-  const monsterDetails = hasDetails ? getMonsterDetails(monster.detailIndex) : null
 
   const handleClick = () => {
     if (hasDetails) {
-      setIsPopupOpen(true)
+      navigate(`/monster/${monster.detailIndex}`)
     }
   }
 
   return (
-    <td className="name-cell" >
+    <td className="name-cell">
       <div
         onClick={handleClick}
         style={{
@@ -44,11 +41,6 @@ const NameTableData: React.FC<NameTableDataProps> = ({ monster }) => {
         </span>
         <span>{monster.number ? ` ${monster.number}` : ''}</span>
       </div>
-      <MonsterInfoPopup
-        isOpen={isPopupOpen}
-        onClose={() => setIsPopupOpen(false)}
-        monsterDetails={monsterDetails}
-      />
     </td>
   )
 }

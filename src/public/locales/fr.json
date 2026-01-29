@@ -1,6 +1,7 @@
 {
   "lang": "fr",
   "terms": {
+    "customMonsters": "Monstres Personnalisés",
     "__thisLanguage": "Français",
     "showQuickActions": "Afficher Actions Rapides",
     "showStatus": "Afficher Statut",
@@ -12,6 +13,7 @@
     "visualSettings": "Paramètres Visuels",
     "behaviouralSettings": "Paramètres de Comportement",
     "manageSaveFiles": "Gérer Fichiers de Sauvegarde",
+    "manageData": "Gérer les Données",
     "settings": "Paramètres",
     "openSettings": "Ouvrir Paramètres",
     "undo": "Annuler",

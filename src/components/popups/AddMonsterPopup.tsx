@@ -3,19 +3,16 @@ import Popup from '@/components/popups/Popup'
 import MonsterSuggestionInput from '@/components/ui/MonsterSuggestionInput'
 import { useMonsterStore } from '@/store'
 import { useTerm } from '@/hooks/useTerm'
+import { useNavigate } from 'react-router'
 
-interface AddMonsterPopupProps {
-  isOpen: boolean
-  onClose: () => void
-}
-
-const AddMonsterPopup: React.FC<AddMonsterPopupProps> = ({ isOpen, onClose }) => {
+const AddMonsterPopup: React.FC = () => {
   const [name, setName] = useState('')
   const [hp, setHp] = useState('')
   const [amount, setAmount] = useState('')
   const [xp, setXp] = useState('')
 
   const addMonster = useMonsterStore((state) => state.addMonster)
+  const navigate = useNavigate()
 
   const t_addMonster = useTerm('addMonster')
   const t_hp = useTerm('hp')
@@ -30,17 +27,16 @@ const AddMonsterPopup: React.FC<AddMonsterPopupProps> = ({ isOpen, onClose }) =>
     setName('')
     setHp('')
     setAmount('')
-    onClose()
+    navigate('/')
   }
 
   return (
     <Popup
-      isOpen={isOpen}
       onClose={() => {
         setAmount('')
         setHp('')
         setName('')
-        onClose()
+        navigate('/')
       }}
       title={t_addMonster}
       width={300}

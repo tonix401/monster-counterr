@@ -1,6 +1,7 @@
 {
   "lang": "sv",
   "terms": {
+    "customMonsters": "Anpassade Monster",
     "__thisLanguage": "Svenska",
     "showQuickActions": "Visa Snabbåtgärder",
     "showStatus": "Visa Status",
@@ -12,6 +13,7 @@
     "visualSettings": "Visuella Inställningar",
     "behaviouralSettings": "Beteendeinställningar",
     "manageSaveFiles": "Hantera Sparfiler",
+    "manageData": "Hantera Data",
     "settings": "Inställningar",
     "openSettings": "Öppna Inställningar",
     "undo": "Ångra",

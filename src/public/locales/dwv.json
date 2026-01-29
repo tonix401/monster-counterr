@@ -1,6 +1,7 @@
 {
   "lang": "dwv",
   "terms": {
+    "customMonsters": "Kazad Grobi Zhar",
     "__thisLanguage": "Dwarvish",
     "showQuickActions": "Kazad Throk-Gothul",
     "showStatus": "Kazad Durak",
@@ -12,6 +13,7 @@
     "visualSettings": "Nar Kazad",
     "behaviouralSettings": "Nar Gothul",
     "manageSaveFiles": "Lhune Khaz-Durin",
+    "manageData": "Lhune Kazad",
     "settings": "Nar",
     "openSettings": "Barak Nar",
     "undo": "Kruk",

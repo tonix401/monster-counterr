@@ -1,6 +1,7 @@
 {
   "lang": "ja",
   "terms": {
+    "customMonsters": "カスタムモンスター",
     "__thisLanguage": "日本語",
     "showQuickActions": "クイックアクションを表示",
     "showStatus": "ステータスを表示",
@@ -12,6 +13,7 @@
     "visualSettings": "表示設定",
     "behaviouralSettings": "動作設定",
     "manageSaveFiles": "セーブファイルを管理",
+    "manageData": "データ管理",
     "settings": "設定",
     "openSettings": "設定を開く",
     "undo": "元に戻す",

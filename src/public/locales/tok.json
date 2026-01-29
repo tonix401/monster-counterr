@@ -1,6 +1,7 @@
 {
   "lang": "tok",
   "terms": {
+    "customMonsters": "soweli ike pi jan",
     "__thisLanguage": "toki pona",
     "showQuickActions": "o lukin e pali wawa",
     "showStatus": "o lukin e nasin",
@@ -12,6 +13,7 @@
     "visualSettings": "nasin lukin",
     "behaviouralSettings": "nasin pali",
     "manageSaveFiles": "o lawa e lipu awen",
+    "manageData": "o lawa e sona ale",
     "settings": "nasin",
     "openSettings": "o open e nasin",
     "undo": "o pini e ante",

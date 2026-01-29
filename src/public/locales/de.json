@@ -1,6 +1,7 @@
 {
   "lang": "de",
   "terms": {
+    "customMonsters": "Eigene Monster",
     "__thisLanguage": "Deutsch",
     "showQuickActions": "Schnellaktionen anzeigen",
     "showStatus": "Status anzeigen",
@@ -12,6 +13,7 @@
     "visualSettings": "Visuelle Einstellungen",
     "behaviouralSettings": "Verhaltenseinstellungen",
     "manageSaveFiles": "Backups verwalten",
+    "manageData": "Daten verwalten",
     "settings": "Einstellungen",
     "openSettings": "Einstellungen öffnen",
     "undo": "Zurück",

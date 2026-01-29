@@ -12,36 +12,58 @@ export interface SaveData {
   monsterDetails: Record<string, MonsterDetails>
 }
 
+export interface SaveFileExportSettings {
+  includeIndex: boolean
+  includeDetails: boolean
+  includeMonsters: boolean
+  includeSettings: boolean
+  includeCurrentXp: boolean
+  minimizeJson: boolean
+}
+
 export type DataManagementSlice = {
+  exportSettings: SaveFileExportSettings
+  setExportSetting: (key: keyof SaveFileExportSettings, value: boolean) => void
   exportData: () => void
   importData: (data: unknown) => boolean
 }
 
-const isSaveData = (data: unknown): data is SaveData => {
+const isSaveData = (data: unknown): data is Partial<SaveData> => {
   if (typeof data !== 'object' || data === null) return false
   const d = data as Partial<SaveData>
-  return (
-    typeof d.schemaVersion === 'number' &&
-    Array.isArray(d.monsters) &&
-    typeof d.currentXp === 'number' &&
-    typeof d.settings === 'object' &&
-    typeof d.monsterIndex === 'object' &&
-    typeof d.monsterDetails === 'object'
-  )
+  // Only require schemaVersion for partial import
+  return typeof d.schemaVersion === 'number'
 }
 
 export const createDataManagementSlice = (set: any, get: any): DataManagementSlice => ({
+  exportSettings: {
+    includeIndex: true,
+    includeDetails: true,
+    includeMonsters: true,
+    includeSettings: true,
+    includeCurrentXp: true,
+    minimizeJson: true,
+  },
+  setExportSetting: (key, value) =>
+    set((state: any) => ({
+      exportSettings: {
+        ...state.exportSettings,
+        [key]: value,
+      },
+    })),
   exportData: () => {
-    const { monsters, xp, settings, monsterIndex, monsterDetails } = get()
-    const data: SaveData = {
+    const { monsters, xp, settings, monsterIndex, monsterDetails, exportSettings } = get()
+    const data: Partial<SaveData> = {
       schemaVersion: SAVE_FILE.SCHEMA_VERSION,
-      monsters,
-      currentXp: xp,
-      settings,
-      monsterIndex,
-      monsterDetails,
+      ...(exportSettings.includeSettings ? { settings } : {}),
+      ...(exportSettings.includeCurrentXp ? { currentXp: xp } : {}),
+      ...(exportSettings.includeIndex ? { monsterIndex } : {}),
+      ...(exportSettings.includeDetails ? { monsterDetails } : {}),
+      ...(exportSettings.includeMonsters ? { monsters } : {}),
     }
-    const dataJson = JSON.stringify(data, null, 2)
+    const dataJson = exportSettings.minimizeJson
+      ? JSON.stringify(data)
+      : JSON.stringify(data, null, 2)
     const blob = new Blob([dataJson], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
@@ -59,15 +81,16 @@ export const createDataManagementSlice = (set: any, get: any): DataManagementSli
 
     try {
       switch (data.schemaVersion) {
-        case 1:
-          set({
-            monsters: data.monsters || [],
-            xp: data.currentXp || 0,
-            settings: data.settings || get().settings,
-            monsterIndex: data.monsterIndex || {},
-            monsterDetails: data.monsterDetails || {},
-          })
+        case 1: {
+          const newState: any = {}
+          if ('monsters' in data) newState.monsters = data.monsters
+          if ('currentXp' in data) newState.xp = data.currentXp
+          if ('settings' in data) newState.settings = data.settings
+          if ('monsterIndex' in data) newState.monsterIndex = data.monsterIndex
+          if ('monsterDetails' in data) newState.monsterDetails = data.monsterDetails
+          set(newState)
           return true
+        }
         default:
           alert(`Unsupported save file schema version: ${data.schemaVersion}`)
           return false

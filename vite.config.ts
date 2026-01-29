@@ -22,7 +22,7 @@ export default defineConfig({
     origin: '',
   },
   preview: {
-    port: 14121,
+    port: 14120,
     strictPort: true,
   },
 })

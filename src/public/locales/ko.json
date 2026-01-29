@@ -1,6 +1,7 @@
 {
   "lang": "ko",
   "terms": {
+    "customMonsters": "커스텀 몬스터",
     "__thisLanguage": "한국어",
     "showQuickActions": "빠른 작업 표시",
     "showStatus": "상태 표시",
@@ -12,6 +13,7 @@
     "visualSettings": "시각 설정",
     "behaviouralSettings": "동작 설정",
     "manageSaveFiles": "저장 파일 관리",
+    "manageData": "데이터 관리",
     "settings": "설정",
     "openSettings": "설정 열기",
     "undo": "실행 취소",

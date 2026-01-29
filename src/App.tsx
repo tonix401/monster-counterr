@@ -1,15 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import { Outlet } from 'react-router'
 import './App.css'
 import MonsterTable from '@/components/table/MonsterTable'
-import AddMonsterPopup from '@/components/popups/AddMonsterPopup'
-import SettingsPopup from '@/components/popups/settingsPopup/SettingsPopup'
 import Header from '@/components/Header'
 import { useMonsterStore, useMonsters, useXp, useIsLoading } from '@/store'
 
 function App() {
-  const [isAddPopupOpen, setIsAddPopupOpen] = useState(false)
-  const [isSettingsPopupOpen, setIsSettingsPopupOpen] = useState(false)
-
   const initialize = useMonsterStore((state) => state.initialize)
 
   useEffect(() => {
@@ -54,17 +50,11 @@ function App() {
 
   return (
     <div className="app">
-      <Header
-        xpDisplay={xp}
-        onResetXp={resetXp}
-        onOpenSettings={() => setIsSettingsPopupOpen(true)}
-        onOpenAddMonster={() => setIsAddPopupOpen(true)}
-      />
+      <Header xpDisplay={xp} onResetXp={resetXp} />
       <div id="monsterList">
         <MonsterTable monsters={monsters} />
       </div>
-      <AddMonsterPopup isOpen={isAddPopupOpen} onClose={() => setIsAddPopupOpen(false)} />
-      <SettingsPopup isOpen={isSettingsPopupOpen} onClose={() => setIsSettingsPopupOpen(false)} />
+      <Outlet />
     </div>
   )
 }

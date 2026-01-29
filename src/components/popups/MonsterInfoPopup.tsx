@@ -30,7 +30,7 @@ const MonsterInfoPopup: React.FC<MonsterInfoPopupProps> = ({ isOpen, onClose, mo
 
   if (!monsterDetails) {
     return (
-      <Popup isOpen={isOpen} onClose={onClose} title={t_monsterDetailsNotFound} width={400}>
+      <Popup onClose={onClose} title={t_monsterDetailsNotFound} width={400}>
         <p>{t_monsterDetailsCouldNotBeLoaded}</p>
       </Popup>
     )
@@ -49,7 +49,7 @@ const MonsterInfoPopup: React.FC<MonsterInfoPopupProps> = ({ isOpen, onClose, mo
   }
 
   return (
-    <Popup isOpen={isOpen} onClose={onClose} width={1100}>
+    <Popup onClose={onClose} width={1100}>
       <div className="monster-name-picture-area">
         <div className="monster-name-area">
           <h2 style={{ textAlign: 'left' }}>{monsterDetails.name}</h2>

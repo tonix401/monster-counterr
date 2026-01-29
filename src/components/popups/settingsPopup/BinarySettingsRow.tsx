@@ -2,10 +2,10 @@ import React from 'react'
 import type { Settings } from '@/types/Settings'
 
 interface BinarySettingsRowProps {
-  settingKey: keyof Settings
+  settingKey: keyof Settings | string
   label: string
   value: boolean
-  onChange: (key: keyof Settings, value: boolean) => void
+  onChange: (key: keyof Settings | string, value: boolean) => void
 }
 
 const BinarySettingsRow: React.FC<BinarySettingsRowProps> = ({ settingKey, label, value, onChange }) => {

@@ -24,12 +24,7 @@ createRoot(document.getElementById('root')!).render(
           <Route
             path="settings"
             element={
-              <SettingsPopup
-                isOpen={true}
-                onClose={() => {
-                  window.history.back()
-                }}
-              />
+              <SettingsPopup/>
             }
           />
           <Route path="monster/:monsterId" element={<MonsterInfoPopupRoute />} />

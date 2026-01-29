@@ -1,14 +1,11 @@
-import React from 'react'
-import type { Settings } from '@/types/Settings'
-
-interface BinarySettingsRowProps {
-  settingKey: keyof Settings | string
+interface BinarySettingsRowProps<T extends string>{
+  settingKey: T
   label: string
   value: boolean
-  onChange: (key: keyof Settings | string, value: boolean) => void
+  onChange: (key: T, value: boolean) => void
 }
 
-const BinarySettingsRow: React.FC<BinarySettingsRowProps> = ({ settingKey, label, value, onChange }) => {
+const BinarySettingsRow = <T extends string>({ settingKey, label, value, onChange }: BinarySettingsRowProps<T>) => {
   return (
     <div className="settings-row">
       <label htmlFor={settingKey}>{label}</label>

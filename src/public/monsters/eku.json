@@ -1,0 +1,1 @@
+{"name":"Eku","isNpc":true,"isNamedCreature":true,"source":"ToA","page":34,"_copy":{"name":"Couatl","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the couatl","with":"Eku","flags":"i"}}},"hasToken":true}

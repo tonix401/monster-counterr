@@ -1,0 +1,1 @@
+{"name":"Nikolai Wachter","isNpc":true,"isNamedCreature":true,"source":"CoS","page":110,"_copy":{"name":"Noble","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the noble","with":"Nikolai","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["L","N"],"hasToken":true}

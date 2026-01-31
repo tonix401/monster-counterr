@@ -1,0 +1,1 @@
+{"name":"Krebbyg Masq'il'yr","isNpc":true,"isNamedCreature":true,"source":"WDH","page":67,"_copy":{"name":"Drow Gunslinger","source":"WDH","_mod":{"*":{"mode":"replaceTxt","replace":"the drow","with":"Krebbyg","flags":"i"}}},"alignment":["C","N"],"hasToken":true}

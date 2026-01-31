@@ -1,0 +1,1 @@
+{"name":"Kaylan Renaudon","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":156,"_copy":{"name":"Vampire","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the vampire","with":"Kaylan","flags":"i"}}},"hasToken":true}

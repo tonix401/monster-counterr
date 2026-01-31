@@ -1,0 +1,1 @@
+{"name":"Qawasha","isNpc":true,"isNamedCreature":true,"source":"ToA","page":35,"_copy":{"name":"Druid","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the druid","with":"Qawasha","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["N","G"],"hasToken":true}

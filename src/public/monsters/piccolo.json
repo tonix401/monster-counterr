@@ -1,0 +1,1 @@
+{"name":"Piccolo","isNpc":true,"isNamedCreature":true,"source":"CoS","page":118,"_copy":{"name":"Baboon","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the baboon","with":"Piccolo","flags":"i"}}},"hasToken":true,"hasFluffImages":true,"fluff":{"name":"Piccolo","source":"CoS","images":[{"type":"image","href":{"type":"internal","path":"bestiary/CoS/Piccolo.webp"}}]}}

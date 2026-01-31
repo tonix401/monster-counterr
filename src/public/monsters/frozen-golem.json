@@ -1,0 +1,1 @@
+{"name":"Frozen Golem","source":"CoA","page":132,"_copy":{"name":"Iron Golem","source":"MM"},"immune":["cold","fire","poison","psychic",{"immune":["bludgeoning","piercing","slashing"],"note":"from nonmagical attacks that aren't adamantine","cond":true}],"tokenCredit":"Artguyonthefly","tokenCustom":true,"hasToken":true}

@@ -1,0 +1,1 @@
+{"name":"Mister Threadneedle","isNpc":true,"isNamedCreature":true,"source":"ToA","page":183,"_copy":{"name":"Scarecrow","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the scarecrow","with":"Mister Threadneedle","flags":"i"}}},"hasToken":true}

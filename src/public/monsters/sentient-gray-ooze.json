@@ -1,0 +1,1 @@
+{"name":"Sentient Gray Ooze","source":"TftYP","page":158,"_copy":{"name":"Gray Ooze","source":"MM","_mod":{"conditionImmune":{"mode":"removeArr","items":"charmed"}}},"int":5,"languages":["Common"],"languageTags":["C"],"damageTags":["A","B"],"hasToken":true}

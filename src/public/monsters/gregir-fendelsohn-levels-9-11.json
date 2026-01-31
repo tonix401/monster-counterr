@@ -1,0 +1,1 @@
+{"name":"Gregir Fendelsohn (Levels 9-11)","isNpc":true,"isNamedCreature":true,"source":"KftGV","page":8,"_copy":{"name":"Veteran","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the veteran","with":"Gregir Fendelsohn","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["L","N"],"tokenCustom":true,"hasToken":true}

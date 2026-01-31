@@ -1,0 +1,1 @@
+{"name":"Glyster","isNpc":true,"isNamedCreature":true,"source":"WDMM","page":241,"_copy":{"name":"Adult Bronze Dragon","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the dragon","with":"Glyster","flags":"i"}}},"alignment":["L","G"],"damageTagsLegendary":[],"hasToken":true}

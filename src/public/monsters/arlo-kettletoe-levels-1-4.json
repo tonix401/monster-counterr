@@ -1,0 +1,1 @@
+{"name":"Arlo Kettletoe (Levels 1-4)","isNpc":true,"isNamedCreature":true,"source":"KftGV","page":8,"_copy":{"name":"Bandit Captain","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the captain","with":"Arlo Kettletoe","flags":"i"}}},"type":{"type":"humanoid","tags":["halfling"]},"alignment":["N"],"tokenCustom":true,"hasToken":true}

@@ -1,0 +1,1 @@
+{"name":"Oussa","isNpc":true,"isNamedCreature":true,"source":"TftYP","page":157,"_copy":{"name":"Yuan-ti Malison (Type 3)","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the yuan-ti","with":"Oussa","flags":"i"}}},"hasToken":true}

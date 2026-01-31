@@ -1,0 +1,1 @@
+{"name":"Swarm of Undead Snakes","source":"EGW","page":247,"_copy":{"name":"Swarm of Poisonous Snakes","source":"MM","_mod":{"conditionImmune":{"mode":"appendArr","items":"poisoned"}}},"type":{"type":"undead","swarmSize":"T"},"immune":["poison"],"hasToken":true}

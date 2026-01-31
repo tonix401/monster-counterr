@@ -1,0 +1,1 @@
+{"name":"Stone Warrior","source":"PotA","page":97,"_copy":{"name":"Stone Golem","source":"MM","_mod":{"action":{"mode":"removeArr","names":"Multiattack"}}},"hp":{"average":102,"formula":"17d10 + 85"},"cr":"4","actionTags":[],"hasToken":true}

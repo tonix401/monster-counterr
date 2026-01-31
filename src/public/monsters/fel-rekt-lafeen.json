@@ -1,0 +1,1 @@
+{"name":"Fel'rekt Lafeen","isNpc":true,"isNamedCreature":true,"source":"WDH","page":67,"_copy":{"name":"Drow Gunslinger","source":"WDH","_mod":{"*":{"mode":"replaceTxt","replace":"the drow","with":"Fel'rekt","flags":"i"}}},"alignment":["N","G"],"hasToken":true}

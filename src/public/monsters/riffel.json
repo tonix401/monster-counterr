@@ -1,0 +1,1 @@
+{"name":"Riffel","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":113,"_copy":{"name":"Werewolf","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the werewolf","with":"Riffel","flags":"i"}}},"size":["S"],"alignment":["N","G"],"hasToken":true}

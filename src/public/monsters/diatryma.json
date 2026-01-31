@@ -1,0 +1,1 @@
+{"name":"Diatryma","source":"WDH","page":191,"_copy":{"name":"Axe Beak","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"axe beak","with":"diatryma"}}},"action":[{"name":"Beak","entries":["{@atk mw} {@hit 4} to hit, reach 5 ft., one target. {@h}6 ({@damage 1d8 + 2}) piercing damage."]}],"damageTags":["P"],"hasToken":true}

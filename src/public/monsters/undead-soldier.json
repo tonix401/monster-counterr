@@ -1,0 +1,1 @@
+{"name":"Undead Soldier","source":"DSotDQ","page":96,"_copy":{"name":"Wight","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"wight","with":"soldier"}}},"ac":[{"ac":18,"from":["{@item plate armor|phb}"]}],"trait":null,"tokenCustom":true,"hasToken":true}

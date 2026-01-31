@@ -1,0 +1,1 @@
+{"name":"Nyssa Otellion","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":157,"_copy":{"name":"Blue Abishai","source":"MPMM","_mod":{"*":{"mode":"replaceTxt","replace":"the abishai","with":"Nyssa","flags":"i"}}},"hasToken":true}

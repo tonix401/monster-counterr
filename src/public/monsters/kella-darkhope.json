@@ -1,0 +1,1 @@
+{"name":"Kella Darkhope","isNpc":true,"isNamedCreature":true,"source":"SKT","page":25,"_copy":{"name":"Spy","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the spy","with":"Kella","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["N","E"],"hasToken":true}

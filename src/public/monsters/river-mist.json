@@ -1,0 +1,1 @@
+{"name":"River Mist","isNpc":true,"isNamedCreature":true,"source":"ToA","page":35,"_copy":{"name":"Tabaxi Hunter","source":"ToA","_mod":{"*":{"mode":"replaceTxt","replace":"the tabaxi","with":"River Mist","flags":"i"}}},"hasToken":true}

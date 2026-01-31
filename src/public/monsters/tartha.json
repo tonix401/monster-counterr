@@ -1,0 +1,1 @@
+{"name":"Tartha","isNpc":true,"isNamedCreature":true,"source":"SKT","page":207,"_copy":{"name":"Fire Giant","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the giant","with":"Tartha","flags":"i"}}},"hasToken":true}

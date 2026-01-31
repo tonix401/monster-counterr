@@ -1,0 +1,1 @@
+{"name":"Drufi","isNpc":true,"isNamedCreature":true,"source":"ToA","page":64,"_copy":{"name":"Frost Giant","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the giant","with":"Drufi","flags":"i"}}},"alignment":["N","E"],"tokenCustom":true,"hasToken":true}

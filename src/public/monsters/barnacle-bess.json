@@ -1,0 +1,1 @@
+{"name":"Barnacle Bess","isNpc":true,"isNamedCreature":true,"source":"GoS","page":220,"_copy":{"name":"Giant Crab","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the crab","with":"Bess","flags":"i"}}},"alignment":["L","N"],"int":10,"languages":["Common"],"languageTags":["C"],"hasToken":true}

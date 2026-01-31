@@ -1,0 +1,1 @@
+{"name":"Isabela Folcarae","isNpc":true,"isNamedCreature":true,"source":"QftIS","page":79,"_copy":{"name":"Bandit Captain","source":"MM","_templates":[{"name":"Human","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the captain","with":"Isabela","flags":"i"}}},"alignment":["L","G"],"hasToken":true}

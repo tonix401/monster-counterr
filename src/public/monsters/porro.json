@@ -1,0 +1,1 @@
+{"name":"Porro","isNpc":true,"isNamedCreature":true,"source":"QftIS","page":66,"_copy":{"name":"Tower Sage","source":"QftIS","_templates":[{"name":"Stout Halfling","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the tower sage","with":"Porro","flags":"i"}}},"alignment":["L","E"],"hasToken":true}

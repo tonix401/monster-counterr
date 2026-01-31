@@ -1,0 +1,1 @@
+{"name":"Bronzefume","isNpc":true,"isNamedCreature":true,"source":"PotA","page":92,"_copy":{"name":"Dragon Turtle","source":"MM"},"hp":{"average":220,"formula":"22d20 + 110"},"cr":"13","hasToken":true}

@@ -1,0 +1,1 @@
+{"name":"Gadof Blinsky","isNpc":true,"isNamedCreature":true,"source":"CoS","page":118,"_copy":{"name":"Commoner","source":"MM"},"type":{"type":"humanoid","tags":["human"]},"alignment":["C","G"],"hasToken":true,"hasFluffImages":true,"fluff":{"name":"Gadof Blinsky","source":"CoS","images":[{"type":"image","href":{"type":"internal","path":"bestiary/CoS/Gadof Blinsky.webp"}}]}}

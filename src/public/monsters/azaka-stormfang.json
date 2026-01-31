@@ -1,0 +1,1 @@
+{"name":"Azaka Stormfang","isNpc":true,"isNamedCreature":true,"source":"ToA","page":33,"_copy":{"name":"Weretiger","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"weretiger","with":"Azaka","flags":"i"}}},"alignment":["N","G"],"hasToken":true}

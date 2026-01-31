@@ -1,0 +1,1 @@
+{"name":"Myla","isNpc":true,"isNamedCreature":true,"source":"DoSI","page":9,"_copy":{"name":"Kobold Tinkerer","source":"DoSI","_mod":{"*":{"mode":"replaceTxt","replace":"the kobold","with":"Myla","flags":"i"}}},"alignment":["L","G"],"hasToken":true}

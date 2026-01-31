@@ -1,0 +1,1 @@
+{"name":"Jot","isNpc":true,"isNamedCreature":true,"source":"TftYP","page":15,"_copy":{"name":"Quasit","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the quasit","with":"Jot","flags":"i"}}},"hasToken":true}

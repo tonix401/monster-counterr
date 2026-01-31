@@ -1,0 +1,1 @@
+{"name":"Stone Guardian (Stone Golem)","source":"PSX","page":40,"_copy":{"name":"Stone Golem","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"golem","with":"stone guardian"}}},"hasToken":true,"hasFluff":true,"hasFluffImages":true,"fluff":{"name":"Stone Guardian (Stone Golem)","source":"PSX","_copy":{"name":"Stone Guardian (Animated Armor)","source":"PSX"}}}

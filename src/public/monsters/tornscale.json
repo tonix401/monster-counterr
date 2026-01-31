@@ -1,0 +1,1 @@
+{"name":"Tornscale","isNpc":true,"isNamedCreature":true,"source":"PotA","page":90,"_copy":{"name":"Lizardfolk","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the lizardfolk","with":"Tornscale","flags":"i"}}},"hp":{"average":36,"formula":"4d8 + 4"},"hasToken":true}

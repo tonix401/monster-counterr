@@ -1,0 +1,1 @@
+{"name":"Skeletal Polar Bear","source":"IMR","page":34,"_copy":{"name":"Polar Bear","source":"MM"},"type":"undead","immune":["poison"],"vulnerable":["bludgeoning"],"conditionImmune":["exhaustion","poisoned"],"tokenCustom":true,"hasToken":true}

@@ -1,0 +1,1 @@
+{"name":"Damaged Flesh Golem","source":"EGW","page":248,"_copy":{"name":"Flesh Golem","source":"MM","_mod":{"action":{"mode":"removeArr","names":"Multiattack"}}},"hp":{"average":5,"formula":"11d8 + 44"},"cr":"1","actionTags":[],"hasToken":true}

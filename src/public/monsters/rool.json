@@ -1,0 +1,1 @@
+{"name":"Rool","isNpc":true,"isNamedCreature":true,"source":"SKT","page":221,"_copy":{"name":"Assassin","source":"MM","_templates":[{"name":"Half-Orc","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the assassin","with":"Rool","flags":"i"}}},"alignment":["N","E"],"senseTags":["D"],"languageTags":["O","TC","X"],"hasToken":true}

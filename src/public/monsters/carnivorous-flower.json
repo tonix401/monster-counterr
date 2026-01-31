@@ -1,0 +1,1 @@
+{"name":"Carnivorous Flower","source":"RoT","page":67,"otherSources":[{"source":"ToD","page":153}],"_copy":{"name":"Otyugh","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"otyugh","with":"plant"}}},"type":"plant","speed":{"walk":0},"hasToken":true}

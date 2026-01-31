@@ -1,0 +1,1 @@
+{"name":"Vasilka","isNpc":true,"isNamedCreature":true,"source":"CoS","page":151,"_copy":{"name":"Flesh Golem","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the golem","with":"Vasilka","flags":"i"}}},"hasToken":true}

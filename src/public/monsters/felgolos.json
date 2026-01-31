@@ -1,0 +1,1 @@
+{"name":"Felgolos","isNpc":true,"isNamedCreature":true,"source":"SKT","page":192,"_copy":{"name":"Adult Bronze Dragon","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the dragon","with":"Felgolos","flags":"i"}}},"damageTagsLegendary":[],"hasToken":true}

@@ -1,0 +1,1 @@
+{"name":"Cavil Zaltobar","isNpc":true,"isNamedCreature":true,"source":"PotA","page":182,"_copy":{"name":"Mage","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the mage","with":"Cavil","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"tokenCustom":true,"hasToken":true}

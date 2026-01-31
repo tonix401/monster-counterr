@@ -1,0 +1,1 @@
+{"name":"Shago","isNpc":true,"isNamedCreature":true,"source":"ToA","page":35,"_copy":{"name":"Gladiator","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the gladiator","with":"Shago","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["C","G"],"skill":{"athletics":"+10","intimidation":"+5","survival":"+7"},"hasToken":true}

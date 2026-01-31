@@ -1,0 +1,1 @@
+{"name":"Nepartak","isNpc":true,"isNamedCreature":true,"source":"ToA","page":137,"_copy":{"name":"Flameskull","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the flameskull","with":"Nepartak","flags":"i"}}},"languages":["Common","telepathy 30 ft."],"languageTags":["C","TP"],"hasToken":true}

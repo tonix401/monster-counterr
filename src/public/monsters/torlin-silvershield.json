@@ -1,0 +1,1 @@
+{"name":"Torlin Silvershield","isNpc":true,"isNamedCreature":true,"source":"TftYP","page":159,"_copy":{"name":"Wight","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the wight","with":"Torlin","flags":"i"}}},"hasToken":true}

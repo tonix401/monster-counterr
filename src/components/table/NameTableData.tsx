@@ -15,7 +15,7 @@ const NameTableData: React.FC<NameTableDataProps> = ({ monster }) => {
 
   const handleClick = () => {
     if (hasDetails) {
-      navigate(`/monster/${monster.detailIndex}`)
+      navigate(`/monsters/${monster.detailIndex}`)
     }
   }
 

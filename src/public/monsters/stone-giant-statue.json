@@ -1,0 +1,1 @@
+{"name":"Stone Giant Statue","source":"SKT","page":127,"_copy":{"name":"Stone Golem","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"giant","with":"golem"}}},"size":["H"],"hp":{"average":195,"formula":"17d12 + 85"},"languages":null,"cr":"0","action":null,"actionTags":[],"languageTags":[],"miscTags":[],"hasToken":true}

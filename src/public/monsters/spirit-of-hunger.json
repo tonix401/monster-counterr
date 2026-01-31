@@ -1,0 +1,1 @@
+{"name":"Spirit of Hunger","isNpc":true,"isNamedCreature":true,"source":"QftIS","page":144,"_copy":{"name":"Wraith","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the wraith","with":"Spirit of Hunger","flags":"i"}}},"hasToken":true}

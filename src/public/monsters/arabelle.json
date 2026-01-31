@@ -1,0 +1,1 @@
+{"name":"Arabelle","isNpc":true,"isNamedCreature":true,"source":"CoS","page":38,"_copy":{"name":"Commoner","source":"MM","_mod":{"action":"remove"}},"type":{"type":"humanoid","tags":["human"]},"alignment":["L","N"],"hp":{"average":2,"formula":"1d8"},"miscTags":[],"hasToken":true}

@@ -1,0 +1,1 @@
+{"name":"Young Troglodyte","source":"TftYP","page":176,"_copy":{"name":"Kobold","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"kobold","with":"troglodyte","flags":"i"}}},"type":{"type":"humanoid","tags":["troglodyte"]},"hasToken":true}

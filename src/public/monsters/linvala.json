@@ -1,0 +1,1 @@
+{"name":"Linvala","isNamedCreature":true,"source":"PSZ","page":21,"_copy":{"name":"Planetar","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"\\bthe planetar","with":"Linvala","flags":"i"}}},"tokenCustom":true,"hasToken":true,"hasFluff":true,"hasFluffImages":true,"fluff":{"name":"Linvala","source":"PSZ","_copy":{"name":"Angel","source":"PSZ"}}}

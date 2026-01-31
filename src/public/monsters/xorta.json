@@ -1,0 +1,1 @@
+{"name":"Xorta","isNpc":true,"isNamedCreature":true,"source":"WDMM","page":98,"_copy":{"name":"Stone Giant","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the giant","with":"Xorta","flags":"i"}}},"hasToken":true}

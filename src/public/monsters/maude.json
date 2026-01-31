@@ -1,0 +1,1 @@
+{"name":"Maude","isNpc":true,"isNamedCreature":true,"source":"NRH-AT","page":12,"_copy":{"name":"Bugbear Chief","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the bugbear","with":"Maude","flags":"i"}}},"tokenCustom":true,"hasToken":true}

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Popup from '@/components/popups/Popup'
 import MonsterSuggestionInput from '@/components/ui/MonsterSuggestionInput'
 import { useMonsterStore } from '@/store'
-import { useTerm } from '@/hooks/useTerm'
+import { useTerm } from '@/store/index'
 import { useNavigate } from 'react-router'
 
 const AddMonsterPopup: React.FC = () => {
@@ -30,6 +30,11 @@ const AddMonsterPopup: React.FC = () => {
     navigate('/')
   }
 
+  const suggestionInputOnChange = (value: string) => {
+    setName(value)
+    console.log('Selected monster name:', value)
+  }
+
   return (
     <Popup
       onClose={() => {
@@ -47,12 +52,7 @@ const AddMonsterPopup: React.FC = () => {
           handleAdd()
         }}
       >
-        <MonsterSuggestionInput
-          onHpChange={(newHp) => setHp(newHp.toString())}
-          onXpChange={(newXp) => setXp(newXp.toString())}
-          value={name}
-          onChange={setName}
-        />
+        <MonsterSuggestionInput value={name} onChange={suggestionInputOnChange} />
         <input
           id="hp-input"
           required

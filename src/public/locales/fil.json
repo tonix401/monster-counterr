@@ -61,6 +61,12 @@
     "remove": "Alisin",
     "status": "Katayuan",
     "changeHp": "Baguhin ang HP",
-    "language": "Wika"
+    "language": "Wika",
+    "openMenu": "Buksan ang Menu",
+    "menu": "Menu",
+    "includeSettings": "Isama ang Mga Setting",
+    "includeCurrentXp": "Isama ang Kasalukuyang XP",
+    "includeMonsters": "Isama ang iyong kasalukuyang mga Halimaw",
+    "fileSize": "Inaasahang laki ng file na mai-save:"
   }
 }

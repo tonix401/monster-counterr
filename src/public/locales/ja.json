@@ -61,6 +61,12 @@
     "remove": "削除",
     "status": "ステータス",
     "changeHp": "HPを変更",
-    "language": "言語"
+    "language": "言語",
+    "openMenu": "メニューを開く",
+    "includeCurrentXp": "現在の XP を含める",
+    "includeSettings": "設定を含める",
+    "menu": "メニュー",
+    "includeMonsters": "現在のモンスターを含める",
+    "fileSize": "予想される保存ファイルサイズ:"
   }
 }

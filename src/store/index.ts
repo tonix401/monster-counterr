@@ -3,23 +3,23 @@ import { persist } from 'zustand/middleware'
 import type { Monster } from '@/types/Monster'
 import { createMonsterSlice, type MonsterSlice } from '@/store/slices/monsterSlice'
 import { createSettingsSlice, type SettingsSlice } from '@/store/slices/settingsSlice'
-import { createInfoSlice, type InfoSlice } from '@/store/slices/infoSlice'
 import { createXpSlice, type XpSlice } from '@/store/slices/xpSlice'
 import {
   createDataManagementSlice,
   type DataManagementSlice,
 } from '@/store/slices/dataManagementSlice'
 import { temporal, type TemporalState, type TemporalActions } from '@/store/middleware/temporal'
-import { STORAGE_KEYS, ANIMATION_DURATION, ASSETS_URL } from '@/constants'
+import { STORAGE_KEYS, ANIMATION_DURATION, BASE_URL } from '@/constants'
 import { createConditionsSlice, type ConditionsSlice } from './slices/conditionsSlice'
 import { createTermSlice, type TermSlice } from './slices/termSlice'
+import { createNotificationSlice, type NotificationSlice } from './slices/notificationSlice'
 
 type MonsterCounterCoreState = MonsterSlice &
   SettingsSlice &
-  InfoSlice &
   XpSlice &
   DataManagementSlice &
   ConditionsSlice &
+  NotificationSlice &
   TermSlice & {
     isLoading: boolean
 
@@ -47,11 +47,11 @@ export const useMonsterStore = create<MonsterCounterState>()(
           // Slices
           ...createMonsterSlice(set, get),
           ...createSettingsSlice(set, get),
-          ...createInfoSlice(set, get),
           ...createXpSlice(set),
           ...createDataManagementSlice(set, get),
           ...createConditionsSlice(set),
           ...createTermSlice(set, get),
+          ...createNotificationSlice(set),
 
           // Complex Actions (combine multiple slices)
           killMonster: (monsterId: string) => {
@@ -100,12 +100,12 @@ export const useMonsterStore = create<MonsterCounterState>()(
             await get().loadAvailableLanguages()
             await get().loadLanguagePack(get().language)
             set({ isLoading: false })
-            get().updateMonsterIndex()
+            get().getMonsterIndex()
           },
 
           loadLanguagePack: async (language: string) => {
             try {
-              const response = await fetch(`${ASSETS_URL}/locales/${language}.json`)
+              const response = await fetch(`${BASE_URL}/locales/${language}.json`)
 
               if (!response.ok) {
                 throw new Error(
@@ -127,7 +127,7 @@ export const useMonsterStore = create<MonsterCounterState>()(
           },
           loadAvailableLanguages: async () => {
             try {
-              const response = await fetch(`${ASSETS_URL}/locales/locales.json`)
+              const response = await fetch(`${BASE_URL}/locales/locales.json`)
 
               if (!response.ok) {
                 throw new Error(
@@ -153,6 +153,7 @@ export const useMonsterStore = create<MonsterCounterState>()(
         partialize: (state: any) => ({
           monsters: state.monsters,
           settings: state.settings,
+          language: state.language,
           xp: state.xp,
         }),
       }
@@ -161,8 +162,6 @@ export const useMonsterStore = create<MonsterCounterState>()(
       name: STORAGE_KEYS.MONSTER_COUNTER,
       partialize: (state) => ({
         monsters: state.monsters,
-        monsterDetails: state.monsterDetails,
-        monsterIndex: state.monsterIndex,
         settings: state.settings,
         language: state.language,
         xp: state.xp,
@@ -183,3 +182,9 @@ export const useLanguage = () => useMonsterStore((state) => state.language)
 export const useSetLanguage = () => useMonsterStore((state) => state.setLanguage)
 export const useLoadLanguagePack = () => useMonsterStore((state) => state.loadLanguagePack)
 export const useAvailableLanguages = () => useMonsterStore((state) => state.availableLanguages)
+export const useTerm = (key: string) => useMonsterStore((state) => state.getTerm(key))
+export const userSource = () => useMonsterStore((state) => state.source)
+export const useSetSource = (src: string | null) => useMonsterStore((state) => state.setSource(src))
+export const useNotifications = () => useMonsterStore((state) => state.queue)
+export const useNotify = () => useMonsterStore((state) => state.notify)
+export const useRemoveNotification = () => useMonsterStore((state) => state.removeNotification)

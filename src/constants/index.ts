@@ -16,9 +16,7 @@ export const CONDITIONS = [
 ] as const
 
 export type Condition = (typeof CONDITIONS)[number]
-
-export const API_URL = 'https://www.dnd5eapi.co' as const
-export const ASSETS_URL = '/monster-counterr' as const
+export const BASE_URL = '/monster-counterr' as const
 
 export const ANIMATION_DURATION = {
   XP_UPDATE: 1500,

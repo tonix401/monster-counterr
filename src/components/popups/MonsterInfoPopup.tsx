@@ -1,10 +1,10 @@
 // @ts-nocheck
 import React, { useEffect, useState } from 'react'
 import Popup from '@/components/popups/Popup'
-import { useTerm } from '@/hooks/useTerm'
+import { useTerm } from '@/store/index'
 import type { MonsterDetails } from '@/types/MonsterDetails'
 import { useNavigate, useParams } from 'react-router'
-import { ASSETS_URL } from '@/constants'
+import { BASE_URL } from '@/constants'
 
 const MonsterInfoPopup: React.FC = () => {
   const navigate = useNavigate()
@@ -31,7 +31,7 @@ const MonsterInfoPopup: React.FC = () => {
   const [monsterDetails, setMonsterDetails] = useState<null | MonsterDetails>(null)
 
   useEffect(() => {
-    fetch(`${ASSETS_URL}/monsters/${monsterId}.json`).then((data) =>
+    fetch(`${BASE_URL}/monsters/${monsterId}.json`).then((data) =>
       data.json().then((data) => {
         setMonsterDetails(data)
         console.log(data)
@@ -41,13 +41,17 @@ const MonsterInfoPopup: React.FC = () => {
 
   if (!monsterDetails) {
     return (
-      <Popup onClose={() => navigate('/')} title={t_monsterDetailsNotFound} width={400}>
+      <Popup onClose={() => navigate('/')} width={1100} title={t_monsterDetailsNotFound}>
         <p>{t_monsterDetailsCouldNotBeLoaded}</p>
       </Popup>
     )
   }
 
-  return <Popup onClose={() => navigate('/')} width={1100} title={monsterDetails.name}></Popup>
+  return (
+    <Popup onClose={() => navigate('/')} width={1100} title={monsterDetails.name}>
+      <pre>{JSON.stringify(monsterDetails, null, 2)}</pre>
+    </Popup>
+  )
 }
 
 export default MonsterInfoPopup

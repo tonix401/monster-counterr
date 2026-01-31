@@ -1,5 +1,5 @@
-import { useMonsterStore } from '@/store'
-import { useTerm } from '@/hooks/useTerm'
+import { useMonsterStore, useNotify } from '@/store'
+import { useTerm } from '@/store/index'
 
 const ImportFileButton = () => {
   const importData = useMonsterStore((state) => state.importData)
@@ -17,7 +17,11 @@ const ImportFileButton = () => {
         importData(data)
       } catch (error) {
         console.error('Failed to load save file:', error)
-        alert(t_failedToLoadSaveFile)
+        const notify = useNotify()
+        notify({
+          type: 'error',
+          message: t_failedToLoadSaveFile,
+        })
       }
     }
     reader.readAsText(file)

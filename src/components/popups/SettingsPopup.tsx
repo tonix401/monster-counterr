@@ -1,11 +1,11 @@
 import React from 'react'
 import Popup from '@/components/popups/Popup'
-import BinarySettingsRow from '@/components/popups/settingsPopup/BinarySettingsRow'
+import BinarySettingsRow from '@/components/ui/BinarySettingsRow'
 import type { Settings } from '@/types/Settings'
 import { useMonsterStore } from '@/store'
-import { useTerm } from '@/hooks/useTerm'
-import LanguageSelectionRow from './LanguageSelectionRow'
+import { useTerm } from '@/store/index'
 import { useNavigate } from 'react-router'
+import LanguageSelectionRow from '../ui/LanguageSelectionRow'
 
 const SettingsPopup: React.FC = () => {
   const t_showQuickActions = useTerm('showQuickActions')

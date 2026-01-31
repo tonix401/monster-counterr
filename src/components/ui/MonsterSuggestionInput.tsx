@@ -1,81 +1,58 @@
-import React, { useEffect } from 'react'
-import { useMonsterStore } from '@/store'
-import { useTerm } from '@/hooks/useTerm'
+import React, { useMemo } from 'react'
+import { useMonsterStore, useTerm } from '@/store/index'
+import type { MonsterIndexEntry } from '@/store/slices/monsterSlice'
 
 interface MonsterSuggestionInputProps {
-  onHpChange: (hp: number) => void
-  onXpChange: (xp: number) => void
   value: string
   onChange: (value: string) => void
+  filterCallBack?: (entry: MonsterIndexEntry) => boolean
 }
 
-const MonsterSuggestionInput: React.FC<MonsterSuggestionInputProps> = ({
-  onHpChange,
-  onXpChange,
-  value,
-  onChange,
-}) => {
-  const getMonsterNames = useMonsterStore((state) => state.getMonsterNames)
-  const getMonsterIdByName = useMonsterStore((state) => state.getMonsterIdByName)
-  const isMonsterDetailsAvailable = useMonsterStore((state) => state.isMonsterDetailsAvailable)
-  const addMonsterDetails = useMonsterStore((state) => state.addMonsterDetails)
-  const getMonsterDetails = useMonsterStore((state) => state.getMonsterDetails)
-
+const MonsterSuggestionInput: React.FC<MonsterSuggestionInputProps> = ({ value, onChange }) => {
+  const monsterIndex = useMonsterStore((state) => state.monsterIndex)
+  const source = useMonsterStore((state) => state.source)
+  const setSource = useMonsterStore((state) => state.setSource)
   const t_name = useTerm('name')
+  const t_source = useTerm('source')
 
-  const monsterNames = getMonsterNames()
-
-  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value
-    onChange(query)
-
-    if (query && monsterNames.includes(query)) {
-      const id = getMonsterIdByName(query)
-      if (!id) return
-
-      if (!isMonsterDetailsAvailable(id)) {
-        await addMonsterDetails(id)
-      }
-      const details = getMonsterDetails(id)
-      if (details) {
-        onHpChange(details.hit_points)
-        onXpChange(details.xp)
-      }
-    }
-  }
-
-  useEffect(() => {
-    if (value && monsterNames.includes(value)) {
-      ;(async () => {
-        const id = getMonsterIdByName(value)
-        if (!id) return
-
-        if (!isMonsterDetailsAvailable(id)) {
-          await addMonsterDetails(id)
-        }
-        const details = getMonsterDetails(id)
-        if (details) {
-          onHpChange(details.hit_points)
-          onXpChange(details.xp)
-        }
-      })()
-    }
-  }, [value])
+  const sources = useMemo(
+    () =>
+      Object.values(monsterIndex)
+        .map((entry) => entry.source)
+        .filter((v, i, a) => a.indexOf(v) === i)
+        .sort(),
+    [monsterIndex, source]
+  )
 
   return (
     <div className="suggestion-input-container">
+      <input
+        type="text"
+        placeholder={t_source}
+        value={source ?? ''}
+        onChange={(e) => setSource(e.target.value)}
+        list="monster-sources-datalist"
+        onFocus={() => setSource(null)}
+      />
+      <datalist id="monster-sources-datalist">
+        {sources.map((entry) => (
+          <option key={entry} value={entry} />
+        ))}
+      </datalist>
       <input
         id="monster-suggestion-input"
         placeholder={t_name}
         required
         value={value}
-        onChange={handleInputChange}
+        onChange={(e) => onChange(e.target.value)}
         list="monster-names-datalist"
       />
       <datalist id="monster-names-datalist">
-        {monsterNames.map((name) => (
-          <option key={name} value={name} />
-        ))}
+        {Object.values(monsterIndex)
+          .filter((entry) => (source ? entry.source === source : true))
+          .map((entry) => (
+            <option key={entry.index} value={entry.name} />
+          ))}
       </datalist>
     </div>
   )

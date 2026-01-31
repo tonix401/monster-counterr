@@ -1,116 +1,179 @@
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 
-// Api key
+// -----------------------------------------------------------------------------
+// Env
+// -----------------------------------------------------------------------------
+
 process.loadEnvFile('.env.local')
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY
-
 if (!GOOGLE_API_KEY) {
   console.error('Error: GOOGLE_API_KEY environment variable not set.')
   process.exit(1)
 }
 
-// get languages
-const languages = readdirSync('src/public/locales')
-  .filter((f) => f.endsWith('.json') && !f.startsWith('locales'))
-  .map((f) => f.replace('.json', ''))
-  .filter((l) => l !== 'en')
+const LOCALES_DIR = 'src/public/locales'
+const EN_LANG = 'en'
 
-// translate
+// ANSI colors
+const RED = '\x1b[31m'
+const GREEN = '\x1b[32m'
+const RESET = '\x1b[0m'
+
+// -----------------------------------------------------------------------------
+// File helpers
+// -----------------------------------------------------------------------------
+
+function getLangData(lang) {
+  const filePath = `${LOCALES_DIR}/${lang}.json`
+  return JSON.parse(readFileSync(filePath, 'utf-8'))
+}
+
+function writeLangData(lang, data) {
+  const filePath = `${LOCALES_DIR}/${lang}.json`
+  writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8')
+}
+
+function getLanguages() {
+  return readdirSync(LOCALES_DIR)
+    .filter((f) => f.endsWith('.json') && f !== 'locales.json')
+    .map((f) => f.replace('.json', ''))
+    .filter((l) => l !== EN_LANG)
+}
+
+// -----------------------------------------------------------------------------
+// Diff-style logger (colored)
+// -----------------------------------------------------------------------------
+
+function logDiff(lang, key, type, oldValue, newValue) {
+  console.log(`diff --locale ${lang}`)
+
+  if (type === 'add') {
+    console.log(`${GREEN}+ ${key}: "${newValue}"${RESET}\n`)
+  }
+
+  if (type === 'remove') {
+    console.log(`${RED}- ${key}: "${oldValue}"${RESET}\n`)
+  }
+
+  if (type === 'change') {
+    console.log(
+      `${RED}- ${key}: "${oldValue}"${RESET}\n` + `${GREEN}+ ${key}: "${newValue}"${RESET}\n`
+    )
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Google Translate
+// -----------------------------------------------------------------------------
+
 async function translate(text, target) {
   const url = `https://translation.googleapis.com/language/translate/v2?key=${GOOGLE_API_KEY}`
-  const body = {
-    q: text,
-    target,
-    format: 'text',
-  }
+
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      q: text,
+      target,
+      format: 'text',
+    }),
   })
+
   if (!res.ok) {
-    throw new Error(`Translation API error: ${res.statusText}`)
+    throw new Error(`Translation API error: ${res.status} ${res.statusText}`)
   }
+
   const data = await res.json()
   return data.data.translations[0].translatedText
 }
 
-function getLangData(lang) {
-  const langFilePath = `src/public/locales/${lang}.json`
-  return JSON.parse(readFileSync(langFilePath))
-}
+// -----------------------------------------------------------------------------
+// Core logic
+// -----------------------------------------------------------------------------
 
-// find missing terms
-function findMissingTerms() {
-  const enTerms = getLangData('en').terms
+function findMissingTerms(languages) {
+  const enTerms = getLangData(EN_LANG).terms
+  const missing = new Set()
 
-  const missingTerms = []
-
-  languages.forEach((lang) => {
+  for (const lang of languages) {
     const langTerms = getLangData(lang).terms
-
-    for (const key in enTerms) {
+    for (const key of Object.keys(enTerms)) {
       if (!(key in langTerms)) {
-        missingTerms.push(key)
+        missing.add(key)
       }
     }
-  })
+  }
 
-  return missingTerms.filter((v, i, a) => a.indexOf(v) === i) // unique
+  return [...missing]
 }
 
-// add term to all languages
-async function addTermToLanguages(key, term) {
-  for (const lang of languages) {
-    const langFilePath = `src/public/locales/${lang}.json`
-    const langData = getLangData(lang)
-    const translatedTerm = await translate(term, lang)
+async function addMissingTerms(languages) {
+  const enTerms = getLangData(EN_LANG).terms
+  const missingTerms = findMissingTerms(languages)
 
-    langData.terms[key] = translatedTerm
+  for (const key of missingTerms) {
+    const sourceText = enTerms[key]
 
-    // write back to file
-    writeFileSync(langFilePath, JSON.stringify(langData, null, 2), 'utf-8')
-    console.log(`Added term ${key} as "${translatedTerm}" to ${lang}`)
+    for (const lang of languages) {
+      const langData = getLangData(lang)
+
+      if (key in langData.terms) continue
+
+      const translated = await translate(sourceText, lang)
+      langData.terms[key] = translated
+
+      writeLangData(lang, langData)
+      logDiff(lang, key, 'add', null, translated)
+    }
   }
 }
 
-// Add missing terms
-findMissingTerms().forEach(async (key) => {
-  const enData = getLangData('en')
-  const term = enData.terms[key]
-  await addTermToLanguages(key, term)
-})
+function removeObsoleteTerms(languages) {
+  const enTerms = getLangData(EN_LANG).terms
 
-// Remove keys that are not in en.json
-languages.forEach((lang) => {
-  const langFilePath = `src/public/locales/${lang}.json`
-  const langData = getLangData(lang)
-  const enTerms = getLangData('en').terms
+  for (const lang of languages) {
+    const langData = getLangData(lang)
 
-  Object.keys(langData.terms).forEach((key) => {
-    if (!(key in enTerms)) {
-      delete langData.terms[key]
-      console.log(`Removed obsolete term ${key} from ${lang}`)
+    for (const key of Object.keys(langData.terms)) {
+      if (!(key in enTerms)) {
+        const oldValue = langData.terms[key]
+        delete langData.terms[key]
+
+        logDiff(lang, key, 'remove', oldValue)
+      }
+    }
+
+    writeLangData(lang, langData)
+  }
+}
+
+function updateLocalesIndex(languages) {
+  const allLangs = [...languages, EN_LANG].sort()
+
+  const index = allLangs.map((lang) => {
+    const langData = getLangData(lang)
+    return {
+      key: lang,
+      name: langData.terms.__thisLanguage,
     }
   })
 
-  // write back to file
-  writeFileSync(langFilePath, JSON.stringify(langData, null, 2), 'utf-8')
+  writeFileSync(`${LOCALES_DIR}/locales.json`, JSON.stringify(index, null, 2), 'utf-8')
+}
+
+// -----------------------------------------------------------------------------
+// Run
+// -----------------------------------------------------------------------------
+
+async function run() {
+  const languages = getLanguages()
+  await addMissingTerms(languages)
+  removeObsoleteTerms(languages)
+  updateLocalesIndex(languages)
+}
+
+run().catch((err) => {
+  console.error(err)
+  process.exit(1)
 })
-
-// Update the locales index file
-const localesIndex = await Promise.all(languages.map(async (lang) => {
-  const langData = await getLangData(lang)
-  return {
-    key: lang,
-    name: langData.terms.__thisLanguage,
-  }
-}))
-
-writeFileSync(
-  'src/public/locales/locales.json',
-  JSON.stringify(localesIndex, null, 2),
-  'utf-8'
-)
-console.log('Updated locales index file.')

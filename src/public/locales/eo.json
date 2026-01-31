@@ -61,6 +61,12 @@
     "remove": "Forigi",
     "status": "Stato",
     "changeHp": "Ŝanĝi VP",
-    "language": "Lingvo"
+    "language": "Lingvo",
+    "menu": "Menuo",
+    "includeSettings": "Inkluzivi Agordojn",
+    "openMenu": "Malfermi Menuon",
+    "includeCurrentXp": "Inkluzivi Nunan XP",
+    "includeMonsters": "Inkluzivi viajn nunajn Monstrojn",
+    "fileSize": "Atendita grandeco de konservita dosiero:"
   }
 }

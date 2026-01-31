@@ -28,10 +28,11 @@ interface TemporalOptions<T> {
   partialize?: (state: T & TemporalState<Partial<T>> & TemporalActions) => Partial<T>
 }
 
-const temporalImpl = <T>(
-  config: StateCreator<T, [], []>,
-  options: TemporalOptions<T> = {}
-): StateCreator<T & TemporalState<T> & TemporalActions, [], []> =>
+const temporalImpl =
+  <T>(
+    config: StateCreator<T, [], []>,
+    options: TemporalOptions<T> = {}
+  ): StateCreator<T & TemporalState<T> & TemporalActions, [], []> =>
   (set, get, api) => {
     const {
       limit = 50,

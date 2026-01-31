@@ -61,6 +61,12 @@
     "remove": "Ta Bort",
     "status": "Status",
     "changeHp": "Ändra HP",
-    "language": "Språk"
+    "language": "Språk",
+    "openMenu": "Öppna menyn",
+    "includeSettings": "Inkludera inställningar",
+    "includeCurrentXp": "Inkludera aktuell XP",
+    "menu": "Meny",
+    "includeMonsters": "Inkludera dina nuvarande monster",
+    "fileSize": "Förväntad storlek på sparad fil:"
   }
 }

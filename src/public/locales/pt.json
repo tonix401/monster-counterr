@@ -61,6 +61,12 @@
     "remove": "Remover",
     "status": "Estado",
     "changeHp": "Mudar PV",
-    "language": "Idioma"
+    "language": "Idioma",
+    "menu": "Menu",
+    "openMenu": "Abrir menu",
+    "includeCurrentXp": "Incluir XP atual",
+    "includeSettings": "Incluir configurações",
+    "includeMonsters": "Inclua seus monstros atuais",
+    "fileSize": "Tamanho esperado do arquivo salvo:"
   }
 }

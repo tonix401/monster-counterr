@@ -3,9 +3,9 @@ import { SETTING_SCHEMA } from '@/types/Settings'
 
 export type SettingsSlice = {
   settings: Settings
-  getSetting: (key: keyof Settings) => boolean
+  getSetting: (key: keyof Settings) => boolean | string | null
   getSettingName: (key: keyof Settings) => string
-  setSetting: (key: keyof Settings, value: boolean) => void
+  setSetting: (key: keyof Settings, value: boolean | string | null) => void
 }
 
 export const createSettingsSlice = (set: any, get: any): SettingsSlice => ({
@@ -30,7 +30,7 @@ export const createSettingsSlice = (set: any, get: any): SettingsSlice => ({
     return SETTING_SCHEMA[key].name
   },
 
-  setSetting: (key: keyof Settings, value: boolean) => {
+  setSetting: (key: keyof Settings, value: boolean | string | null) => {
     set((state: any) => ({
       settings: { ...state.settings, [key]: value },
     }))

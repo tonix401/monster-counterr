@@ -1,11 +1,16 @@
-interface BinarySettingsRowProps<T extends string>{
+interface BinarySettingsRowProps<T extends string> {
   settingKey: T
   label: string
   value: boolean
   onChange: (key: T, value: boolean) => void
 }
 
-const BinarySettingsRow = <T extends string>({ settingKey, label, value, onChange }: BinarySettingsRowProps<T>) => {
+const BinarySettingsRow = <T extends string>({
+  settingKey,
+  label,
+  value,
+  onChange,
+}: BinarySettingsRowProps<T>) => {
   return (
     <div className="settings-row">
       <label htmlFor={settingKey}>{label}</label>

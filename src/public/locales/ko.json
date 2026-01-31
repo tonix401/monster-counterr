@@ -61,6 +61,12 @@
     "remove": "제거",
     "status": "상태",
     "changeHp": "HP 변경",
-    "language": "언어"
+    "language": "언어",
+    "menu": "메뉴",
+    "openMenu": "메뉴 열기",
+    "includeCurrentXp": "현재 XP 포함",
+    "includeSettings": "포함 설정",
+    "includeMonsters": "현재 보유하고 있는 몬스터를 포함하세요",
+    "fileSize": "예상 저장 파일 크기:"
   }
 }

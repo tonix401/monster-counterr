@@ -61,6 +61,12 @@
     "remove": "移除",
     "status": "状态",
     "changeHp": "改变生命值",
-    "language": "语言"
+    "language": "语言",
+    "menu": "菜单",
+    "openMenu": "打开菜单",
+    "includeSettings": "包含设置",
+    "includeCurrentXp": "包括当前经验值",
+    "includeMonsters": "请列出你目前拥有的怪物。",
+    "fileSize": "预计保存文件大小："
   }
 }

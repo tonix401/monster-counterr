@@ -61,6 +61,12 @@
     "remove": "Rimuovi",
     "status": "Stato",
     "changeHp": "Cambia PF",
-    "language": "Lingua"
+    "language": "Lingua",
+    "openMenu": "Apri il menu",
+    "includeCurrentXp": "Includi XP correnti",
+    "menu": "Menu",
+    "includeSettings": "Includi impostazioni",
+    "includeMonsters": "Includi i tuoi mostri attuali",
+    "fileSize": "Dimensione prevista del file di salvataggio:"
   }
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 import type { Settings } from '@/types/Settings'
-import { useTerm } from '@/hooks/useTerm'
+import { useTerm } from '@/store/index'
 
 interface TableHeaderRowProps {
   settings: Settings

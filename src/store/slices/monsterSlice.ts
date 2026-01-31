@@ -1,8 +1,13 @@
+import { BASE_URL } from '@/constants'
 import type { Monster } from '@/types/Monster'
 import { MonsterClass } from '@/types/Monster'
 
+export type MonsterIndexEntry = { index: string; name: string; source: string }
+
 export type MonsterSlice = {
   monsters: Monster[]
+  monsterIndex: Record<string, MonsterIndexEntry>
+  source: string | null
   addMonster: (name: string, hp: number, amount?: number) => Monster[]
   removeMonster: (monsterId: string) => void
   removeDead: () => void
@@ -14,11 +19,14 @@ export type MonsterSlice = {
   ) => void
   addMonsterCondition: (monsterId: string, condition: string) => void
   removeMonsterCondition: (monsterId: string, condition: string) => void
+  getMonsterIndex: () => Promise<void>
+  setSource: (source: string | null) => void
 }
 
 export const createMonsterSlice = (set: any, get: any): MonsterSlice => ({
   monsters: [],
-
+  monsterIndex: {},
+  source: null,
   addMonster: (name: string, hp: number, amount: number = 1) => {
     const newMonsters: Monster[] = []
     const detailIndex = name.toLowerCase().trim().replace(/\s+/g, '-')
@@ -113,5 +121,22 @@ export const createMonsterSlice = (set: any, get: any): MonsterSlice => ({
           : monster
       ),
     }))
+  },
+
+  getMonsterIndex: async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/monsters/index.json`)
+      if (!response.ok) {
+        return
+      }
+      response.json().then((data) => set({ monsterIndex: data }))
+    } catch (error) {
+      console.error('Failed to fetch monster index:', error)
+      set({ monsterIndex: {} })
+    }
+  },
+
+  setSource: (source: string | null) => {
+    set({ source })
   },
 })

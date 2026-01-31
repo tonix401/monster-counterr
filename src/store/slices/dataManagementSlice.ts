@@ -1,7 +1,7 @@
 import { SAVE_FILE } from '@/constants'
 import type { Monster } from '@/types/Monster'
 import type { Settings } from '@/types/Settings'
-import type { MonsterDetails, MonsterIndex } from '@/types/MonsterDetails'
+import type { MonsterIndex } from '@/types/MonsterDetails'
 
 export interface SaveData {
   schemaVersion: number
@@ -9,7 +9,6 @@ export interface SaveData {
   currentXp: number
   settings: Settings
   monsterIndex: Record<string, MonsterIndex>
-  monsterDetails: Record<string, MonsterDetails>
 }
 
 export interface SaveFileExportSettings {
@@ -52,13 +51,11 @@ export const createDataManagementSlice = (set: any, get: any): DataManagementSli
       },
     })),
   exportData: () => {
-    const { monsters, xp, settings, monsterIndex, monsterDetails, exportSettings } = get()
+    const { monsters, xp, settings, exportSettings } = get()
     const data: Partial<SaveData> = {
       schemaVersion: SAVE_FILE.SCHEMA_VERSION,
       ...(exportSettings.includeSettings ? { settings } : {}),
       ...(exportSettings.includeCurrentXp ? { currentXp: xp } : {}),
-      ...(exportSettings.includeIndex ? { monsterIndex } : {}),
-      ...(exportSettings.includeDetails ? { monsterDetails } : {}),
       ...(exportSettings.includeMonsters ? { monsters } : {}),
     }
     const dataJson = exportSettings.minimizeJson
@@ -74,6 +71,8 @@ export const createDataManagementSlice = (set: any, get: any): DataManagementSli
   },
 
   importData: (data: unknown): boolean => {
+
+
     if (!isSaveData(data)) {
       console.error('Invalid save data format')
       return false
@@ -86,13 +85,11 @@ export const createDataManagementSlice = (set: any, get: any): DataManagementSli
           if ('monsters' in data) newState.monsters = data.monsters
           if ('currentXp' in data) newState.xp = data.currentXp
           if ('settings' in data) newState.settings = data.settings
-          if ('monsterIndex' in data) newState.monsterIndex = data.monsterIndex
-          if ('monsterDetails' in data) newState.monsterDetails = data.monsterDetails
           set(newState)
           return true
         }
         default:
-          alert(`Unsupported save file schema version: ${data.schemaVersion}`)
+          get().notify(`Unsupported save file schema version: ${data.schemaVersion}`)
           return false
       }
     } catch (error) {

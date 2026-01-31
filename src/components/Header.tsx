@@ -2,7 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router'
 import { useMonsterStore, useCanUndo, useCanRedo } from '@/store'
 import { useUndoRedoShortcuts } from '@/hooks/useKeyboardShortcut'
-import { useTerm } from '@/hooks/useTerm'
+import { useTerm } from '@/store/index'
 
 const undoSvg = '/monster-counterr/undo.svg'
 const redoSvg = '/monster-counterr/redo.svg'

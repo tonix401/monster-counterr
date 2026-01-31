@@ -1,4 +1,4 @@
-import { useTerm } from '@/hooks/useTerm'
+import { useTerm } from '@/store/index'
 import { useAvailableLanguages, useMonsterStore } from '@/store'
 import React from 'react'
 

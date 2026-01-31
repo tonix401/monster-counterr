@@ -61,6 +61,12 @@
     "remove": "Удалить",
     "status": "Статус",
     "changeHp": "Изменить Здоровье",
-    "language": "Язык"
+    "language": "Язык",
+    "openMenu": "Открыть меню",
+    "includeCurrentXp": "Включить текущий опыт",
+    "includeSettings": "Включить настройки",
+    "menu": "Меню",
+    "includeMonsters": "Укажите ваших текущих монстров.",
+    "fileSize": "Ожидаемый размер файла сохранения:"
   }
 }

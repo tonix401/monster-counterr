@@ -61,6 +61,12 @@
     "remove": "Entfernen",
     "status": "Status",
     "changeHp": "HP ändern",
-    "language": "Sprache"
+    "language": "Sprache",
+    "menu": "Menü",
+    "includeCurrentXp": "Aktuelle XP einschließen",
+    "includeSettings": "Einstellungen einschließen",
+    "openMenu": "Menü öffnen",
+    "includeMonsters": "Füge deine aktuellen Monster hinzu",
+    "fileSize": "Erwartete Größe der Speicherdatei:"
   }
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useMonsterStore } from '@/store'
-import { useTerm } from '@/hooks/useTerm'
+import { useTerm } from '@/store/index'
 
 const skullSvg = '/monster-counterr/skull.svg'
 const binSvg = '/monster-counterr/bin.svg'

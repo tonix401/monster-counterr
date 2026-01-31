@@ -8,6 +8,7 @@
     "start": "node ./start.js",
     "preview": "vite preview",
     "dev": "vite",
+    "update_terms": "node scripts/update_terms.js",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\""
   },

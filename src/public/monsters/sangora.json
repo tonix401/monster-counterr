@@ -1,0 +1,1 @@
+{"name":"Sangora","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":31,"_copy":{"name":"Vampire","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the vampire","with":"Sangora","flags":"i"}}},"hasToken":true}

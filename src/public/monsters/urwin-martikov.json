@@ -1,0 +1,1 @@
+{"name":"Urwin Martikov","isNpc":true,"isNamedCreature":true,"source":"CoS","page":98,"_copy":{"name":"Wereraven","source":"VRGR","_mod":{"*":{"mode":"replaceTxt","replace":"the wereraven","with":"Urwin","flags":"i"}}},"alignment":["L","G"],"hasToken":true}

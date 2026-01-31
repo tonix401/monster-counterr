@@ -1,0 +1,1 @@
+{"name":"Braelen Hatherhand","isNpc":true,"isNamedCreature":true,"source":"PotA","page":156,"_copy":{"name":"Commoner","source":"MM"},"type":{"type":"humanoid","tags":["human"]},"hp":{"average":2,"formula":"1d8"},"action":null,"tokenCustom":true,"miscTags":[],"hasToken":true}

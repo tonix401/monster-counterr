@@ -1,0 +1,1 @@
+{"name":"Morgantha","isNpc":true,"isNamedCreature":true,"source":"CoS","page":48,"_copy":{"name":"Night Hag","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the hag","with":"Morgantha","flags":"i"}}},"hasToken":true}

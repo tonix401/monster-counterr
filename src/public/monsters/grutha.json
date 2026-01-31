@@ -1,0 +1,1 @@
+{"name":"Grutha","isNpc":true,"isNamedCreature":true,"source":"TftYP","page":170,"_copy":{"name":"Hill Giant","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the giant","with":"Grutha","flags":"i"}}},"hasToken":true}

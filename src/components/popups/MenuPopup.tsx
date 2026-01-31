@@ -10,7 +10,7 @@ const MenuPopup: React.FC = () => {
   const t_customMonsters = useTerm('customMonsters')
 
   return (
-    <Popup onClose={() => navigate(-1)}>
+    <Popup onClose={() => navigate('/')} title="Menu" width={520}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: 220 }}>
         <button className="green-button" onClick={() => navigate('/settings')}>
           {t_settings}

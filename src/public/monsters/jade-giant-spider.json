@@ -1,0 +1,1 @@
+{"name":"Jade Giant Spider","source":"OotA","page":201,"_copy":{"name":"Stone Golem","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"golem","with":"spider","flags":"i"}}},"hp":{"average":250,"formula":"17d10 + 85"},"speed":{"walk":30,"climb":30},"senses":["truesight 120 ft."],"hasToken":true}

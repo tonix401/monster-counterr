@@ -1,0 +1,1 @@
+{"name":"Tosh Starling (Levels 5-8)","isNpc":true,"isNamedCreature":true,"source":"KftGV","page":8,"_copy":{"name":"Spy","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the spy","with":"Tosh Starling","flags":"i"}}},"type":{"type":"humanoid","tags":["orc"]},"alignment":["N"],"tokenCustom":true,"hasToken":true}

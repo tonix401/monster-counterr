@@ -1,0 +1,1 @@
+{"name":"Distended Corpse","source":"CoS","page":165,"_copy":{"name":"Commoner","source":"MM"},"speed":{"walk":20},"conditionImmune":["charmed","frightened"],"trait":[{"name":"Snake-Swollen","entries":["When a corpse is reduced to 0 hit points, it splits open, disgorging a {@creature swarm of poisonous snakes}. The snakes are hungry and fight until slain."]}],"hasToken":true}

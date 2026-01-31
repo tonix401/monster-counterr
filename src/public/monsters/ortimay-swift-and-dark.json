@@ -1,0 +1,1 @@
+{"name":"Ortimay Swift and Dark","isNpc":true,"isNamedCreature":true,"source":"ToA","page":21,"_copy":{"name":"Bandit Captain","source":"MM","_templates":[{"name":"Rock Gnome","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the captain","with":"Ortimay","flags":"i"}}},"alignment":["C","G"],"senseTags":["D"],"languageTags":["G","X"],"hasToken":true}

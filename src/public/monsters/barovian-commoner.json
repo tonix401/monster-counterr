@@ -1,0 +1,1 @@
+{"name":"Barovian Commoner","source":"CoS","page":29,"_copy":{"name":"Commoner","source":"MM"},"action":[{"name":"Pitchfork","entries":["{@atk mw} {@hit 2} to hit, reach 5 ft., one target. {@h}3 ({@damage 1d6}) piercing damage."]}],"damageTags":["P"],"hasToken":true}

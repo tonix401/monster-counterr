@@ -1,0 +1,1 @@
+{"name":"The Abbot","isNpc":true,"isNamedCreature":true,"source":"CoS","page":151,"_copy":{"name":"Deva","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the deva","with":"The Abbot","flags":"i"}}},"alignment":["L","E"],"hasToken":true}

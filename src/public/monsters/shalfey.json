@@ -1,0 +1,1 @@
+{"name":"Shalfey","isNpc":true,"isNamedCreature":true,"source":"QftIS","page":68,"_copy":{"name":"Tower Sage","source":"QftIS","_templates":[{"name":"Human","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the tower sage","with":"Shalfey","flags":"i"}}},"alignment":["L","G"],"hasToken":true}

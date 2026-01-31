@@ -1,0 +1,1 @@
+{"name":"Floon Blagmaar","isNpc":true,"isNamedCreature":true,"source":"WDH","page":202,"_copy":{"name":"Commoner","source":"MM"},"type":{"type":"humanoid","tags":["human"]},"alignment":["N","G"],"int":7,"cha":13,"tokenCustom":true,"hasToken":true}

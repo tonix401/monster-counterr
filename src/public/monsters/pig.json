@@ -1,0 +1,1 @@
+{"name":"Pig","source":"SKT","page":143,"_copy":{"name":"Boar","source":"MM"},"hp":{"average":5,"formula":"1d8 + 1"},"speed":{"walk":30},"cr":"0","trait":null,"action":null,"traitTags":[],"miscTags":[],"hasToken":true}

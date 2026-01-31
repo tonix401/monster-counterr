@@ -1,0 +1,1 @@
+{"name":"Old Croaker","isNpc":true,"isNamedCreature":true,"source":"EGW","page":240,"_copy":{"name":"Giant Toad","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the toad","with":"Old Croaker","flags":"i"}}},"immune":["cold"],"hasToken":true}

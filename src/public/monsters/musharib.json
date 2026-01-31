@@ -1,0 +1,1 @@
+{"name":"Musharib","isNpc":true,"isNamedCreature":true,"source":"ToA","page":34,"_copy":{"name":"Albino Dwarf Spirit Warrior","source":"ToA","_mod":{"*":{"mode":"replaceTxt","replace":"the dwarf","with":"Musharib","flags":"i"}}},"alignment":["L","G"],"hasToken":true}

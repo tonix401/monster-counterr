@@ -1,0 +1,1 @@
+{"name":"Chief Nosnra","isNpc":true,"isNamedCreature":true,"source":"TftYP","page":170,"_copy":{"name":"Frost Giant","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the giant","with":"Chief Nosnra","flags":"i"}}},"ac":[{"ac":17,"from":["{@item splint armor|phb}"]}],"immune":null,"conditionInflict":[],"hasToken":true}

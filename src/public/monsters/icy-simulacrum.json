@@ -1,0 +1,1 @@
+{"name":"Icy Simulacrum","source":"CoA","page":176,"_copy":{"name":"Doppelganger","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"doppelganger","with":"simulacrum"}}},"immune":["cold"],"tokenCredit":"Caverns of the Snow Witch","tokenCustom":true,"hasToken":true}

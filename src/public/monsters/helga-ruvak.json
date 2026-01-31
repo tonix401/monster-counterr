@@ -1,0 +1,1 @@
+{"name":"Helga Ruvak","isNpc":true,"isNamedCreature":true,"source":"CoS","page":64,"_copy":{"name":"Vampire Spawn","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the vampire","with":"Helga","flags":"i"}}},"hasToken":true}

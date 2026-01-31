@@ -1,0 +1,1 @@
+{"name":"Animated Drow Statue","source":"OotA","page":96,"_copy":{"name":"Animated Armor","source":"MM","_mod":{"*":[{"mode":"replaceTxt","replace":"suit of armor","with":"statue"},{"mode":"replaceTxt","replace":"armor","with":"statue"}]}},"type":"elemental","hasToken":true}

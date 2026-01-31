@@ -1,0 +1,1 @@
+{"name":"Tholtz Daggerdark","isNpc":true,"isNamedCreature":true,"source":"SKT","page":221,"_copy":{"name":"Archmage","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the archmage","with":"Tholtz"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["C","E"],"hasToken":true}

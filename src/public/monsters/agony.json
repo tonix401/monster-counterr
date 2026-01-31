@@ -1,0 +1,1 @@
+{"name":"Agony","isNpc":true,"isNamedCreature":true,"source":"LoX","page":34,"_copy":{"name":"Ghost","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the ghost","with":"Agony","flags":"i"}}},"hasToken":true}

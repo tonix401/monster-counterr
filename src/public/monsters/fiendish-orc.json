@@ -1,0 +1,1 @@
+{"name":"Fiendish Orc","source":"CRCotN","page":71,"_copy":{"name":"Orc War Chief","source":"MM"},"type":{"type":"fiend","tags":["orc"]},"immune":["fire","poison"],"languages":["Abyssal","Common","Orc"],"tokenCustom":true,"hasToken":true}

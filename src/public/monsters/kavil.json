@@ -1,0 +1,1 @@
+{"name":"Kavil","isNpc":true,"isNamedCreature":true,"source":"WDMM","page":205,"_copy":{"name":"Mage","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the mage","with":"Kavil","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["N","E"],"languages":["Dwarvish","Common","Giant","Undercommon"],"languageTags":["C","D","GI","U"],"hasToken":true}

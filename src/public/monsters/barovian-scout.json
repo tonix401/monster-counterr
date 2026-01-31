@@ -1,0 +1,1 @@
+{"name":"Barovian Scout","source":"CoS","page":29,"_copy":{"name":"Scout","source":"MM","_mod":{"action":{"mode":"replaceArr","replace":"Longbow","items":{"name":"Light Crossbows","entries":["{@atk rw} {@hit 4} to hit, ranged 80/320 ft., one target. {@h}6 ({@damage 1d8 + 2}) piercing damage."]}}}},"miscTags":["MW","RW"],"hasToken":true}

@@ -1,0 +1,1 @@
+{"name":"Buppido","isNpc":true,"isNamedCreature":true,"source":"OotA","page":6,"_copy":{"name":"Derro","source":"OotA","_mod":{"*":{"mode":"replaceTxt","replace":"the derro","with":"Buppido","flags":"i"}}},"hasToken":true,"hasFluffImages":true,"fluff":{"name":"Buppido","source":"OotA","images":[{"type":"image","href":{"type":"internal","path":"bestiary/OotA/Buppido.webp"}}]}}

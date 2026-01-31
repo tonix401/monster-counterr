@@ -1,0 +1,1 @@
+{"name":"Elder Giant Lizard","source":"TftYP","page":176,"_copy":{"name":"Giant Crocodile","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"crocodile","with":"lizard","flags":"i"}}},"speed":{"walk":30,"climb":30},"senses":["darkvision 60 ft."],"senseTags":["D"],"hasToken":true}

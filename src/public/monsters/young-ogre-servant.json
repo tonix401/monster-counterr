@@ -1,0 +1,1 @@
+{"name":"Young Ogre Servant","source":"TftYP","page":171,"_copy":{"name":"Orc","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"orc","with":"ogre","flags":"i"}}},"type":"giant","hasToken":true}

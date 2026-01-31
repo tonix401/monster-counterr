@@ -1,0 +1,1 @@
+{"name":"Armored Saber-Toothed Tiger","source":"CoS","page":115,"_copy":{"name":"Saber-Toothed Tiger","source":"MM"},"ac":[{"ac":17,"from":["{@item half plate armor|phb}"]}],"hp":{"average":84,"formula":"7d10 + 14"},"cr":"3","hasToken":true}

@@ -26,7 +26,7 @@ const SettingsPopup: React.FC = () => {
   const navigate = useNavigate()
 
   return (
-    <Popup onClose={() => navigate('/')} width={500}>
+    <Popup onClose={() => navigate('/menu')} width={500}>
       <div style={{ marginBottom: '20px', textAlign: 'center' }}>
         <strong>{t_visualSettings}</strong>
       </div>

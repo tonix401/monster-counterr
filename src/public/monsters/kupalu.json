@@ -1,0 +1,1 @@
+{"name":"Kupalué","isNpc":true,"isNamedCreature":true,"source":"ToA","page":35,"_copy":{"name":"Vegepygmy","source":"VGM","_mod":{"*":{"mode":"replaceTxt","replace":"the vegepygmy","with":"Kupalué","flags":"i"}}},"hasToken":true}

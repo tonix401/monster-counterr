@@ -1,0 +1,1 @@
+{"name":"Raggnar Redtooth","isNpc":true,"isNamedCreature":true,"source":"HotDQ","page":74,"otherSources":[{"source":"ToD","page":90}],"_copy":{"name":"Veteran","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the veteran","with":"Raggnar","flags":"i"}}},"ac":[11],"tokenCustom":true,"hasToken":true}

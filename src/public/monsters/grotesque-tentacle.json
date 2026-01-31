@@ -1,0 +1,1 @@
+{"name":"Grotesque Tentacle","source":"CoA","page":78,"_copy":{"name":"Guardian Naga","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"naga","with":"tentacle"}}},"alignment":["L","E"],"speed":{"walk":0},"spellcasting":null,"tokenCredit":"Irene Meniconi","tokenCustom":true,"hasToken":true}

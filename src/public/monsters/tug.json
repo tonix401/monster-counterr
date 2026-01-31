@@ -1,0 +1,1 @@
+{"name":"Tug","isNpc":true,"isNamedCreature":true,"source":"SKT","page":209,"_copy":{"name":"Hill Giant","source":"MM"},"ac":[{"ac":15,"from":["{@item scale mail|phb}"]}],"hasToken":true}

@@ -1,0 +1,1 @@
+{"name":"Undead Bulette","source":"WDMM","page":90,"_copy":{"name":"Bulette","source":"MM"},"type":"undead","hp":{"average":125,"formula":"9d10 + 45"},"resist":["necrotic"],"immune":["poison"],"vulnerable":["radiant"],"conditionImmune":["poisoned"],"hasToken":true}

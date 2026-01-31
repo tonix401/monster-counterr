@@ -27,7 +27,7 @@ createRoot(document.getElementById('root')!).render(
               <SettingsPopup/>
             }
           />
-          <Route path="monster/:monsterId" element={<MonsterInfoPopupRoute />} />
+          <Route path="monsters/:monsterId" element={<MonsterInfoPopupRoute />} />
           <Route path="menu" element={<MenuPopup />} />
           <Route path="custom-monsters" element={<CustomMonstersPopup />} />
           <Route path="manage-data" element={<ManageDataPopup />} />

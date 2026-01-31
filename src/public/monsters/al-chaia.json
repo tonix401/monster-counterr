@@ -1,0 +1,1 @@
+{"name":"Al'chaia","isNpc":true,"isNamedCreature":true,"source":"WDMM","page":218,"_copy":{"name":"Githyanki Knight","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the githyanki","with":"Al'chaia","flags":"i"}}},"hp":{"average":140,"formula":"14d8 + 28"},"hasToken":true}

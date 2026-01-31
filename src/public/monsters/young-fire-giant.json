@@ -1,0 +1,1 @@
+{"name":"Young Fire Giant","source":"TftYP","page":192,"_copy":{"name":"Ogre","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"ogre","with":"giant","flags":"i"}}},"immune":["fire"],"hasToken":true}

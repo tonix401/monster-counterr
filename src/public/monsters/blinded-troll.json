@@ -1,0 +1,1 @@
+{"name":"Blinded Troll","isNpc":true,"source":"WDH","page":114,"_copy":{"name":"Troll","source":"MM","_mod":{"trait":{"mode":"prependArr","items":{"name":"Blinded","entries":["The troll is wearing an eyeless helm, and is {@condition blinded}."]}}}},"speed":{"walk":20},"cr":"4","hasToken":true}

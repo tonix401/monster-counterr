@@ -1,0 +1,1 @@
+{"name":"Wood Elf Wizard","source":"CM","page":187,"_copy":{"name":"Drow Mage","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"\\bdrow\\b","with":"wood elf"},"trait":{"mode":"removeArr","names":"Sunlight Sensitivity"}}},"tokenCustom":true,"traitTags":["Fey Ancestry"],"hasToken":true}

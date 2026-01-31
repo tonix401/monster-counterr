@@ -1,0 +1,1 @@
+{"name":"Treant Totem Elemental","source":"PSX","page":38,"_copy":{"name":"Treant","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"treant","with":"treant totem"}}},"tokenCustom":true,"hasToken":true,"hasFluff":true,"fluff":{"name":"Treant Totem Elemental","source":"PSX","_copy":{"name":"Totem Elemental","source":"PSX"}}}

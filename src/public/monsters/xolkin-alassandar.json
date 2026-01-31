@@ -1,0 +1,1 @@
+{"name":"Xolkin Alassandar","isNpc":true,"isNamedCreature":true,"source":"SKT","page":27,"_copy":{"name":"Bandit Captain","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the captain","with":"Xolkin","flags":"i"}}},"type":{"type":"humanoid","tags":["half-elf"]},"alignment":["L","E"],"hasToken":true}

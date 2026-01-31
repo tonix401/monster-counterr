@@ -1,0 +1,1 @@
+{"name":"Hydia Moonmusk","isNpc":true,"isNamedCreature":true,"source":"SKT","page":148,"_copy":{"name":"Gladiator","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the gladiator","with":"Hydia","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["C","E"],"languages":["Bothii","Common"],"languageTags":["C","OTH"],"hasToken":true}

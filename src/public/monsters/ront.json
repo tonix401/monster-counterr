@@ -1,0 +1,1 @@
+{"name":"Ront","isNpc":true,"isNamedCreature":true,"source":"OotA","page":7,"_copy":{"name":"Orc","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the orc","with":"Ront","flags":"i"}}},"hasToken":true,"hasFluffImages":true,"fluff":{"name":"Ront","source":"OotA","images":[{"type":"image","href":{"type":"internal","path":"bestiary/OotA/Ront.webp"}}]}}

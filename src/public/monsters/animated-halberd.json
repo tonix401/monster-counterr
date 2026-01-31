@@ -1,0 +1,1 @@
+{"name":"Animated Halberd","source":"CoS","page":59,"_copy":{"name":"Flying Sword","source":"MM"},"ac":[{"ac":15,"from":["natural armor"]}],"action":[{"name":"Halberd","entries":["{@atk mw} {@hit 3} to hit, reach 5 ft., one target. {@h}5 ({@damage 1d10 + 1}) slashing damage."]}],"attachedItems":["halberd|phb"],"miscTags":["MLW"],"hasToken":true}

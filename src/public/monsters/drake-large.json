@@ -1,0 +1,1 @@
+{"name":"Drake (Large)","source":"PSZ","page":24,"_copy":{"name":"Giant Eagle","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"eagle","with":"drake"}}},"tokenCustom":true,"hasToken":true,"hasFluff":true,"hasFluffImages":true,"fluff":{"name":"Drake (Large)","source":"PSK","_copy":{"name":"Drake (Small)","source":"PSK"}}}

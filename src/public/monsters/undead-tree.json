@@ -1,0 +1,1 @@
+{"name":"Undead Tree","source":"BGDIA","page":109,"_copy":{"name":"Treant","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"treant","with":"tree"}}},"type":"undead","resist":["necrotic"],"hasToken":true}

@@ -1,0 +1,1 @@
+{"name":"Vaal","isNpc":true,"isNamedCreature":true,"source":"SKT","page":207,"_copy":{"name":"Cloud Giant","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the giant","with":"Vaal","flags":"i"}}},"hasToken":true}

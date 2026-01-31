@@ -1,0 +1,1 @@
+{"name":"Vincent Trench","isNpc":true,"isNamedCreature":true,"source":"WDH","page":32,"_copy":{"name":"Rakshasa","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the rakshasa","with":"Vincent","flags":"i"}}},"hasToken":true}

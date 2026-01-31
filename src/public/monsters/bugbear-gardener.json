@@ -1,0 +1,1 @@
+{"name":"Bugbear Gardener","source":"TftYP","page":29,"_copy":{"name":"Bugbear","source":"MM","_mod":{"action":{"mode":"replaceArr","replace":"Morningstar","items":{"name":"Glaive","entries":["{@atk mw} {@hit 4} to hit, reach 10 ft., one target. {@h}13 ({@damage 2d10 + 2}) slashing damage."]}}}},"damageTags":["P","S"],"miscTags":["MW","RCH","RW","THW"],"hasToken":true}

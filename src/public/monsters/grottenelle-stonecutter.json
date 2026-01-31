@@ -1,0 +1,1 @@
+{"name":"Grottenelle Stonecutter","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":49,"_copy":{"name":"Mage","source":"MM","_templates":[{"name":"Deep Gnome","source":"DMG"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the mage","with":"Grottenelle","flags":"i"}}},"alignment":["C","E"],"hasToken":true}

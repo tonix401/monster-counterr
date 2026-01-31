@@ -1,0 +1,1 @@
+{"name":"Awakened Shrub Totem Elemental","source":"PSX","page":38,"_copy":{"name":"Awakened Shrub","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"shrub","with":"shrub totem"}}},"tokenCustom":true,"hasToken":true,"hasFluff":true,"fluff":{"name":"Awakened Shrub Totem Elemental","source":"PSX","_copy":{"name":"Totem Elemental","source":"PSX"}}}

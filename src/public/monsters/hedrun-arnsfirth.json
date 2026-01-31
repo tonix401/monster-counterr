@@ -1,0 +1,1 @@
+{"name":"Hedrun Arnsfirth","isNpc":true,"isNamedCreature":true,"source":"TftYP","page":160,"_copy":{"name":"Deathlock Wight","source":"MTF","_mod":{"*":{"mode":"replaceTxt","replace":"the wight","with":"Hedrun","flags":"i"}}},"hasToken":true}

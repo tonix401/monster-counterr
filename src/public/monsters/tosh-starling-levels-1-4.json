@@ -1,0 +1,1 @@
+{"name":"Tosh Starling (Levels 1-4)","isNpc":true,"isNamedCreature":true,"source":"KftGV","page":8,"_copy":{"name":"Scout","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the scout","with":"Tosh Starling","flags":"i"}}},"type":{"type":"humanoid","tags":["orc"]},"alignment":["N"],"tokenCustom":true,"hasToken":true}

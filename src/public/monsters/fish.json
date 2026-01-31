@@ -1,0 +1,1 @@
+{"name":"Fish","source":"GoS","page":224,"_copy":{"name":"Quipper","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"quipper","with":"fish","flags":"i"},"trait":{"mode":"removeArr","names":"Blood Frenzy"}}},"action":null,"damageTags":[],"miscTags":[],"hasToken":true}

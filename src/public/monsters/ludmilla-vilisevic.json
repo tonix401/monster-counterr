@@ -1,0 +1,1 @@
+{"name":"Ludmilla Vilisevic","isNpc":true,"isNamedCreature":true,"source":"CoS","page":93,"_copy":{"name":"Vampire Spawn","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the vampire","with":"Ludmilla","flags":"i"}}},"hasToken":true}

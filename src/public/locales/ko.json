@@ -34,7 +34,6 @@
     "addMonster": "몬스터 추가",
     "name": "이름",
     "hp": "HP",
-    "bob": "밥",
     "amount": "수량",
     "importSaveFile": "저장 파일 가져오기",
     "exportSaveFile": "저장 파일 내보내기",

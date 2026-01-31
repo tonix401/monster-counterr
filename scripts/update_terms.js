@@ -1,7 +1,7 @@
-import { readdirSync, readFileSync, writeFile } from 'node:fs'
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 
 // Api key
-process.loadEnvFile('.env')
+process.loadEnvFile('.env.local')
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY
 
@@ -12,6 +12,7 @@ if (!GOOGLE_API_KEY) {
 
 // get languages
 const languages = readdirSync('src/public/locales')
+  .filter((f) => f.endsWith('.json') && !f.startsWith('locales'))
   .map((f) => f.replace('.json', ''))
   .filter((l) => l !== 'en')
 
@@ -35,14 +36,19 @@ async function translate(text, target) {
   return data.data.translations[0].translatedText
 }
 
+function getLangData(lang) {
+  const langFilePath = `src/public/locales/${lang}.json`
+  return JSON.parse(readFileSync(langFilePath))
+}
+
 // find missing terms
 function findMissingTerms() {
-  const enTerms = JSON.parse(readFileSync('src/public/locales/en.json')).terms
+  const enTerms = getLangData('en').terms
 
   const missingTerms = []
 
   languages.forEach((lang) => {
-    const langTerms = JSON.parse(readFileSync(`src/public/locales/${lang}.json`)).terms
+    const langTerms = getLangData(lang).terms
 
     for (const key in enTerms) {
       if (!(key in langTerms)) {
@@ -54,50 +60,57 @@ function findMissingTerms() {
   return missingTerms.filter((v, i, a) => a.indexOf(v) === i) // unique
 }
 
-function addTermToLanguages(key, term) {
-  languages.forEach(async (lang) => {
+// add term to all languages
+async function addTermToLanguages(key, term) {
+  for (const lang of languages) {
     const langFilePath = `src/public/locales/${lang}.json`
-    const langData = JSON.parse(readFileSync(langFilePath))
-
+    const langData = getLangData(lang)
     const translatedTerm = await translate(term, lang)
 
     langData.terms[key] = translatedTerm
 
     // write back to file
-    writeFile(langFilePath, JSON.stringify(langData, null, 2), 'utf-8', (err) => {
-      if (err) {
-        console.error(`Error writing file ${langFilePath}:`, err)
-      } else {
-        console.log(`Added term ${key} as "${translatedTerm}" to ${lang}`)
-      }
-    })
-  })
+    writeFileSync(langFilePath, JSON.stringify(langData, null, 2), 'utf-8')
+    console.log(`Added term ${key} as "${translatedTerm}" to ${lang}`)
+  }
 }
 
-findMissingTerms().forEach((key) => {
-  const enData = JSON.parse(readFileSync('src/public/locales/en.json'))
+// Add missing terms
+findMissingTerms().forEach(async (key) => {
+  const enData = getLangData('en')
   const term = enData.terms[key]
-  addTermToLanguages(key, term)
+  await addTermToLanguages(key, term)
 })
-
 
 // Remove keys that are not in en.json
 languages.forEach((lang) => {
-  const langFilePath = `src/public/locales/${lang}.json`;
-  const langData = JSON.parse(readFileSync(langFilePath));
-  const enTerms = JSON.parse(readFileSync('src/public/locales/en.json')).terms;
+  const langFilePath = `src/public/locales/${lang}.json`
+  const langData = getLangData(lang)
+  const enTerms = getLangData('en').terms
 
-  langData.terms.forEach((key) => {
+  Object.keys(langData.terms).forEach((key) => {
     if (!(key in enTerms)) {
-      delete langData.terms[key];
-      console.log(`Removed obsolete term ${key} from ${lang}`);
+      delete langData.terms[key]
+      console.log(`Removed obsolete term ${key} from ${lang}`)
     }
-  });
+  })
 
   // write back to file
-  writeFile(langFilePath, JSON.stringify(langData, null, 2), 'utf-8', (err) => {
-    if (err) {
-      console.error(`Error writing file ${langFilePath}:`, err);
-    }
-  });
-});
+  writeFileSync(langFilePath, JSON.stringify(langData, null, 2), 'utf-8')
+})
+
+// Update the locales index file
+const localesIndex = await Promise.all(languages.map(async (lang) => {
+  const langData = await getLangData(lang)
+  return {
+    key: lang,
+    name: langData.terms.__thisLanguage,
+  }
+}))
+
+writeFileSync(
+  'src/public/locales/locales.json',
+  JSON.stringify(localesIndex, null, 2),
+  'utf-8'
+)
+console.log('Updated locales index file.')

@@ -1,3 +1,5 @@
+import type { StateCreator } from 'zustand'
+
 export type Notification = {
   id?: string
   message: string
@@ -11,18 +13,22 @@ export type NotificationSlice = {
   removeNotification: (id: string) => void
 }
 
-export const createNotificationSlice = (set: any): NotificationSlice => ({
+export const createNotificationSlice: StateCreator<NotificationSlice, [], [], NotificationSlice> = (
+  set
+) => ({
   queue: [],
-  notify: (notification: Notification) => {
+
+  notify: (notification: Notification): void => {
     console.log('Notification:', notification)
     notification.id = crypto.randomUUID()
-    set((state: any) => ({
+    set((state) => ({
       queue: [...state.queue, notification],
     }))
   },
-  removeNotification: (id: string) => {
-    set((state: any) => ({
-      queue: state.queue.filter((n: Notification) => n.id !== id),
+
+  removeNotification: (id: string): void => {
+    set((state) => ({
+      queue: state.queue.filter((n) => n.id !== id),
     }))
   },
 })

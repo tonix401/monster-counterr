@@ -4,15 +4,62 @@
 }
 
 :root {
+  /* Core Colors */
   --bg: #1c1f2b;
   --card: #2a3042;
   --text: #f4f6fb;
   --accent: #7c4dff;
   --border: rgba(255, 255, 255, 0.08);
+
+  /* Status Colors */
   --heal: #1db954;
   --damage: #e84a5f;
   --injured: #f39c12;
   --down: #7f8c8d;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 28px;
+  --spacing-3xl: 32px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+
+  /* Transitions */
+  --transition-fast: 0.1s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.4s ease;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 18px rgba(0, 0, 0, 0.25);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.35);
+
+  /* Overlays */
+  --overlay-light: rgba(255, 255, 255, 0.02);
+  --overlay-medium: rgba(255, 255, 255, 0.05);
+  --overlay-heavy: rgba(255, 255, 255, 0.08);
+  --overlay-accent: rgba(124, 77, 255, 0.08);
+  --overlay-accent-light: rgba(124, 77, 255, 0.05);
+
+  /* Button Sizes */
+  --button-height: 32px;
+  --button-padding: 8px 12px;
+
+  /* Font Sizes */
+  --font-sm: 12px;
+  --font-base: 14px;
+  --font-lg: 18px;
+  --font-xl: 23px;
 }
 
 body {
@@ -22,7 +69,7 @@ body {
   display: flex;
   justify-content: center;
   min-height: 100vh;
-  padding: 24px;
+  padding: var(--spacing-xl);
 }
 
 #root {
@@ -51,6 +98,7 @@ body {
   border-radius: 10px;
   border: 2px solid transparent;
   background-clip: padding-box;
+  transition: background-color var(--transition-base);
 }
 
 *::-webkit-scrollbar-thumb:hover {
@@ -64,13 +112,14 @@ body {
 input {
   text-align: center;
   width: 100px;
-  padding: 6px 8px;
+  padding: var(--spacing-md) var(--spacing-sm);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  background: var(--overlay-medium);
   color: var(--text);
   appearance: none;
   -moz-appearance: textfield;
+  transition: border-color var(--transition-base);
 }
 
 input::-webkit-outer-spin-button,
@@ -81,23 +130,27 @@ input::-webkit-inner-spin-button {
 
 button {
   width: 100%;
-  height: 32px;
+  height: var(--button-height);
   white-space: nowrap;
-  padding: 8px 12px;
+  padding: var(--button-padding);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   background: var(--accent);
   color: #fff;
   cursor: pointer;
   transition:
     transform 0.05s ease,
-    box-shadow 0.1s ease,
-    background-color 0.4s ease;
+    box-shadow var(--transition-fast),
+    background-color var(--transition-slow);
+}
+
+input {
+  height: var(--button-height)
 }
 
 button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--shadow-lg);
 }
 
 button:active {
@@ -121,13 +174,14 @@ button:active {
 
 select {
   width: 100%;
-  padding: 6px 8px;
+  padding: var(--spacing-md) var(--spacing-sm);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  background: var(--overlay-medium);
   color: var(--text);
   text-align: center;
   cursor: pointer;
+  transition: border-color var(--transition-base);
 }
 
 select option {
@@ -136,8 +190,8 @@ select option {
 }
 
 input[type='checkbox'] {
-  width: 24px;
-  height: 24px;
+  width: var(--spacing-xl);
+  height: var(--spacing-xl);
   cursor: pointer;
   accent-color: var(--accent);
   border-radius: 20%;
@@ -146,8 +200,8 @@ input[type='checkbox'] {
   appearance: none;
   -webkit-appearance: none;
   outline: none;
-  background: rgba(255, 255, 255, 0.05);
-  transition: all 0.2s ease;
+  background: var(--overlay-medium);
+  transition: all var(--transition-base);
 }
 
 input[type='checkbox']:hover {
@@ -178,5 +232,5 @@ input[type='checkbox']:checked {
 hr {
   border: none;
   border-top: 1px solid var(--border);
-  margin: 12px 0;
+  margin: var(--spacing-md) 0;
 }

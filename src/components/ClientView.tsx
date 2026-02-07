@@ -2,10 +2,20 @@ import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import Peer, { type DataConnection } from 'peerjs'
 
+interface Enemy {
+  name: string
+  health: number
+  conditions: string[]
+}
+
+interface EncounterData {
+  enemies: Enemy[]
+}
+
 const ClientView: React.FC = () => {
   const [searchParams] = useSearchParams()
   const hostId = searchParams.get('host')
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<EncounterData | null>(null)
   const [status, setStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>(
     'connecting'
   )
@@ -32,7 +42,7 @@ const ClientView: React.FC = () => {
 
       conn.on('data', (receivedData) => {
         console.log('Received data:', receivedData)
-        setData(receivedData)
+        setData(receivedData as EncounterData)
       })
 
       conn.on('close', () => {
@@ -92,7 +102,7 @@ const ClientView: React.FC = () => {
         <p>No enemies in encounter.</p>
       ) : (
         <div style={{ display: 'grid', gap: '1rem' }}>
-          {data.enemies.map((enemy: any, i: number) => (
+          {data.enemies.map((enemy: Enemy, i: number) => (
             <div
               key={i}
               style={{

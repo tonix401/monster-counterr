@@ -10,7 +10,7 @@ interface ChangeHpTableDataProps {
 const ChangeHpTableData: React.FC<ChangeHpTableDataProps> = ({ monster }) => {
   const [value, setValue] = useState('')
   const updateMonsterHealth = useMonsterStore((state) => state.updateMonsterHealth)
-  
+
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       const amount = parseInt(value, 10)

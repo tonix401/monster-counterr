@@ -17,6 +17,7 @@ export const CONDITIONS = [
 ] as const
 
 export type Condition = (typeof CONDITIONS)[number]
+
 export const BASE_URL = '/monster-counterr' as const
 
 export const ANIMATION_DURATION = {
@@ -32,4 +33,11 @@ export const STORAGE_KEYS = {
 export const SAVE_FILE = {
   SCHEMA_VERSION: 1,
   FILENAME: 'monster-counter-save-file.json',
+} as const
+
+export const ASSETS = {
+  UNDO_ICON: `${BASE_URL}/undo.svg`,
+  REDO_ICON: `${BASE_URL}/redo.svg`,
+  SKULL_ICON: `${BASE_URL}/skull.svg`,
+  BIN_ICON: `${BASE_URL}/bin.svg`,
 } as const

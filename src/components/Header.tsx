@@ -3,10 +3,8 @@ import { useNavigate } from 'react-router'
 import { useMonsterStore, useCanUndo, useCanRedo } from '@/store'
 import { useUndoRedoShortcuts } from '@/hooks/useKeyboardShortcut'
 import { useTerm } from '@/store/index'
+import { ASSETS } from '@/constants'
 import './Header.css'
-
-const undoSvg = '/monster-counterr/undo.svg'
-const redoSvg = '/monster-counterr/redo.svg'
 
 interface HeaderProps {
   xpDisplay: number
@@ -44,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({ xpDisplay, onResetXp }) => {
             cursor: canUndo ? 'pointer' : 'not-allowed',
           }}
         >
-          <img src={undoSvg} alt={t('undo')} style={{ width: '16px', height: '16px' }} />
+          <img src={ASSETS.UNDO_ICON} alt={t('undo')} style={{ width: '16px', height: '16px' }} />
         </button>
         <button
           className="green-button"
@@ -56,7 +54,7 @@ const Header: React.FC<HeaderProps> = ({ xpDisplay, onResetXp }) => {
             cursor: canRedo ? 'pointer' : 'not-allowed',
           }}
         >
-          <img src={redoSvg} alt={t('redo')} style={{ width: '16px', height: '16px' }} />
+          <img src={ASSETS.REDO_ICON} alt={t('redo')} style={{ width: '16px', height: '16px' }} />
         </button>
         {settings.showXpCounter && (
           <button

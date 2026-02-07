@@ -14,7 +14,7 @@ const AddMonsterPopup: React.FC = () => {
   const addMonster = useMonsterStore((state) => state.addMonster)
   const navigate = useNavigate()
   const t = useTerm()
-  
+
   const handleAdd = () => {
     const trimmedName = name.trim()
     const hpValue = parseInt(hp) || 1

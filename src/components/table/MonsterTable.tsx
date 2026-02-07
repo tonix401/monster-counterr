@@ -4,6 +4,7 @@ import { useMonsterStore } from '@/store'
 import MonsterTableRow from '@/components/table/MonsterTableRow'
 import TableHeaderRow from '@/components/table/TableHeaderRow'
 import TableColgroup from '@/components/table/TableColgroup'
+import './MonsterTable.css'
 
 interface MonsterTableProps {
   monsters: Monster[]

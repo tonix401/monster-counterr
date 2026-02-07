@@ -4,10 +4,6 @@
     "name": "Deutsch"
   },
   {
-    "key": "dwv",
-    "name": "Dwarvish"
-  },
-  {
     "key": "en",
     "name": "English"
   },
@@ -32,6 +28,14 @@
     "name": "Italiano"
   },
   {
+    "key": "ja",
+    "name": "日本語"
+  },
+  {
+    "key": "ko",
+    "name": "한국어"
+  },
+  {
     "key": "pt",
     "name": "Português"
   },
@@ -42,18 +46,6 @@
   {
     "key": "sv",
     "name": "Svenska"
-  },
-  {
-    "key": "tok",
-    "name": "toki pona"
-  },
-  {
-    "key": "ja",
-    "name": "日本語"
-  },
-  {
-    "key": "ko",
-    "name": "한국어"
   },
   {
     "key": "zh",

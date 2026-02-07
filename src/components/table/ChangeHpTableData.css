@@ -1,0 +1,22 @@
+.damage-cell {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  align-items: center;
+}
+
+.damage-cell > button {
+  width: 48px;
+}
+
+.damage-button {
+  background-color: var(--damage);
+  font-size: large;
+  padding: 3px 12px;
+}
+
+.heal-button {
+  background-color: var(--heal);
+  font-size: large;
+  padding: 3px 12px;
+}

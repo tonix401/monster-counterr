@@ -1,20 +1,19 @@
 import React from 'react'
 import { useMonsterStore } from '@/store'
-import { useTerm } from '@/hooks/useTerm'
-
-const skullSvg = '/monster-counterr/skull.svg'
-const binSvg = '/monster-counterr/bin.svg'
+import { useTerm } from '@/store/index'
+import { ASSETS } from '@/constants'
+import './QuickActionsTableData.css'
 
 interface QuickActionsTableDataProps {
   monsterId: string
+  isHidden?: boolean
 }
 
-const QuickActionsTableData: React.FC<QuickActionsTableDataProps> = ({ monsterId }) => {
+const QuickActionsTableData: React.FC<QuickActionsTableDataProps> = ({ monsterId, isHidden }) => {
   const killMonster = useMonsterStore((state) => state.killMonster)
   const removeMonster = useMonsterStore((state) => state.removeMonster)
-
-  const t_killMonster = useTerm('killMonster')
-  const t_removeMonster = useTerm('removeMonster')
+  const toggleHideMonster = useMonsterStore((state) => state.toggleHideMonster)
+  const t = useTerm()
 
   const handleKill = () => {
     killMonster(monsterId)
@@ -24,14 +23,29 @@ const QuickActionsTableData: React.FC<QuickActionsTableDataProps> = ({ monsterId
     removeMonster(monsterId)
   }
 
+  const handleHide = () => {
+    toggleHideMonster(monsterId)
+  }
+
   return (
     <td>
       <div className="quick-actions-container">
-        <button className="red-button icon-button" title={t_killMonster} onClick={handleKill}>
-          <img src={skullSvg} alt={t_killMonster} />
+        <button className="red-button icon-button" title={t('killMonster')} onClick={handleKill}>
+          <img src={ASSETS.SKULL_ICON} alt={t('killMonster')} />
         </button>
-        <button className="red-button icon-button" title={t_removeMonster} onClick={handleRemove}>
-          <img src={binSvg} alt={t_removeMonster} />
+        <button
+          className="red-button icon-button"
+          title={t('removeMonster')}
+          onClick={handleRemove}
+        >
+          <img src={ASSETS.BIN_ICON} alt={t('removeMonster')} />
+        </button>
+        <button
+          className={"red-button icon-button" + (isHidden ? " monster-hidden-button" : "")}
+          title={isHidden ? t('showMonster') : t('hideMonster')}
+          onClick={handleHide}
+        >
+          <img src={ASSETS.HIDE_ICON} alt={isHidden ? t('showMonster') : t('hideMonster')} />
         </button>
       </div>
     </td>

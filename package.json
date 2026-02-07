@@ -5,13 +5,15 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "start": "node ./start.js",
     "preview": "vite preview",
     "dev": "vite",
+    "update_terms": "node scripts/update_terms.js",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\""
   },
   "dependencies": {
+    "peerjs": "^1.5.5",
+    "qrcode.react": "^4.2.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-router": "^7.13.0",
@@ -20,6 +22,7 @@
   "devDependencies": {
     "@eslint/js": "9.39.1",
     "@types/node": "24.10.1",
+    "@types/peerjs": "^0.0.30",
     "@types/react": "19.2.5",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "5.1.1",

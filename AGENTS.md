@@ -16,7 +16,7 @@ When the user askes you to implement something:
 **Core Stack:**
 
 - **React 19.2.0** - UI framework with latest features
-- **TypeScript 5.9.3** - Type-safe development
+- **TypeScript 5.9.3** - Type-safe development with strict type checking
 - **Vite 7.2.4** - Fast build tool and dev server
 - **React Router 7.13.0** - Client-side routing with nested routes
 - **Zustand 5.0.9** - Lightweight state management with middleware support
@@ -38,10 +38,11 @@ When the user askes you to implement something:
 **Key Features:**
 
 - Path aliasing (`@/` resolves to `src/`)
-- CSS modules and custom CSS
+- CSS modules with centralized CSS variables system
 - Browser localStorage for data persistence
 - External D&D 5e SRD API integration
 - Multi-language support with dynamic locale loading
+- Type-safe state management with no `any` types
 
 ## Project structure
 
@@ -112,10 +113,19 @@ src/
 **Key Architecture Patterns:**
 
 - **State Management**: Zustand store with persist middleware for localStorage, temporal middleware for undo/redo
+  - All slices use proper TypeScript types with `StateCreator`
+  - No `any` types - fully type-safe
+  - Consistent custom hooks for all selectors
 - **Routing**: React Router with nested routes (popups overlay main view)
 - **Data Persistence**: All data stored in browser localStorage via Zustand persist
 - **Localization**: Dynamic language loading from JSON files
 - **External API**: D&D 5e SRD API for official monster data
+- **CSS System**: Centralized CSS variables for:
+  - Colors (primary, status, overlays)
+  - Spacing (xs to 3xl scale)
+  - Border radius (sm to 2xl scale)
+  - Transitions and shadows
+  - All components use these variables for consistency
 
 ## Commands
 

@@ -1,67 +1,101 @@
+import type { StateCreator } from 'zustand'
+import { BASE_URL } from '@/constants'
 import type { Monster } from '@/types/Monster'
-import { MonsterClass } from '@/types/Monster'
+import { createMonster } from '@/types/Monster'
+import type { Settings } from '@/types/Settings'
 
-export type MonsterSlice = {
+export type MonsterIndexEntryHp =
+  | {
+      average: number
+      formula: string
+    }
+  | {
+      special: string
+    }
+
+export type MonsterIndexEntry = {
+  name: string
+  source: string
+  hp: MonsterIndexEntryHp
+  xp: number
+}
+
+export type MonsterSliceState = {
   monsters: Monster[]
-  addMonster: (name: string, hp: number, amount?: number) => Monster[]
+  monsterIndex: Record<string, MonsterIndexEntry>
+  source: string | null
+  highlightedMonsterId: string | null
+}
+
+export type MonsterSliceActions = {
+  addMonster: (name: string, index: string | undefined, hp: number, amount?: number) => Monster[]
   removeMonster: (monsterId: string) => void
   removeDead: () => void
   clearMonsters: () => void
-  updateMonsterHealth: (
-    monsterId: string,
-    amount: number,
-    onDeath?: (monster: Monster) => void
-  ) => void
+  updateMonsterHealth: (monsterId: string, amount: number) => void
   addMonsterCondition: (monsterId: string, condition: string) => void
   removeMonsterCondition: (monsterId: string, condition: string) => void
+  getMonsterIndex: () => Promise<void>
+  setSource: (source: string | null) => void
+  highlightMonster: (monsterId: string) => void
+  toggleHideMonster: (monsterId: string) => void
 }
 
-export const createMonsterSlice = (set: any, get: any): MonsterSlice => ({
-  monsters: [],
+export type MonsterSlice = MonsterSliceState & MonsterSliceActions
 
-  addMonster: (name: string, hp: number, amount: number = 1) => {
+export const createMonsterSlice: StateCreator<
+  MonsterSlice & { settings: Settings },
+  [],
+  [],
+  MonsterSlice
+> = (set) => ({
+  monsters: [],
+  monsterIndex: {},
+  source: null,
+  highlightedMonsterId: null,
+
+  addMonster: (
+    name: string,
+    index: string | undefined,
+    hp: number,
+    amount: number = 1
+  ): Monster[] => {
     const newMonsters: Monster[] = []
-    const detailIndex = name.toLowerCase().trim().replace(/\s+/g, '-')
 
     if (amount === 1) {
-      newMonsters.push(new MonsterClass(name, hp, detailIndex, 0))
+      newMonsters.push(createMonster(name, hp, index, 0))
     } else {
       for (let i = 0; i < amount; i++) {
-        newMonsters.push(new MonsterClass(name, hp, detailIndex, i + 1))
+        newMonsters.push(createMonster(name, hp, index, i + 1))
       }
     }
 
-    set((state: any) => ({
+    set((state) => ({
       monsters: [...state.monsters, ...newMonsters],
     }))
     return newMonsters
   },
 
-  removeMonster: (monsterId: string) => {
-    set((state: any) => ({
-      monsters: state.monsters.filter((monster: Monster) => monster.id !== monsterId),
+  removeMonster: (monsterId: string): void => {
+    set((state) => ({
+      monsters: state.monsters.filter((monster) => monster.id !== monsterId),
     }))
   },
 
-  removeDead: () => {
-    set((state: any) => ({
-      monsters: state.monsters.filter((monster: Monster) => monster.hp > 0),
+  removeDead: (): void => {
+    set((state) => ({
+      monsters: state.monsters.filter((monster) => monster.hp > 0),
     }))
   },
 
-  clearMonsters: () => {
+  clearMonsters: (): void => {
     set({ monsters: [] })
   },
 
-  updateMonsterHealth: (
-    monsterId: string,
-    amount: number,
-    onDeath?: (monster: Monster) => void
-  ) => {
-    const { settings } = get()
-    set((state: any) => {
+  updateMonsterHealth: (monsterId: string, amount: number): void => {
+    set((state) => {
       const monsters = state.monsters
-        .map((monster: Monster) => {
+        .map((monster) => {
           if (monster.id === monsterId) {
             const newHp = Math.max(0, monster.hp + amount)
             const updatedMonster = { ...monster, hp: newHp }
@@ -69,12 +103,9 @@ export const createMonsterSlice = (set: any, get: any): MonsterSlice => ({
             // Handle death
             if (newHp === 0 && !monster.hasDiedAlready) {
               updatedMonster.hasDiedAlready = true
-              if (onDeath) {
-                onDeath(updatedMonster)
-              }
 
               // Auto remove if setting is enabled
-              if (settings.autoRemoveDead) {
+              if (state.settings?.autoRemoveDead) {
                 return null
               }
             }
@@ -89,9 +120,9 @@ export const createMonsterSlice = (set: any, get: any): MonsterSlice => ({
     })
   },
 
-  addMonsterCondition: (monsterId: string, condition: string) => {
-    set((state: any) => ({
-      monsters: state.monsters.map((monster: Monster) =>
+  addMonsterCondition: (monsterId: string, condition: string): void => {
+    set((state) => ({
+      monsters: state.monsters.map((monster) =>
         monster.id === monsterId && !monster.conditions.includes(condition)
           ? {
               ...monster,
@@ -102,9 +133,9 @@ export const createMonsterSlice = (set: any, get: any): MonsterSlice => ({
     }))
   },
 
-  removeMonsterCondition: (monsterId: string, condition: string) => {
-    set((state: any) => ({
-      monsters: state.monsters.map((monster: Monster) =>
+  removeMonsterCondition: (monsterId: string, condition: string): void => {
+    set((state) => ({
+      monsters: state.monsters.map((monster) =>
         monster.id === monsterId
           ? {
               ...monster,
@@ -113,5 +144,36 @@ export const createMonsterSlice = (set: any, get: any): MonsterSlice => ({
           : monster
       ),
     }))
+  },
+
+  getMonsterIndex: async (): Promise<void> => {
+    try {
+      const response = await fetch(`${BASE_URL}/monster_index.json`)
+      if (!response.ok) {
+        return
+      }
+      const data = await response.json()
+      set({ monsterIndex: data })
+    } catch (error) {
+      console.error('Failed to fetch monster index:', error)
+      set({ monsterIndex: {} })
+    }
+  },
+
+  toggleHideMonster: (monsterId: string): void => {
+    set((state) => ({
+      monsters: state.monsters.map((monster) =>
+        monster.id === monsterId ? { ...monster, isHidden: !monster.isHidden } : monster
+      ),
+    }))
+  },
+
+  setSource: (source: string | null): void => {
+    set({ source })
+  },
+
+  highlightMonster: (monsterId: string): void => {
+    set({ highlightedMonsterId: monsterId })
+    setTimeout(() => set({ highlightedMonsterId: null }), 2000)
   },
 })

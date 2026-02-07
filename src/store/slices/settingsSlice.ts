@@ -1,14 +1,18 @@
+import type { StateCreator } from 'zustand'
 import type { Settings } from '@/types/Settings'
 import { SETTING_SCHEMA } from '@/types/Settings'
 
 export type SettingsSlice = {
   settings: Settings
-  getSetting: (key: keyof Settings) => boolean
+  getSetting: (key: keyof Settings) => boolean | string | null
   getSettingName: (key: keyof Settings) => string
-  setSetting: (key: keyof Settings, value: boolean) => void
+  setSetting: (key: keyof Settings, value: boolean | string | null) => void
 }
 
-export const createSettingsSlice = (set: any, get: any): SettingsSlice => ({
+export const createSettingsSlice: StateCreator<SettingsSlice, [], [], SettingsSlice> = (
+  set,
+  get
+) => ({
   settings: {
     showStatus: SETTING_SCHEMA.showStatus.default,
     showHealth: SETTING_SCHEMA.showHealth.default,
@@ -19,19 +23,19 @@ export const createSettingsSlice = (set: any, get: any): SettingsSlice => ({
     showQuickActions: SETTING_SCHEMA.showQuickActions.default,
   },
 
-  getSetting: (key: keyof Settings) => {
+  getSetting: (key: keyof Settings): boolean | string | null => {
     return get().settings[key]
   },
 
-  getSettingName: (key: keyof Settings) => {
+  getSettingName: (key: keyof Settings): string => {
     if (!(key in SETTING_SCHEMA)) {
       throw new Error(`Setting "${key}" does not exist.`)
     }
     return SETTING_SCHEMA[key].name
   },
 
-  setSetting: (key: keyof Settings, value: boolean) => {
-    set((state: any) => ({
+  setSetting: (key: keyof Settings, value: boolean | string | null): void => {
+    set((state) => ({
       settings: { ...state.settings, [key]: value },
     }))
   },

@@ -1,0 +1,13 @@
+#monster-info-iframe {
+  width: 100%;
+  height: 80vh;
+  border-radius: var(--radius-xl);
+  border: var(--border) 2px solid;
+}
+
+#monster-info-link {
+  font-size: var(--font-lg);
+  margin-top: var(--spacing-lg);
+  margin-left: auto;
+  color: var(--text);
+}

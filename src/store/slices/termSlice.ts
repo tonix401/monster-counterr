@@ -1,3 +1,4 @@
+import type { StateCreator } from 'zustand'
 import type { Term } from '@/types/Term'
 
 export type TermSlice = {
@@ -6,30 +7,33 @@ export type TermSlice = {
   availableLanguages: { key: string; name: string }[]
   getTerm: (key: string) => string
   setLanguage: (language: string) => Promise<void>
-  addLanguage: (language: { key: string; name: string }) => void
+  loadLanguagePack: (language: string) => Promise<void>
+  loadAvailableLanguages: () => Promise<void>
 }
 
-export const createTermSlice = (set: any, get: any): TermSlice => ({
+export const createTermSlice: StateCreator<
+  TermSlice & { isLoading: boolean },
+  [],
+  [],
+  TermSlice
+> = (_set, get) => ({
   terms: {},
   language: 'en',
   availableLanguages: [{ key: 'en', name: 'English' }],
 
-  getTerm: (key: string) => {
+  getTerm: (key: string): string => {
     const state = get()
     const isLoading = state.isLoading
     const term = state.terms[key]
 
     if (!term && !isLoading) {
-      console.warn(
-        `Term with key "${key}" not found in language "${state.language}". Displaying key instead.`
-      )
       return key
     }
 
     return term
   },
 
-  setLanguage: async (language: string) => {
+  setLanguage: async (language: string): Promise<void> => {
     const state = get()
 
     if (state.language === language) {
@@ -38,16 +42,12 @@ export const createTermSlice = (set: any, get: any): TermSlice => ({
 
     await get().loadLanguagePack(language)
   },
-  addLanguage: (language: { key: string; name: string }) => {
-    const state = get()
-    if (
-      !state.availableLanguages
-        .map((lang: { key: string; name: string }) => lang.key)
-        .includes(language.key)
-    ) {
-      set({
-        availableLanguages: [...state.availableLanguages, language],
-      })
-    }
+
+  loadLanguagePack: async (_language: string): Promise<void> => {
+    // Implementation provided by store/index.ts
+  },
+
+  loadAvailableLanguages: async (): Promise<void> => {
+    // Implementation provided by store/index.ts
   },
 })

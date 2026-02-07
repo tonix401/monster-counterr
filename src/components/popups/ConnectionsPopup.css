@@ -1,0 +1,76 @@
+.connections-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.qr-wrapper {
+  background: white;
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+}
+
+.peer-info {
+  text-align: center;
+}
+
+.peer-info p {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.peer-id-code {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-sm);
+}
+
+.connections-list-section {
+  width: 100%;
+}
+
+.connections-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.connections-header h3 {
+  margin: 0;
+}
+
+.stop-hosting-button {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+  background: #ff5252;
+}
+
+.connections-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.connection-item {
+  padding: 0.5rem;
+  background: var(--overlay-medium);
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.connection-status {
+  color: #4caf50;
+  font-size: 0.8rem;
+}
+
+.no-connections {
+  opacity: 0.6;
+  font-size: 0.9rem;
+}

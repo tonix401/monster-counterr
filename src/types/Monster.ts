@@ -1,32 +1,38 @@
+export type MonsterStatus = "healthy" | "injured" | "badly-injured" | "down"
+
 export interface Monster {
   id: string
   name: string
-  detailIndex: string
+  detailIndex: string | undefined
   hp: number
   maxhp: number
   hasDiedAlready: boolean
   conditions: string[]
   number: number
+  isHidden: boolean
 }
 
-export class MonsterClass implements Monster {
+export type ClientMonster = {
   id: string
   name: string
-  detailIndex: string
-  hp: number
-  maxhp: number
-  hasDiedAlready: boolean
-  conditions: string[]
-  number: number
+  status: MonsterStatus
+}
 
-  constructor(name: string, hp: number, detailIndex: string, number: number) {
-    this.id = Date.now().toString() + Math.random().toString(36).slice(2, 11)
-    this.name = name
-    this.detailIndex = detailIndex
-    this.hp = hp
-    this.maxhp = hp
-    this.hasDiedAlready = false
-    this.conditions = []
-    this.number = number
+export function createMonster(
+  name: string,
+  hp: number,
+  detailIndex: string | undefined,
+  number: number
+): Monster {
+  return {
+    id: crypto.randomUUID(),
+    name,
+    detailIndex,
+    hp,
+    maxhp: hp,
+    hasDiedAlready: false,
+    conditions: [],
+    number,
+    isHidden: true,
   }
 }

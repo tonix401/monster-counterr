@@ -29,7 +29,7 @@ const Header: React.FC<HeaderProps> = ({ xpDisplay, onResetXp }) => {
   return (
     <header>
       <div>
-        <button className="green-button" onClick={() => navigate('/menu')} title={t('openMenu')}>
+        <button className="green-button" onClick={() => navigate('menu')} title={t('openMenu')}>
           {t('menu')}
         </button>
         <button
@@ -80,7 +80,7 @@ const Header: React.FC<HeaderProps> = ({ xpDisplay, onResetXp }) => {
         </button>
         <button
           className="green-button"
-          onClick={() => navigate('/add')}
+          onClick={() => navigate('add')}
           title={t('addNewMonsters')}
         >
           {t('add')}

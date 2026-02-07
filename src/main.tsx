@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router'
+import { HashRouter, Routes, Route, Navigate } from 'react-router'
 import './index.css'
 import App from '@/App'
 import AddMonsterPopup from '@/components/popups/AddMonsterPopup'
@@ -14,7 +14,7 @@ import ClientView from '@/client_app/ClientView'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter basename="/monster-counterr">
+    <HashRouter>
       <Routes>
         <Route path="/" element={<App />}>
           <Route path="add" element={<AddMonsterPopup />} />
@@ -25,9 +25,9 @@ createRoot(document.getElementById('root')!).render(
           <Route path="custom-monsters" element={<CustomMonstersPopup />} />
           <Route path="manage-data" element={<ManageDataPopup />} />
         </Route>
-        <Route path="/client" element={<ClientView />} />
+        <Route path="client" element={<ClientView />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   </StrictMode>
 )

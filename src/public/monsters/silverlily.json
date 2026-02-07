@@ -1,1 +1,1 @@
-{"name":"Silverlily","isNpc":true,"isNamedCreature":true,"source":"QftIS","page":92,"_copy":{"name":"Unicorn","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the unicorn","with":"Silverlily","flags":"i"}}},"hasToken":true}
+{"name":"Silverlily","isNpc":true,"isNamedCreature":true,"source":"QftIS","page":92,"_copy":{"name":"Unicorn","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the unicorn","with":"Silverlily","flags":"i"}}}}

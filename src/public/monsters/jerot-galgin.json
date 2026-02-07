@@ -1,1 +1,1 @@
-{"name":"Jerot Galgin","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":28,"_copy":{"name":"Necromancer Wizard","source":"MPMM","_mod":{"*":{"mode":"replaceTxt","replace":"the necromancer","with":"Jerot","flags":"i"}}},"alignment":["N","E"],"hasToken":true}
+{"name":"Jerot Galgin","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":28,"_copy":{"name":"Necromancer Wizard","source":"MPMM","_mod":{"*":{"mode":"replaceTxt","replace":"the necromancer","with":"Jerot","flags":"i"}}},"alignment":["N","E"]}

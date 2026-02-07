@@ -1,1 +1,1 @@
-{"name":"Skeletal Two-Headed Owlbear","source":"IMR","page":36,"_copy":{"name":"Two-Headed Owlbear","source":"IMR"},"type":"undead","immune":["poison"],"vulnerable":["bludgeoning"],"conditionImmune":["exhaustion","poisoned"],"tokenCustom":true,"hasToken":true}
+{"name":"Skeletal Two-Headed Owlbear","source":"IMR","page":36,"_copy":{"name":"Two-Headed Owlbear","source":"IMR"},"type":"undead","immune":["poison"],"vulnerable":["bludgeoning"],"conditionImmune":["exhaustion","poisoned"],"tokenCustom":true}

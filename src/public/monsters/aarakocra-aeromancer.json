@@ -70,30 +70,5 @@
   "damageTags": ["B", "L"],
   "damageTagsSpell": ["L"],
   "spellcastingTags": ["O"],
-  "miscTags": ["MA", "RA"],
-  "savingThrowForcedSpell": ["dexterity", "strength"],
-  "hasToken": true,
-  "hasFluff": true,
-  "hasFluffImages": true,
-  "fluff": {
-    "name": "Aarakocra Aeromancer",
-    "source": "XMM",
-    "_copy": {
-      "name": "Aarakocra",
-      "source": "XMM",
-      "_mod": {
-        "entries": {
-          "mode": "prependArr",
-          "items": [
-            {
-              "type": "section",
-              "entries": [
-                "Aarakocra aeromancers control magical winds from the endless storms of the Elemental Plane of Air."
-              ]
-            }
-          ]
-        }
-      }
-    }
-  }
+  "savingThrowForcedSpell": ["dexterity", "strength"]
 }

@@ -1,1 +1,1 @@
-{"name":"Hellion (Huge)","source":"PSK","page":31,"_copy":{"name":"Remorhaz","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"remorhaz","with":"hellion"}}},"hasToken":true,"hasFluff":true,"hasFluffImages":true,"fluff":{"name":"Hellion (Huge)","source":"PSK","_copy":{"name":"Hellion (Large)","source":"PSK"}}}
+{"name":"Hellion (Huge)","source":"PSK","page":31,"_copy":{"name":"Remorhaz","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"remorhaz","with":"hellion"}}}}

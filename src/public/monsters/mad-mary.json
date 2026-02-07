@@ -1,1 +1,1 @@
-{"name":"Mad Mary","isNpc":true,"isNamedCreature":true,"source":"CoS","page":44,"_copy":{"name":"Commoner","source":"MM"},"type":{"type":"humanoid","tags":["human"]},"alignment":["C","N"],"hasToken":true,"hasFluffImages":true,"fluff":{"name":"Mad Mary","source":"CoS","images":[{"type":"image","href":{"type":"internal","path":"bestiary/CoS/016-cos03-04.webp"}}]}}
+{"name":"Mad Mary","isNpc":true,"isNamedCreature":true,"source":"CoS","page":44,"_copy":{"name":"Commoner","source":"MM"},"type":{"type":"humanoid","tags":["human"]},"alignment":["C","N"]}

@@ -1,1 +1,1 @@
-{"name":"Ontharyx","isNpc":true,"isNamedCreature":true,"source":"PaBTSO","page":115,"_copy":{"name":"Humanoid Mutate","source":"PaBTSO","_mod":{"*":{"mode":"replaceTxt","replace":"the mutate","with":"Ontharyx","flags":"i"}}},"hasToken":true}
+{"name":"Ontharyx","isNpc":true,"isNamedCreature":true,"source":"PaBTSO","page":115,"_copy":{"name":"Humanoid Mutate","source":"PaBTSO","_mod":{"*":{"mode":"replaceTxt","replace":"the mutate","with":"Ontharyx","flags":"i"}}}}

@@ -1,1 +1,1 @@
-{"name":"Ammit","source":"PSA","page":30,"_copy":{"name":"Giant Crocodile","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"crocodile","with":"ammit"}}},"hasToken":true,"hasFluff":true,"hasFluffImages":true,"fluff":{"name":"Ammit","source":"PSA","_copy":{"name":"Amonkhet Demon","source":"PSA"}}}
+{"name":"Ammit","source":"PSA","page":30,"_copy":{"name":"Giant Crocodile","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"crocodile","with":"ammit"}}}}

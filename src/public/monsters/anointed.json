@@ -1,1 +1,1 @@
-{"name":"Anointed","source":"PSA","page":34,"_copy":{"name":"Zombie","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"zombie","with":"anointed"}}},"hasToken":true,"hasFluff":true,"hasFluffImages":true,"fluff":{"name":"Anointed","source":"PSA","_copy":{"name":"Amonkhet Mummy","source":"PSA"}}}
+{"name":"Anointed","source":"PSA","page":34,"_copy":{"name":"Zombie","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"zombie","with":"anointed"}}}}

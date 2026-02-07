@@ -1,1 +1,1 @@
-{"name":"Sarcelle Malinosh","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":20,"_copy":{"name":"Mage","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the mage","with":"Sarcelle","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"spellcasting":null,"hasToken":true}
+{"name":"Sarcelle Malinosh","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":20,"_copy":{"name":"Mage","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the mage","with":"Sarcelle","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"spellcasting":null}

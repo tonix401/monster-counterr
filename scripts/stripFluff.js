@@ -9,6 +9,7 @@ const monsterData = readdirSync('src/public/monsters')
     delete data.hasFluff
     delete data.hasFluffImages
     delete data.miscTags
+    delete data.hasToken
     
     writeFileSync(`src/public/monsters/${file}`, JSON.stringify(data))
   })

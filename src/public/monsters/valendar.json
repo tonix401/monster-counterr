@@ -1,1 +1,1 @@
-{"name":"Valendar","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":120,"_copy":{"name":"Werewolf","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the werewolf","with":"Valendar","flags":"i"}}},"alignment":["C","G"],"hasToken":true}
+{"name":"Valendar","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":120,"_copy":{"name":"Werewolf","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the werewolf","with":"Valendar","flags":"i"}}},"alignment":["C","G"]}

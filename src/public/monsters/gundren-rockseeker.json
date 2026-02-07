@@ -1,1 +1,1 @@
-{"name":"Gundren Rockseeker","isNpc":true,"isNamedCreature":true,"source":"PaBTSO","page":10,"_copy":{"name":"Commoner","source":"MM","_templates":[{"name":"Mountain Dwarf","source":"PHB"}]},"hasToken":true,"hasFluffImages":true,"fluff":{"name":"Gundren Rockseeker","source":"PaBTSO","images":[{"type":"image","href":{"type":"internal","path":"bestiary/PaBTSO/Gundren Rockseeker.webp"}}]}}
+{"name":"Gundren Rockseeker","isNpc":true,"isNamedCreature":true,"source":"PaBTSO","page":10,"_copy":{"name":"Commoner","source":"MM","_templates":[{"name":"Mountain Dwarf","source":"PHB"}]}}

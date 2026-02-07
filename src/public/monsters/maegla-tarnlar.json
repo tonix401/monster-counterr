@@ -1,1 +1,1 @@
-{"name":"Maegla Tarnlar","isNpc":true,"isNamedCreature":true,"source":"PotA","page":25,"_copy":{"name":"Commoner","source":"MM"},"type":{"type":"humanoid","tags":["human"]},"hasToken":true,"hasFluffImages":true,"fluff":{"name":"Maegla Tarnlar","source":"PotA","images":[{"type":"image","href":{"type":"internal","path":"bestiary/PotA/017-poa02-04.webp"}}]}}
+{"name":"Maegla Tarnlar","isNpc":true,"isNamedCreature":true,"source":"PotA","page":25,"_copy":{"name":"Commoner","source":"MM"},"type":{"type":"humanoid","tags":["human"]}}

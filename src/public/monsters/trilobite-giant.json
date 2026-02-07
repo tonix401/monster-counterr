@@ -1,1 +1,1 @@
-{"name":"Trilobite (Giant)","source":"PSX","page":40,"_copy":{"name":"Giant Crab","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"crab","with":"trilobite"}}},"hasToken":true,"hasFluff":true,"hasFluffImages":true,"fluff":{"name":"Trilobite (Giant)","source":"PSX","_copy":{"name":"Trilobite","source":"PSX"}}}
+{"name":"Trilobite (Giant)","source":"PSX","page":40,"_copy":{"name":"Giant Crab","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"crab","with":"trilobite"}}}}

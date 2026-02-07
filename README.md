@@ -8,7 +8,8 @@ A web application for D&D Dungeon Masters to track enemy health, conditions, and
 
 **🎨 Custom Monsters**: Create and add your own custom enemies (now accessible from the main menu)
 
-- **🔧 Customizable Display**: Show or hide specific columns
+- **� WebRTC Broadcasting**: Host your encounter state and share it with players via QR code
+- **�🔧 Customizable Display**: Show or hide specific columns
 - **📄 Full Monster Sheets**: View complete stat blocks for any official D&D monster
 - **💾 Save System**: Import and export your encounter data to share
 - **🌐 No Backend Required**: Runs entirely in your browser - no server, no account, nothing to distract from the campaign!

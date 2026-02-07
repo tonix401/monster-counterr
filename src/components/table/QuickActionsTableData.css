@@ -1,0 +1,21 @@
+.quick-actions-container {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.icon-button {
+  vertical-align: middle;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  width: auto;
+  padding: 0 8px;
+}
+
+.icon-button > img {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  color: #fff;
+}

@@ -67,6 +67,22 @@
     "includeSettings": "Einstellungen einschließen",
     "openMenu": "Menü öffnen",
     "includeMonsters": "Füge deine aktuellen Monster hinzu",
-    "fileSize": "Erwartete Größe der Speicherdatei:"
+    "fileSize": "Erwartete Größe der Speicherdatei:",
+    "source": "Quelle",
+    "blinded": "Geblendet",
+    "charmed": "Fasziniert",
+    "deafened": "Taub",
+    "fatigued": "Erschöpft",
+    "frightened": "Erschrocken",
+    "grappled": "Gepackt",
+    "incapacitated": "Handlungsunfähig",
+    "invisible": "Unsichtbar",
+    "paralyzed": "Gelähmt",
+    "petrified": "Versteinert",
+    "poisoned": "Vergiftet",
+    "prone": "Anfällig",
+    "restrained": "Zurückgehalten",
+    "stunned": "Betäubt",
+    "unconscious": "Bewusstlos"
   }
 }

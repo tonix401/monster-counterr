@@ -13,6 +13,7 @@ import { STORAGE_KEYS, ANIMATION_DURATION, BASE_URL } from '@/constants'
 import { createConditionsSlice, type ConditionsSlice } from './slices/conditionsSlice'
 import { createTermSlice, type TermSlice } from './slices/termSlice'
 import { createNotificationSlice, type NotificationSlice } from './slices/notificationSlice'
+import { createConnectionSlice, type ConnectionSlice } from './slices/connectionSlice'
 
 type MonsterCounterCoreState = MonsterSlice &
   SettingsSlice &
@@ -20,7 +21,8 @@ type MonsterCounterCoreState = MonsterSlice &
   DataManagementSlice &
   ConditionsSlice &
   NotificationSlice &
-  TermSlice & {
+  TermSlice &
+  ConnectionSlice & {
     isLoading: boolean
 
     // Complex Actions
@@ -39,44 +41,27 @@ type MonsterCounterState = MonsterCounterCoreState & TemporalState<any> & Tempor
 export const useMonsterStore = create<MonsterCounterState>()(
   persist(
     temporal(
-      (set, get) =>
+      (set, get, api) =>
         ({
           // Initial State
           isLoading: false,
 
           // Slices
-          ...createMonsterSlice(set, get),
+          ...createMonsterSlice(set, get, api),
           ...createSettingsSlice(set, get),
           ...createXpSlice(set),
           ...createDataManagementSlice(set, get),
           ...createConditionsSlice(set),
           ...createTermSlice(set, get),
           ...createNotificationSlice(set),
+          ...createConnectionSlice(set, get, api),
 
           // Complex Actions (combine multiple slices)
           killMonster: (monsterId: string) => {
             const state = get()
             const monster = state.monsters.find((m: Monster) => m.id === monsterId)
             if (!monster) return
-
-            const onDeath = (deadMonster: Monster) => {
-              const details = state.monsterDetails[deadMonster.detailIndex]
-              if (details) {
-                state.updateXp(details.xp)
-              }
-            }
-
-            state.updateMonsterHealth(monsterId, -monster.hp, onDeath)
-          },
-
-          getOnDeathCallback: () => {
-            const state = get()
-            return (deadMonster: Monster) => {
-              const details = state.monsterDetails[deadMonster.detailIndex]
-              if (details) {
-                state.updateXp(details.xp)
-              }
-            }
+            state.updateMonsterHealth(monsterId, -monster.hp)
           },
 
           killAllMonsters: () => {
@@ -101,6 +86,13 @@ export const useMonsterStore = create<MonsterCounterState>()(
             await get().loadLanguagePack(get().language)
             set({ isLoading: false })
             get().getMonsterIndex()
+
+            // Auto-broadcast monsters state to connections
+            api.subscribe((state, prevState) => {
+              if (state.monsters !== prevState.monsters && state.broadcastMonsters) {
+                state.broadcastMonsters()
+              }
+            })
           },
 
           loadLanguagePack: async (language: string) => {
@@ -143,7 +135,7 @@ export const useMonsterStore = create<MonsterCounterState>()(
             } catch (error) {
               console.error('Error loading available languages:', error)
               set(() => ({
-                availableLanguages: ['en'],
+                availableLanguages: [{ key: 'en', name: 'English' }],
               }))
             }
           },
@@ -164,6 +156,7 @@ export const useMonsterStore = create<MonsterCounterState>()(
         monsters: state.monsters,
         settings: state.settings,
         language: state.language,
+        source: state.source,
         xp: state.xp,
       }),
     }
@@ -182,9 +175,17 @@ export const useLanguage = () => useMonsterStore((state) => state.language)
 export const useSetLanguage = () => useMonsterStore((state) => state.setLanguage)
 export const useLoadLanguagePack = () => useMonsterStore((state) => state.loadLanguagePack)
 export const useAvailableLanguages = () => useMonsterStore((state) => state.availableLanguages)
-export const useTerm = (key: string) => useMonsterStore((state) => state.getTerm(key))
+export const useTerm = () => {
+  useMonsterStore((state) => state.language) // for rerenders on language change
+  return useMonsterStore((state) => state.getTerm)
+}
 export const userSource = () => useMonsterStore((state) => state.source)
 export const useSetSource = (src: string | null) => useMonsterStore((state) => state.setSource(src))
 export const useNotifications = () => useMonsterStore((state) => state.queue)
 export const useNotify = () => useMonsterStore((state) => state.notify)
 export const useRemoveNotification = () => useMonsterStore((state) => state.removeNotification)
+
+export const usePeerId = () => useMonsterStore((state) => state.peerId)
+export const useConnections = () => useMonsterStore((state) => state.connections)
+export const useInitializeHost = () => useMonsterStore((state) => state.initializeHost)
+export const useIsConnecting = () => useMonsterStore((state) => state.isConnecting)

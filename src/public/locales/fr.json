@@ -67,6 +67,22 @@
     "includeSettings": "Inclure les paramètres",
     "menu": "Menu",
     "includeMonsters": "Incluez vos monstres actuels",
-    "fileSize": "Taille prévue du fichier de sauvegarde:"
+    "fileSize": "Taille prévue du fichier de sauvegarde:",
+    "source": "Source",
+    "blinded": "Aveugle",
+    "charmed": "Charmé",
+    "deafened": "Sourd",
+    "fatigued": "Fatigué",
+    "frightened": "Effrayé",
+    "grappled": "Grappin",
+    "incapacitated": "Incapable",
+    "invisible": "Invisible",
+    "paralyzed": "Paralysé",
+    "petrified": "Pétrifié",
+    "poisoned": "Empoisonné",
+    "prone": "Sujet",
+    "restrained": "Restreint",
+    "stunned": "Étourdi",
+    "unconscious": "Inconscient"
   }
 }

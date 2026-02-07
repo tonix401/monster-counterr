@@ -67,6 +67,22 @@
     "includeCurrentXp": "현재 XP 포함",
     "includeSettings": "포함 설정",
     "includeMonsters": "현재 보유하고 있는 몬스터를 포함하세요",
-    "fileSize": "예상 저장 파일 크기:"
+    "fileSize": "예상 저장 파일 크기:",
+    "source": "원천",
+    "blinded": "눈이 먼",
+    "charmed": "참드",
+    "deafened": "귀가 먹먹해진",
+    "fatigued": "피곤한",
+    "frightened": "겁먹은",
+    "grappled": "붙잡혔다",
+    "incapacitated": "무력화된",
+    "invisible": "보이지 않는",
+    "paralyzed": "마비된",
+    "petrified": "석화된",
+    "poisoned": "독살당함",
+    "prone": "엎드린 자세",
+    "restrained": "억제된",
+    "stunned": "깜짝 놀랐다",
+    "unconscious": "무의식"
   }
 }

@@ -67,6 +67,22 @@
     "includeSettings": "包含设置",
     "includeCurrentXp": "包括当前经验值",
     "includeMonsters": "请列出你目前拥有的怪物。",
-    "fileSize": "预计保存文件大小："
+    "fileSize": "预计保存文件大小：",
+    "source": "来源",
+    "blinded": "失明",
+    "charmed": "迷住了",
+    "deafened": "耳聋",
+    "fatigued": "疲劳",
+    "frightened": "害怕",
+    "grappled": "缠斗",
+    "incapacitated": "丧失行为能力",
+    "invisible": "无形的",
+    "paralyzed": "瘫痪",
+    "petrified": "石化",
+    "poisoned": "中毒",
+    "prone": "易于",
+    "restrained": "克制",
+    "stunned": "目瞪口呆",
+    "unconscious": "无意识"
   }
 }

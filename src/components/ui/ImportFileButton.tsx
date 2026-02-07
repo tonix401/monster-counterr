@@ -3,8 +3,7 @@ import { useTerm } from '@/store/index'
 
 const ImportFileButton = () => {
   const importData = useMonsterStore((state) => state.importData)
-  const t_importSaveFile = useTerm('importSaveFile')
-  const t_failedToLoadSaveFile = useTerm('failedToLoadSaveFile')
+  const t = useTerm()
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -20,7 +19,7 @@ const ImportFileButton = () => {
         const notify = useNotify()
         notify({
           type: 'error',
-          message: t_failedToLoadSaveFile,
+          message: t('failedToLoadSaveFile'),
         })
       }
     }
@@ -34,7 +33,7 @@ const ImportFileButton = () => {
         className="green-button"
         onClick={() => document.getElementById('upload-input')?.click()}
       >
-        {t_importSaveFile}
+        {t('importSaveFile')}
       </button>
       <input
         id="upload-input"

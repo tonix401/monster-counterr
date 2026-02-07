@@ -5,10 +5,10 @@ import { useTerm } from '@/store/index'
 
 const CustomMonstersPopup: React.FC = () => {
   const navigate = useNavigate()
-  const t_customMonsters = useTerm('customMonsters')
+  const t = useTerm()
 
   return (
-    <Popup onClose={() => navigate('/menu')} title={t_customMonsters}>
+    <Popup onClose={() => navigate('/menu')} title={t('customMonsters')}>
       tbd
     </Popup>
   )

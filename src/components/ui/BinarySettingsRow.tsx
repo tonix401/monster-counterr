@@ -1,3 +1,5 @@
+import './BinarySettingsRow.css'
+
 interface BinarySettingsRowProps<T extends string> {
   settingKey: T
   label: string

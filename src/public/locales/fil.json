@@ -67,6 +67,22 @@
     "includeSettings": "Isama ang Mga Setting",
     "includeCurrentXp": "Isama ang Kasalukuyang XP",
     "includeMonsters": "Isama ang iyong kasalukuyang mga Halimaw",
-    "fileSize": "Inaasahang laki ng file na mai-save:"
+    "fileSize": "Inaasahang laki ng file na mai-save:",
+    "source": "Pinagmulan",
+    "blinded": "Nabulag",
+    "charmed": "Nabighani",
+    "deafened": "Nabibingi",
+    "fatigued": "Pagod",
+    "frightened": "Natatakot",
+    "grappled": "Nakipagbuno",
+    "incapacitated": "Walang kakayahan",
+    "invisible": "Hindi nakikita",
+    "paralyzed": "Paralisado",
+    "petrified": "Natakot",
+    "poisoned": "Nalason",
+    "prone": "Nakadapa",
+    "restrained": "Pinigilan",
+    "stunned": "Natigilan",
+    "unconscious": "Walang malay"
   }
 }

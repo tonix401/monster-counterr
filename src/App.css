@@ -3,8 +3,8 @@
   max-width: 1200px;
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-xl);
   overflow: hidden;
 }
 
@@ -12,13 +12,13 @@
 .skeleton {
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.1) 25%,
+    var(--overlay-heavy) 25%,
     rgba(255, 255, 255, 0.2) 50%,
-    rgba(255, 255, 255, 0.1) 75%
+    var(--overlay-heavy) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
 }
 
 @keyframes shimmer {
@@ -31,8 +31,8 @@
 }
 
 .skeleton-header {
-  padding: 24px 28px;
-  background: linear-gradient(135deg, rgba(124, 77, 255, 0.18), rgba(124, 77, 255, 0.05));
+  padding: var(--spacing-xl) var(--spacing-2xl);
+  background: linear-gradient(135deg, rgba(124, 77, 255, 0.18), var(--overlay-accent-light));
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -41,7 +41,7 @@
 
 .skeleton-header-left {
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-md);
 }
 
 .skeleton-header-title {
@@ -58,17 +58,17 @@
 }
 
 .skeleton-table {
-  padding: 28px;
+  padding: var(--spacing-2xl);
 }
 
 .skeleton-table-row {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr 2fr 1fr;
-  gap: 16px;
-  padding: 16px;
-  margin-bottom: 12px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  background: var(--overlay-light);
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border);
 }
 
@@ -83,7 +83,7 @@
 
 #monsterList {
   margin: 0;
-  padding: 24px 28px 32px;
+  padding: var(--spacing-xl) var(--spacing-2xl) var(--spacing-3xl);
   list-style: none;
   overflow: scroll;
   max-height: 87.5vh;

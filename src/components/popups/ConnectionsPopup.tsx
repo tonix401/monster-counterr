@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router'
 import { QRCodeSVG } from 'qrcode.react'
 import Popup from './Popup'
 import { useMonsterStore, useTerm } from '@/store/index'
+import { BASE_URL } from '@/constants'
 import './ConnectionsPopup.css'
 
 const ConnectionsPopup: React.FC = () => {
@@ -18,7 +19,7 @@ const ConnectionsPopup: React.FC = () => {
     initializeHost()
   }, [initializeHost])
 
-  const clientUrl = `${window.location.origin}/monster-counterr/client?host=${peerId}`
+  const clientUrl = `${window.location.origin}${BASE_URL}/client?host=${peerId}`
 
   return (
     <Popup onClose={() => navigate('/')} title={t('connections')} width={520}>

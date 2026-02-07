@@ -6,19 +6,19 @@ table {
   border-spacing: 0;
   background: rgba(255, 255, 255, 0.01);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
 }
 
 th,
 td {
-  padding: 12px 10px;
+  padding: var(--spacing-md) 10px;
   border-bottom: 1px solid var(--border);
   color: var(--text);
   height: 100%;
 }
 
 th {
-  background: rgba(124, 77, 255, 0.08);
+  background: var(--overlay-accent);
   letter-spacing: 0.2px;
   user-select: none;
   white-space: nowrap;
@@ -29,7 +29,7 @@ tr:last-child td {
 }
 
 tr:nth-child(even) td {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--overlay-light);
 }
 
 .name-cell {

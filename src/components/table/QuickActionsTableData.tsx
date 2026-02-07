@@ -1,10 +1,8 @@
 import React from 'react'
 import { useMonsterStore } from '@/store'
 import { useTerm } from '@/store/index'
+import { ASSETS } from '@/constants'
 import './QuickActionsTableData.css'
-
-const skullSvg = '/monster-counterr/skull.svg'
-const binSvg = '/monster-counterr/bin.svg'
 
 interface QuickActionsTableDataProps {
   monsterId: string
@@ -27,14 +25,14 @@ const QuickActionsTableData: React.FC<QuickActionsTableDataProps> = ({ monsterId
     <td>
       <div className="quick-actions-container">
         <button className="red-button icon-button" title={t('killMonster')} onClick={handleKill}>
-          <img src={skullSvg} alt={t('killMonster')} />
+          <img src={ASSETS.SKULL_ICON} alt={t('killMonster')} />
         </button>
         <button
           className="red-button icon-button"
           title={t('removeMonster')}
           onClick={handleRemove}
         >
-          <img src={binSvg} alt={t('removeMonster')} />
+          <img src={ASSETS.BIN_ICON} alt={t('removeMonster')} />
         </button>
       </div>
     </td>

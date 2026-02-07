@@ -1,3 +1,4 @@
+import type { StateCreator } from 'zustand'
 import { CONDITIONS } from '@/constants'
 
 export type ConditionsSlice = {
@@ -7,17 +8,22 @@ export type ConditionsSlice = {
   resetConditions: () => void
 }
 
-export const createConditionsSlice = (set: any): ConditionsSlice => ({
+export const createConditionsSlice: StateCreator<ConditionsSlice, [], [], ConditionsSlice> = (
+  set
+) => ({
   conditions: [...CONDITIONS],
-  addCondition: (condition: string) => {
-    set((state: any) => ({ conditions: [...state.conditions, condition] }))
+
+  addCondition: (condition: string): void => {
+    set((state) => ({ conditions: [...state.conditions, condition] }))
   },
-  removeCondition: (condition: string) => {
-    set((state: any) => ({
-      conditions: state.conditions.filter((c: string) => c !== condition),
+
+  removeCondition: (condition: string): void => {
+    set((state) => ({
+      conditions: state.conditions.filter((c) => c !== condition),
     }))
   },
-  resetConditions: () => {
-    set({ conditions: CONDITIONS })
+
+  resetConditions: (): void => {
+    set({ conditions: [...CONDITIONS] })
   },
 })

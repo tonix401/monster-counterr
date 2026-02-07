@@ -34,9 +34,12 @@ type MonsterCounterCoreState = MonsterSlice &
     initialize: () => Promise<void>
     setLoading: (loading: boolean) => void
     loadLanguagePack: (language: string) => Promise<void>
+    loadAvailableLanguages: () => Promise<void>
   }
 
-type MonsterCounterState = MonsterCounterCoreState & TemporalState<any> & TemporalActions
+type MonsterCounterState = MonsterCounterCoreState &
+  TemporalState<MonsterCounterCoreState> &
+  TemporalActions
 
 export const useMonsterStore = create<MonsterCounterState>()(
   persist(
@@ -48,23 +51,23 @@ export const useMonsterStore = create<MonsterCounterState>()(
 
           // Slices
           ...createMonsterSlice(set, get, api),
-          ...createSettingsSlice(set, get),
-          ...createXpSlice(set),
-          ...createDataManagementSlice(set, get),
-          ...createConditionsSlice(set),
-          ...createTermSlice(set, get),
-          ...createNotificationSlice(set),
+          ...createSettingsSlice(set, get, api),
+          ...createXpSlice(set, get, api),
+          ...createDataManagementSlice(set, get, api),
+          ...createConditionsSlice(set, get, api),
+          ...createTermSlice(set, get, api),
+          ...createNotificationSlice(set, get, api),
           ...createConnectionSlice(set, get, api),
 
           // Complex Actions (combine multiple slices)
-          killMonster: (monsterId: string) => {
+          killMonster: (monsterId: string): void => {
             const state = get()
             const monster = state.monsters.find((m: Monster) => m.id === monsterId)
             if (!monster) return
             state.updateMonsterHealth(monsterId, -monster.hp)
           },
 
-          killAllMonsters: () => {
+          killAllMonsters: (): void => {
             const state = get()
             const monsters = state.monsters
             const killMonster = state.killMonster
@@ -79,8 +82,15 @@ export const useMonsterStore = create<MonsterCounterState>()(
             })
           },
 
+          getOnDeathCallback: () => {
+            return (monster: Monster): void => {
+              const state = get()
+              state.updateXp(monster.maxhp)
+            }
+          },
+
           // Initialization
-          initialize: async () => {
+          initialize: async (): Promise<void> => {
             set({ isLoading: true })
             await get().loadAvailableLanguages()
             await get().loadLanguagePack(get().language)
@@ -95,7 +105,11 @@ export const useMonsterStore = create<MonsterCounterState>()(
             })
           },
 
-          loadLanguagePack: async (language: string) => {
+          setLoading: (loading: boolean): void => {
+            set({ isLoading: loading })
+          },
+
+          loadLanguagePack: async (language: string): Promise<void> => {
             try {
               const response = await fetch(`${BASE_URL}/locales/${language}.json`)
 
@@ -107,8 +121,7 @@ export const useMonsterStore = create<MonsterCounterState>()(
 
               const languagePack = await response.json()
 
-              set((state: any) => ({
-                ...state,
+              set(() => ({
                 terms: languagePack.terms,
                 language: languagePack.lang,
               }))
@@ -117,7 +130,8 @@ export const useMonsterStore = create<MonsterCounterState>()(
               console.warn(`Falling back to term keys for display.`)
             }
           },
-          loadAvailableLanguages: async () => {
+
+          loadAvailableLanguages: async (): Promise<void> => {
             try {
               const response = await fetch(`${BASE_URL}/locales/locales.json`)
 
@@ -139,10 +153,10 @@ export const useMonsterStore = create<MonsterCounterState>()(
               }))
             }
           },
-        }) as any,
+        }) as MonsterCounterCoreState,
       {
         limit: 50,
-        partialize: (state: any) => ({
+        partialize: (state) => ({
           monsters: state.monsters,
           settings: state.settings,
           language: state.language,
@@ -164,28 +178,40 @@ export const useMonsterStore = create<MonsterCounterState>()(
 )
 
 // Selectors for optimized subscriptions
-export const useMonsters = () => useMonsterStore((state) => state.monsters)
-export const useSettings = () => useMonsterStore((state) => state.settings)
-export const useXp = () => useMonsterStore((state) => state.xp)
-export const useIsLoading = () => useMonsterStore((state) => state.isLoading)
-export const useCanUndo = () => useMonsterStore((state) => state.canUndo())
-export const useCanRedo = () => useMonsterStore((state) => state.canRedo())
-export const useConditions = () => useMonsterStore((state) => state.conditions)
-export const useLanguage = () => useMonsterStore((state) => state.language)
-export const useSetLanguage = () => useMonsterStore((state) => state.setLanguage)
-export const useLoadLanguagePack = () => useMonsterStore((state) => state.loadLanguagePack)
-export const useAvailableLanguages = () => useMonsterStore((state) => state.availableLanguages)
-export const useTerm = () => {
+export const useMonsters = (): Monster[] => useMonsterStore((state) => state.monsters)
+export const useSettings = (): SettingsSlice['settings'] =>
+  useMonsterStore((state) => state.settings)
+export const useXp = (): number => useMonsterStore((state) => state.xp)
+export const useIsLoading = (): boolean => useMonsterStore((state) => state.isLoading)
+export const useCanUndo = (): boolean => useMonsterStore((state) => state.canUndo())
+export const useCanRedo = (): boolean => useMonsterStore((state) => state.canRedo())
+export const useConditions = (): string[] => useMonsterStore((state) => state.conditions)
+export const useLanguage = (): string => useMonsterStore((state) => state.language)
+export const useSetLanguage = (): ((language: string) => Promise<void>) =>
+  useMonsterStore((state) => state.setLanguage)
+export const useLoadLanguagePack = (): ((language: string) => Promise<void>) =>
+  useMonsterStore((state) => state.loadLanguagePack)
+export const useAvailableLanguages = (): { key: string; name: string }[] =>
+  useMonsterStore((state) => state.availableLanguages)
+
+export const useTerm = (): ((key: string) => string) => {
   useMonsterStore((state) => state.language) // for rerenders on language change
   return useMonsterStore((state) => state.getTerm)
 }
-export const userSource = () => useMonsterStore((state) => state.source)
-export const useSetSource = (src: string | null) => useMonsterStore((state) => state.setSource(src))
-export const useNotifications = () => useMonsterStore((state) => state.queue)
-export const useNotify = () => useMonsterStore((state) => state.notify)
-export const useRemoveNotification = () => useMonsterStore((state) => state.removeNotification)
 
-export const usePeerId = () => useMonsterStore((state) => state.peerId)
-export const useConnections = () => useMonsterStore((state) => state.connections)
-export const useInitializeHost = () => useMonsterStore((state) => state.initializeHost)
-export const useIsConnecting = () => useMonsterStore((state) => state.isConnecting)
+export const useSource = (): string | null => useMonsterStore((state) => state.source)
+export const useSetSource = (): ((src: string | null) => void) =>
+  useMonsterStore((state) => state.setSource)
+
+export const useNotifications = (): NotificationSlice['queue'] =>
+  useMonsterStore((state) => state.queue)
+export const useNotify = (): NotificationSlice['notify'] => useMonsterStore((state) => state.notify)
+export const useRemoveNotification = (): NotificationSlice['removeNotification'] =>
+  useMonsterStore((state) => state.removeNotification)
+
+export const usePeerId = (): string | null => useMonsterStore((state) => state.peerId)
+export const useConnections = (): ConnectionSlice['connections'] =>
+  useMonsterStore((state) => state.connections)
+export const useInitializeHost = (): (() => void) =>
+  useMonsterStore((state) => state.initializeHost)
+export const useIsConnecting = (): boolean => useMonsterStore((state) => state.isConnecting)

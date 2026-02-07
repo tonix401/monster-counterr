@@ -1,17 +1,19 @@
+import type { StateCreator } from 'zustand'
+
 export type XpSlice = {
   xp: number
   updateXp: (amount: number) => void
   resetXp: () => void
 }
 
-export const createXpSlice = (set: any): XpSlice => ({
+export const createXpSlice: StateCreator<XpSlice, [], [], XpSlice> = (set) => ({
   xp: 0,
 
-  updateXp: (amount: number) => {
-    set((state: any) => ({ xp: state.xp + amount }))
+  updateXp: (amount: number): void => {
+    set((state) => ({ xp: state.xp + amount }))
   },
 
-  resetXp: () => {
+  resetXp: (): void => {
     set({ xp: 0 })
   },
 })

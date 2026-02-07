@@ -1,6 +1,6 @@
 header {
-  padding: 24px 28px;
-  background: linear-gradient(135deg, rgba(124, 77, 255, 0.18), rgba(124, 77, 255, 0.05));
+  padding: var(--spacing-xl) var(--spacing-2xl);
+  background: linear-gradient(135deg, rgba(124, 77, 255, 0.18), var(--overlay-accent-light));
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -16,12 +16,12 @@ header > h2 {
 
 header > div {
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-md);
 }
 
 #xp-counter {
   font-weight: 600;
-  font-size: 18px;
-  padding: 0 12px;
+  font-size: var(--font-lg);
+  padding: 0 var(--spacing-md);
   align-self: center;
 }

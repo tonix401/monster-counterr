@@ -56,7 +56,7 @@ function App() {
         <MonsterTable monsters={monsters} />
       </div>
       <Outlet />
-      <NotificationContainer/>
+      <NotificationContainer />
     </div>
   )
 }

@@ -1,7 +1,9 @@
+import type { StateCreator } from 'zustand'
 import { SAVE_FILE } from '@/constants'
 import type { Monster } from '@/types/Monster'
 import type { Settings } from '@/types/Settings'
 import type { MonsterIndex } from '@/types/MonsterDetails'
+import type { NotificationSlice } from './notificationSlice'
 
 export interface SaveData {
   schemaVersion: number
@@ -34,7 +36,12 @@ const isSaveData = (data: unknown): data is Partial<SaveData> => {
   return typeof d.schemaVersion === 'number'
 }
 
-export const createDataManagementSlice = (set: any, get: any): DataManagementSlice => ({
+export const createDataManagementSlice: StateCreator<
+  DataManagementSlice & { monsters: Monster[]; xp: number; settings: Settings } & NotificationSlice,
+  [],
+  [],
+  DataManagementSlice
+> = (set, get) => ({
   exportSettings: {
     includeIndex: true,
     includeDetails: true,
@@ -43,14 +50,16 @@ export const createDataManagementSlice = (set: any, get: any): DataManagementSli
     includeCurrentXp: true,
     minimizeJson: true,
   },
-  setExportSetting: (key, value) =>
-    set((state: any) => ({
+
+  setExportSetting: (key: keyof SaveFileExportSettings, value: boolean): void =>
+    set((state) => ({
       exportSettings: {
         ...state.exportSettings,
         [key]: value,
       },
     })),
-  exportData: () => {
+
+  exportData: (): void => {
     const { monsters, xp, settings, exportSettings } = get()
     const data: Partial<SaveData> = {
       schemaVersion: SAVE_FILE.SCHEMA_VERSION,
@@ -71,8 +80,6 @@ export const createDataManagementSlice = (set: any, get: any): DataManagementSli
   },
 
   importData: (data: unknown): boolean => {
-
-
     if (!isSaveData(data)) {
       console.error('Invalid save data format')
       return false
@@ -81,7 +88,9 @@ export const createDataManagementSlice = (set: any, get: any): DataManagementSli
     try {
       switch (data.schemaVersion) {
         case 1: {
-          const newState: any = {}
+          const newState: Partial<
+            DataManagementSlice & { monsters: Monster[]; xp: number; settings: Settings }
+          > = {}
           if ('monsters' in data) newState.monsters = data.monsters
           if ('currentXp' in data) newState.xp = data.currentXp
           if ('settings' in data) newState.settings = data.settings
@@ -89,7 +98,10 @@ export const createDataManagementSlice = (set: any, get: any): DataManagementSli
           return true
         }
         default:
-          get().notify(`Unsupported save file schema version: ${data.schemaVersion}`)
+          get().notify({
+            message: `Unsupported save file schema version: ${data.schemaVersion}`,
+            type: 'error',
+          })
           return false
       }
     } catch (error) {

@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import { BASE_URL } from './src/constants/index'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -11,7 +12,7 @@ export default defineConfig({
     },
   },
   root: './',
-  base: '/monster-counterr/',
+  base: BASE_URL,
   publicDir: './src/public',
   build: {
     outDir: 'dist',

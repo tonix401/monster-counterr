@@ -1,0 +1,25 @@
+.quick-actions-container {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+}
+
+.icon-button {
+  vertical-align: middle;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  width: auto;
+  padding: 0 var(--spacing-sm);
+}
+
+.icon-button > img {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  color: #fff;
+}
+
+.monster-hidden-button {
+  background: var(--accent);
+}

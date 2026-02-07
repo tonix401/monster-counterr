@@ -1,0 +1,27 @@
+header {
+  padding: var(--spacing-xl) var(--spacing-2xl);
+  background: linear-gradient(135deg, rgba(124, 77, 255, 0.18), var(--overlay-accent-light));
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header > h2 {
+  margin: 0;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+header > div {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+#xp-counter {
+  font-weight: 600;
+  font-size: var(--font-lg);
+  padding: 0 var(--spacing-md);
+  align-self: center;
+}

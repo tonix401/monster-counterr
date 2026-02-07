@@ -1,8 +1,9 @@
 import React from 'react'
 import type { Monster } from '@/types/Monster'
 import { useMonsterStore } from '@/store'
-import { useTerm } from '@/hooks/useTerm'
+import { useTerm } from '@/store/index'
 import { CONDITIONS } from '@/constants'
+import './ConditionsTableData.css'
 
 interface ConditionsTableDataProps {
   monster: Monster
@@ -13,9 +14,7 @@ const ConditionsTableData: React.FC<ConditionsTableDataProps> = ({ monster }) =>
 
   const addMonsterCondition = useMonsterStore((state) => state.addMonsterCondition)
   const removeMonsterCondition = useMonsterStore((state) => state.removeMonsterCondition)
-
-  const t_addCondition = useTerm('addCondition')
-  const t_remove = useTerm('remove')
+  const t = useTerm()
 
   const handleRemoveCondition = (condition: string) => {
     removeMonsterCondition(monster.id, condition)
@@ -43,7 +42,7 @@ const ConditionsTableData: React.FC<ConditionsTableDataProps> = ({ monster }) =>
             onMouseEnter={() => setHoveredCondition(condition)}
             onMouseLeave={() => setHoveredCondition(null)}
           >
-            {hoveredCondition === condition ? t_remove : condition}
+            {hoveredCondition === condition ? t('remove') : t(condition)}
           </button>
         ))}
         {remainingConditions.length > 0 && (
@@ -60,12 +59,12 @@ const ConditionsTableData: React.FC<ConditionsTableDataProps> = ({ monster }) =>
                   e.target.value = ''
                 }
               }}
-              placeholder={t_addCondition}
+              placeholder={t('addCondition')}
             />
             <datalist id={`conditions-datalist-${monster.id}`}>
               {remainingConditions.map((condition: string) => (
                 <option key={condition} value={condition}>
-                  {condition}
+                  {t(condition)}
                 </option>
               ))}
             </datalist>

@@ -1,10 +1,9 @@
-import { useMonsterStore } from '@/store'
-import { useTerm } from '@/hooks/useTerm'
+import { useMonsterStore, useNotify } from '@/store'
+import { useTerm } from '@/store/index'
 
 const ImportFileButton = () => {
   const importData = useMonsterStore((state) => state.importData)
-  const t_importSaveFile = useTerm('importSaveFile')
-  const t_failedToLoadSaveFile = useTerm('failedToLoadSaveFile')
+  const t = useTerm()
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -17,7 +16,11 @@ const ImportFileButton = () => {
         importData(data)
       } catch (error) {
         console.error('Failed to load save file:', error)
-        alert(t_failedToLoadSaveFile)
+        const notify = useNotify()
+        notify({
+          type: 'error',
+          message: t('failedToLoadSaveFile'),
+        })
       }
     }
     reader.readAsText(file)
@@ -30,7 +33,7 @@ const ImportFileButton = () => {
         className="green-button"
         onClick={() => document.getElementById('upload-input')?.click()}
       >
-        {t_importSaveFile}
+        {t('importSaveFile')}
       </button>
       <input
         id="upload-input"

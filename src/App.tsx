@@ -4,6 +4,7 @@ import './App.css'
 import MonsterTable from '@/components/table/MonsterTable'
 import Header from '@/components/Header'
 import { useMonsterStore, useMonsters, useXp, useIsLoading } from '@/store'
+import { NotificationContainer } from './components/ui/NotificationsContainer'
 
 function App() {
   const initialize = useMonsterStore((state) => state.initialize)
@@ -55,6 +56,7 @@ function App() {
         <MonsterTable monsters={monsters} />
       </div>
       <Outlet />
+      <NotificationContainer />
     </div>
   )
 }

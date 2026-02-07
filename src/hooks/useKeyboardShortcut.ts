@@ -9,9 +9,9 @@ interface KeyboardShortcut {
   preventDefault?: boolean
 }
 
-export const useKeyboardShortcut = (shortcut: KeyboardShortcut) => {
+export const useKeyboardShortcut = (shortcut: KeyboardShortcut): void => {
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent): void => {
       const {
         key,
         ctrl = false,
@@ -38,9 +38,9 @@ export const useKeyboardShortcut = (shortcut: KeyboardShortcut) => {
   }, [shortcut])
 }
 
-export const useUndoRedoShortcuts = (undo: () => void, redo: () => void) => {
+export const useUndoRedoShortcuts = (undo: () => void, redo: () => void): void => {
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent): void => {
       // Ctrl+Z or Cmd+Z for undo
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
         e.preventDefault()

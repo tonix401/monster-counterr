@@ -1,7 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router'
 import type { Monster } from '@/types/Monster'
-import { useMonsterStore } from '@/store'
 
 interface NameTableDataProps {
   monster: Monster
@@ -9,26 +8,17 @@ interface NameTableDataProps {
 
 const NameTableData: React.FC<NameTableDataProps> = ({ monster }) => {
   const navigate = useNavigate()
-  const isMonsterDetailsAvailable = useMonsterStore((state) => state.isMonsterDetailsAvailable)
-
-  const hasDetails = isMonsterDetailsAvailable(monster.detailIndex)
-
-  const handleClick = () => {
-    if (hasDetails) {
-      navigate(`/monster/${monster.detailIndex}`)
-    }
-  }
 
   return (
     <td className="name-cell">
       <div
-        onClick={handleClick}
+        onClick={() => navigate(`/monsters/${monster.detailIndex}`)}
         style={{
           color: monster.hp > 0 ? 'inherit' : 'gray',
           display: 'flex',
           justifyContent: 'center',
         }}
-        className={hasDetails ? 'clickable' : ''}
+        className="clickable"
       >
         <span
           style={{

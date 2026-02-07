@@ -2,10 +2,9 @@ import React from 'react'
 import { useNavigate } from 'react-router'
 import { useMonsterStore, useCanUndo, useCanRedo } from '@/store'
 import { useUndoRedoShortcuts } from '@/hooks/useKeyboardShortcut'
-import { useTerm } from '@/hooks/useTerm'
-
-const undoSvg = '/monster-counterr/undo.svg'
-const redoSvg = '/monster-counterr/redo.svg'
+import { useTerm } from '@/store/index'
+import { ASSETS } from '@/constants'
+import './Header.css'
 
 interface HeaderProps {
   xpDisplay: number
@@ -22,25 +21,7 @@ const Header: React.FC<HeaderProps> = ({ xpDisplay, onResetXp }) => {
   const redo = useMonsterStore((state) => state.redo)
   const canUndo = useCanUndo()
   const canRedo = useCanRedo()
-
-  // Translations
-  const t_menu = useTerm('menu')
-  const t_openMenu = useTerm('openMenu')
-  const t_undo = useTerm('undo')
-  const t_undoShortcut = useTerm('undoShortcut')
-  const t_redo = useTerm('redo')
-  const t_redoShortcut = useTerm('redoShortcut')
-  const t_resetXpCounter = useTerm('resetXpCounter')
-  const t_xp = useTerm('xp')
-  const t_monsterCounter = useTerm('monsterCounter')
-  const t_clear = useTerm('clear')
-  const t_clearTooltip = useTerm('clearTooltip')
-  const t_killAll = useTerm('killAll')
-  const t_killAllTooltip = useTerm('killAllTooltip')
-  const t_removeDead = useTerm('removeDead')
-  const t_removeDeadTooltip = useTerm('removeDeadTooltip')
-  const t_add = useTerm('add')
-  const t_addNewMonsters = useTerm('addNewMonsters')
+  const t = useTerm()
 
   // Enable keyboard shortcuts
   useUndoRedoShortcuts(undo, redo)
@@ -48,57 +29,61 @@ const Header: React.FC<HeaderProps> = ({ xpDisplay, onResetXp }) => {
   return (
     <header>
       <div>
-        <button className="green-button" onClick={() => navigate('/menu')} title={t_openMenu}>
-          {t_menu}
+        <button className="green-button" onClick={() => navigate('/menu')} title={t('openMenu')}>
+          {t('menu')}
         </button>
         <button
           className="green-button"
           onClick={undo}
           disabled={!canUndo}
-          title={t_undoShortcut}
+          title={t('undoShortcut')}
           style={{
             opacity: canUndo ? 1 : 0.6,
             cursor: canUndo ? 'pointer' : 'not-allowed',
           }}
         >
-          <img src={undoSvg} alt={t_undo} style={{ width: '16px', height: '16px' }} />
+          <img src={ASSETS.UNDO_ICON} alt={t('undo')} style={{ width: '16px', height: '16px' }} />
         </button>
         <button
           className="green-button"
           onClick={redo}
           disabled={!canRedo}
-          title={t_redoShortcut}
+          title={t('redoShortcut')}
           style={{
             opacity: canRedo ? 1 : 0.6,
             cursor: canRedo ? 'pointer' : 'not-allowed',
           }}
         >
-          <img src={redoSvg} alt={t_redo} style={{ width: '16px', height: '16px' }} />
+          <img src={ASSETS.REDO_ICON} alt={t('redo')} style={{ width: '16px', height: '16px' }} />
         </button>
         {settings.showXpCounter && (
           <button
             id="xp-counter"
             className="red-button transparent-button"
-            title={t_resetXpCounter}
+            title={t('resetXpCounter')}
             onClick={onResetXp}
           >
-            {xpDisplay} {t_xp}
+            {xpDisplay} {t('xp')}
           </button>
         )}
       </div>
-      <h2>{t_monsterCounter}</h2>
+      <h2>{t('monsterCounter')}</h2>
       <div>
-        <button className="red-button" onClick={clearMonsters} title={t_clearTooltip}>
-          {t_clear}
+        <button className="red-button" onClick={clearMonsters} title={t('clearTooltip')}>
+          {t('clear')}
         </button>
-        <button className="red-button" onClick={killAllMonsters} title={t_killAllTooltip}>
-          {t_killAll}
+        <button className="red-button" onClick={killAllMonsters} title={t('killAllTooltip')}>
+          {t('killAll')}
         </button>
-        <button className="red-button" onClick={removeDead} title={t_removeDeadTooltip}>
-          {t_removeDead}
+        <button className="red-button" onClick={removeDead} title={t('removeDeadTooltip')}>
+          {t('removeDead')}
         </button>
-        <button className="green-button" onClick={() => navigate('/add')} title={t_addNewMonsters}>
-          {t_add}
+        <button
+          className="green-button"
+          onClick={() => navigate('/add')}
+          title={t('addNewMonsters')}
+        >
+          {t('add')}
         </button>
       </div>
     </header>

@@ -1,1 +1,0 @@
-{"name":"Junior Drow Priestess of Lolth","source":"WDMM","page":149,"_copy":{"name":"Priest","source":"MM","_templates":[{"name":"Drow","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"priest","with":"priestess"}}},"alignment":["N","E"],"traitTags":["Fey Ancestry","Sunlight Sensitivity"],"senseTags":["SD"],"languageTags":["E","X"],"spellcastingTags":["CC","I"]}

@@ -1,1 +1,0 @@
-{"name":"Engineer","source":"WDH","page":141,"_copy":{"name":"Apprentice Wizard","source":"VGM","_templates":[{"name":"Rock Gnome","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"apprentice","with":"engineer"}}},"alignment":["N","G"],"hp":{"average":7,"formula":"2d6"},"languages":["Common","Gnomish"],"senseTags":["D"],"languageTags":["C","G"]}

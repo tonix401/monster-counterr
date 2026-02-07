@@ -1,1 +1,0 @@
-{"name":"Ignatius Inkblot","isNpc":true,"isNamedCreature":true,"source":"KftGV","page":169,"_copy":{"name":"Mind Flayer","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the mind flayer","with":"Ignatius Inkblot","flags":"i"}}},"alignment":["L","N"]}

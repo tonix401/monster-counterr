@@ -1,1 +1,0 @@
-{"name":"Rystia Zav","isNpc":true,"isNamedCreature":true,"source":"OotA","page":135,"_copy":{"name":"Spy","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the spy","with":"Rystia","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["C","G"]}

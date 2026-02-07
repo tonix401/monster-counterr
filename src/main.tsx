@@ -10,7 +10,7 @@ import CustomMonstersPopup from '@/components/popups/CustomMonstersPopup'
 import ManageDataPopup from '@/components/popups/ManageDataPopup'
 import ConnectionsPopup from '@/components/popups/ConnectionsPopup'
 import MonsterInfoPopup from '@/components/popups/MonsterInfoPopup'
-import ClientView from '@/components/ClientView'
+import ClientView from '@/client_app/ClientView'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

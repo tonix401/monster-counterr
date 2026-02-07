@@ -1,1 +1,0 @@
-{"name":"Laleh Ghorbani","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":156,"_copy":{"name":"Scout","source":"MM","_templates":[{"name":"High Elf","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the scout","with":"Laleh","flags":"i"}}},"alignment":["N","G"],"traitTags":["Fey Ancestry","Keen Senses"]}

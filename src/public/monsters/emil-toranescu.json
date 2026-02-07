@@ -1,1 +1,0 @@
-{"name":"Emil Toranescu","isNpc":true,"isNamedCreature":true,"source":"CoS","page":81,"_copy":{"name":"Werewolf","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the werewolf","with":"Emil","flags":"i"}}},"hp":{"average":72,"formula":"9d8 + 18"}}

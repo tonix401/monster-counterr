@@ -1,1 +1,0 @@
-{"name":"Chimeric Baboon","source":"IDRotF","page":246,"_copy":{"name":"Baboon","source":"MM","_mod":{"action":{"mode":"replaceArr","replace":"Bite","items":{"name":"Bite","entries":["{@atk mw} {@hit 1} to hit, reach 5 ft., one target. {@h}1 ({@damage 1d4 - 1}) piercing damage, plus an extra 3 ({@damage 1d6}) poison damage."]}}}},"tokenCustom":true}

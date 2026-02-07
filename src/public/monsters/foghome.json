@@ -1,1 +1,0 @@
-{"name":"Foghome","isNpc":true,"isNamedCreature":true,"source":"CRCotN","page":58,"_copy":{"name":"Priest","source":"MM","_templates":[{"name":"Firbolg","source":"VGM"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the priest","with":"Foghome","flags":"i"}}},"alignment":["N","G"],"spellcastingTags":["CC","I"]}

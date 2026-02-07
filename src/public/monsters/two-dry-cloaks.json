@@ -1,1 +1,0 @@
-{"name":"Two Dry Cloaks","shortName":true,"isNpc":true,"isNamedCreature":true,"source":"OoW","page":162,"_copy":{"name":"Spy","source":"MM","_templates":[{"name":"Tabaxi","source":"VGM"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the spy","with":"Two Dry Cloaks","flags":"i"}}},"damageTags":["P","S"]}

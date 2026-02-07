@@ -1,1 +1,0 @@
-{"name":"Feonor","isNpc":true,"isNamedCreature":true,"source":"BGDIA","page":130,"_copy":{"name":"Archmage","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the archmage","with":"Feonor","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["N","E"]}

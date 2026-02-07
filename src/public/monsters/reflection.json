@@ -1,1 +1,0 @@
-{"name":"Reflection","source":"TCE","page":158,"_copy":{"name":"Shadow","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"shadow","with":"reflection"}}},"type":"fey","resist":["acid","cold","fire","lightning","thunder",{"resist":["piercing","slashing"],"note":"from nonmagical attacks","cond":true}],"vulnerable":["bludgeoning"]}

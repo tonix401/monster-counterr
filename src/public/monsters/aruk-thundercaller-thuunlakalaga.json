@@ -1,1 +1,0 @@
-{"name":"Aruk Thundercaller Thuunlakalaga","isNpc":true,"isNamedCreature":true,"source":"IDRotF","page":169,"_copy":{"name":"Goliath Warrior","source":"IDRotF","_mod":{"*":{"mode":"replaceTxt","replace":"the goliath","with":"Aruk","flags":"i"},"_":[{"mode":"addSkills","skills":{"insight":1,"medicine":1}}]}},"tokenCustom":true}

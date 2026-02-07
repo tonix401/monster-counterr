@@ -1,1 +1,0 @@
-{"name":"Shariel","isNpc":true,"isNamedCreature":true,"source":"ToFW","page":65,"_copy":{"name":"Deva","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"The deva","with":"Shariel","flags":"i"}}}}

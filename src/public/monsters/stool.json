@@ -1,1 +1,0 @@
-{"name":"Stool","isNpc":true,"isNamedCreature":true,"source":"OotA","page":7,"_copy":{"name":"Myconid Sprout","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the myconid","with":"Stool","flags":"i"}}}}

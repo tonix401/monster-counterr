@@ -1,1 +1,0 @@
-{"name":"Aunt Dellie","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":36,"_copy":{"name":"Commoner","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the commoner","with":"Aunt Dellie","flags":"i"}}}}

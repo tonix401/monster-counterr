@@ -1,1 +1,0 @@
-{"name":"Grabstab","isNpc":true,"isNamedCreature":true,"source":"ToA","page":89,"_copy":{"name":"Goblin Boss","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the goblin","with":"Grabstab","flags":"i"}}}}

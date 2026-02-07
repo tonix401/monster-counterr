@@ -1,1 +1,0 @@
-{"name":"Atash","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":166,"_copy":{"name":"Solar","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the solar","with":"Atash","flags":"i"}}},"alignment":["L","N"]}

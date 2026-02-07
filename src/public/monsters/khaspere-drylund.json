@@ -1,1 +1,0 @@
-{"name":"Khaspere Drylund","isNpc":true,"isNamedCreature":true,"source":"SKT","page":216,"_copy":{"name":"Noble","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the noble","with":"Khaspere","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["N","E"],"ac":[11],"languages":["Common","Dwarvish","Elvish"],"languageTags":["C","E"]}

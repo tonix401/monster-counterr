@@ -1,1 +1,0 @@
-{"name":"Ferol Sal","isNpc":true,"isNamedCreature":true,"source":"EGW","page":249,"_copy":{"name":"Wight","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the wight","with":"Ferol","flags":"i"}}},"int":16}

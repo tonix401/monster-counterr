@@ -1,1 +1,0 @@
-{"name":"Perigee","isNpc":true,"isNamedCreature":true,"source":"CRCotN","page":168,"_copy":{"name":"Deva","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the deva","with":"Perigee","flags":"i"}}}}

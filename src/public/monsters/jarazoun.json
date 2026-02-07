@@ -1,1 +1,0 @@
-{"name":"Jarazoun","isNpc":true,"isNamedCreature":true,"source":"KftGV","page":200,"_copy":{"name":"Efreeti","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the efreeti","with":"Jarazoun","flags":"i"}}}}

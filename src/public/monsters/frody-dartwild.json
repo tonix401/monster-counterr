@@ -1,1 +1,0 @@
-{"name":"Frody Dartwild","isNpc":true,"isNamedCreature":true,"source":"KftGV","page":105,"_copy":{"name":"Zombie","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the zombie","with":"Frody","flags":"i"}}},"alignment":["N","G"],"int":10,"languages":["Common"],"tokenCustom":true}

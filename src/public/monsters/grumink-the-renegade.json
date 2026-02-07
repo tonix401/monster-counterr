@@ -1,1 +1,0 @@
-{"name":"Grumink the Renegade","isNpc":true,"isNamedCreature":true,"source":"PotA","page":210,"_copy":{"name":"Assassin","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the assassin","with":"Grumink","flags":"i"}}},"type":{"type":"humanoid","tags":["dwarf"]},"alignment":["C","E"],"senses":["darkvision 60 ft."],"senseTags":["D"]}

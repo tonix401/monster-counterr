@@ -1,1 +1,0 @@
-{"name":"Phaia","isNpc":true,"isNamedCreature":true,"source":"TftYP","page":132,"_copy":{"name":"Necromancer","source":"VGM","_mod":{"*":{"mode":"replaceTxt","replace":"the necromancer","with":"Phaia","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]}}

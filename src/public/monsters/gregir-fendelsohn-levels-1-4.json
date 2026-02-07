@@ -1,1 +1,0 @@
-{"name":"Gregir Fendelsohn (Levels 1-4)","isNpc":true,"isNamedCreature":true,"source":"KftGV","page":8,"_copy":{"name":"Bandit","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the bandit","with":"Gregir Fendelsohn","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["L","N"],"tokenCustom":true}

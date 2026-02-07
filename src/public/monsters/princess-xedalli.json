@@ -1,1 +1,0 @@
-{"name":"Princess Xedalli","shortName":true,"isNpc":true,"isNamedCreature":true,"source":"LoX","page":60,"_copy":{"name":"Astral Elf Aristocrat","source":"BAM","_mod":{"*":{"mode":"replaceTxt","replace":"the elf","with":"Xedalli","flags":"i"}}},"alignment":["C","N"]}

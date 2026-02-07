@@ -1,1 +1,0 @@
-{"name":"Headless Body","isNpc":true,"isNamedCreature":true,"source":"KftGV","page":51,"_copy":{"name":"Knight","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"knight","with":"headless body"}}},"senses":["blindsight 30 ft. (blind beyond this radius)"]}

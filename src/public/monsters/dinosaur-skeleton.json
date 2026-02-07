@@ -1,1 +1,0 @@
-{"name":"Dinosaur Skeleton","source":"JttRC","page":57,"_copy":{"name":"Allosaurus","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"allosaurus","with":"skeleton"}}},"type":"undead","senses":["darkvision 60 ft."],"immune":["poison"],"vulnerable":["bludgeoning"],"conditionImmune":["exhaustion","poisoned"],"tokenCustom":true}

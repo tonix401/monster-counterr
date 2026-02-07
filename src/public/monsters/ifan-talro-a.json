@@ -1,1 +1,0 @@
-{"name":"Ifan Talro'a","isNpc":true,"isNamedCreature":true,"source":"ToA","page":25,"_copy":{"name":"Noble","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the noble","with":"Ifan","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["N","E"]}

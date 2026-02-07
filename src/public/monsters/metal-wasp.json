@@ -1,1 +1,0 @@
-{"name":"Metal Wasp","source":"WDMM","page":174,"_copy":{"name":"Giant Wasp","source":"MM"},"type":"construct","ac":[{"ac":16,"from":["natural armor"]}],"senses":["darkvision 60 ft."],"immune":["poison","psychic"],"conditionImmune":["charmed","frightened","paralyzed","petrified","poisoned"],"tokenCustom":true,"senseTags":["D"]}

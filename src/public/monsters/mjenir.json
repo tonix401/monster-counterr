@@ -1,1 +1,0 @@
-{"name":"Mjenir","isNpc":true,"isNamedCreature":true,"source":"IDRotF","page":215,"_copy":{"name":"Druid","source":"MM","_mod":{"*":[{"mode":"replaceTxt","replace":"the druid","with":"Mjenir","flags":"i"}],"_":[{"mode":"addSkills","skills":{"survival":1}}]}},"type":{"type":"humanoid","tags":["human"]},"alignment":["N"],"tokenCustom":true}

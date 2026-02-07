@@ -1,1 +1,0 @@
-{"name":"Afsoun Ghorbani","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":162,"_copy":{"name":"Archmage","source":"MM","_templates":[{"name":"High Elf","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the archmage","with":"Afsoun","flags":"i"}}},"alignment":["C","G"],"traitTags":["Fey Ancestry","Magic Resistance"]}

@@ -1,1 +1,0 @@
-{"name":"Teremini Nightsedge","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":115,"_copy":{"name":"Archmage","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the archmage","with":"Teremini","flags":"i"}}},"type":{"type":"humanoid","tags":["elf"]},"alignment":["L","E"]}

@@ -1,1 +1,0 @@
-{"name":"Flight Alabaster Angel","source":"PSI","page":26,"_copy":{"name":"Deva","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"deva","with":"angel"},"_":{"mode":"addSpells","will":["{@spell protection from evil and good}"],"daily":{"1e":["{@spell dispel evil and good}"]}}}}}

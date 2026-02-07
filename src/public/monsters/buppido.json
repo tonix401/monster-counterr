@@ -1,1 +1,0 @@
-{"name":"Buppido","isNpc":true,"isNamedCreature":true,"source":"OotA","page":6,"_copy":{"name":"Derro","source":"OotA","_mod":{"*":{"mode":"replaceTxt","replace":"the derro","with":"Buppido","flags":"i"}}}}

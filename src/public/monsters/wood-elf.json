@@ -1,1 +1,0 @@
-{"name":"Wood Elf","source":"SKT","page":28,"_copy":{"name":"Scout","source":"MM","_templates":[{"name":"Wood Elf","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"scout","with":"wood elf"}}},"alignment":["C","G"],"languages":["Common","Elvish"],"traitTags":["Fey Ancestry","Keen Senses"],"senseTags":["D"],"languageTags":["C","E"]}

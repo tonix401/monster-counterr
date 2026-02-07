@@ -1,1 +1,0 @@
-{"name":"Corrin Delmaco","isNpc":true,"isNamedCreature":true,"source":"ERLW","page":271,"_copy":{"name":"Spy","source":"MM","_templates":[{"name":"Stout Halfling","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the spy","with":"Corrin","flags":"i"}}},"alignment":["L","E"],"hp":{"average":21,"formula":"6d6"},"tokenCustom":true,"languageTags":["H","X"]}

@@ -1,1 +1,0 @@
-{"name":"Duskwalker","isNpc":true,"isNamedCreature":true,"source":"DSotDQ","page":150,"_copy":{"name":"Treant","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the treant","with":"Duskwalker","flags":"i"}}},"alignment":["N"]}

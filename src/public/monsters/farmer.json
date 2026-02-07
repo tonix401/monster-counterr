@@ -1,1 +1,0 @@
-{"name":"Farmer","isNpc":true,"source":"JttRC","page":36,"_copy":{"name":"Cultist","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"cultist","with":"farmer"}}}}

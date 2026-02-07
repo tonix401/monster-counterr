@@ -1,1 +1,0 @@
-{"name":"Jimjar","isNpc":true,"isNamedCreature":true,"source":"OotA","page":6,"_copy":{"name":"Spy","source":"MM","_templates":[{"name":"Deep Gnome","source":"DMG"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the spy","with":"Jimjar","flags":"i"}}},"languages":["Common","Gnomish","Terran","Undercommon"],"spellcastingTags":["I"]}

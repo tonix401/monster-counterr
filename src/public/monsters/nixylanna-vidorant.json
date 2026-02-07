@@ -1,1 +1,0 @@
-{"name":"Nixylanna Vidorant","isNpc":true,"isNamedCreature":true,"source":"KftGV","page":130,"_copy":{"name":"Assassin","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the Assassin","with":"Nixylanna Vidorant","flags":"i"}}},"type":{"type":"humanoid","tags":["elf"]},"alignment":["C","N"]}

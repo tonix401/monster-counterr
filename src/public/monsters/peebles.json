@@ -1,1 +1,0 @@
-{"name":"Peebles","isNpc":true,"isNamedCreature":true,"source":"OotA","page":134,"_copy":{"name":"Spy","source":"MM","_templates":[{"name":"Deep Gnome","source":"DMG"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the spy","with":"Peebles","flags":"i"}}},"alignment":["N","E"],"spellcastingTags":["I"]}

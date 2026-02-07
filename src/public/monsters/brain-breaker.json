@@ -1,1 +1,0 @@
-{"name":"Brain Breaker","source":"PaBTSO","page":199,"_copy":{"name":"Infected Elder Brain","source":"PaBTSO","_mod":{"*":{"mode":"replaceTxt","replace":"elder brain","with":"brain breaker"}}},"ac":[{"ac":14,"from":["{@item ring mail|PHB}"]}],"speed":{"walk":30,"fly":{"number":30,"condition":"(hover)"},"canHover":true},"cr":"12","tokenCustom":true}

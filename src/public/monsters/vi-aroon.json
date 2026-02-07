@@ -1,1 +1,0 @@
-{"name":"Vi Aroon","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":28,"_copy":{"name":"Noble","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the noble","with":"Vi","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["C","G"]}

@@ -1,1 +1,0 @@
-{"name":"Agathe Silverspoon","isNpc":true,"isNamedCreature":true,"source":"CRCotN","page":21,"_copy":{"name":"Orc","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the orc","with":"Agathe","flags":"i"}}},"alignment":["C","G"]}

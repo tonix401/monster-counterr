@@ -1,1 +1,0 @@
-{"name":"Young-Gi","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":85,"_copy":{"name":"Noble","source":"MM","_templates":[{"name":"Dragonborn (Red)","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the noble","with":"Young-Gi","flags":"i"}}},"alignment":["N"]}

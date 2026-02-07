@@ -1,1 +1,0 @@
-{"name":"Umberto Noblin","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":23,"_copy":{"name":"Mage","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the mage","with":"Umberto","flags":"i"}}},"type":{"type":"humanoid","tags":["gnome"]},"alignment":["L","N"],"spellcasting":null}

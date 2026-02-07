@@ -1,1 +1,0 @@
-{"name":"R04M","isNpc":true,"isNamedCreature":true,"source":"ToFW","page":75,"_copy":{"name":"Monodrone","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"The monodrone","with":"R04M","flags":"i"}}},"alignment":["N","G"],"int":8,"languages":["Common","Modron"]}

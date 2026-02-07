@@ -1,1 +1,0 @@
-{"name":"Rivibiddel","isNpc":true,"isNamedCreature":true,"source":"PaBTSO","page":122,"_copy":{"name":"Deep Gnome (Svirfneblin)","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the gnome","with":"Rivibiddel","flags":"i"}}},"speed":{"walk":15}}

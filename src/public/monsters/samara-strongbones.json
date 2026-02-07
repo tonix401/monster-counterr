@@ -1,1 +1,0 @@
-{"name":"Samara Strongbones","isNpc":true,"isNamedCreature":true,"source":"WDH","page":104,"_copy":{"name":"Spy","source":"MM","_templates":[{"name":"Stout Halfling","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the spy","with":"Samara","flags":"i"}}},"tokenCustom":true,"languageTags":["H","X"]}

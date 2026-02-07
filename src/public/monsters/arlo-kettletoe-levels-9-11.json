@@ -1,1 +1,0 @@
-{"name":"Arlo Kettletoe (Levels 9-11)","isNpc":true,"isNamedCreature":true,"source":"KftGV","page":8,"_copy":{"name":"Mage","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the mage","with":"Arlo Kettletoe","flags":"i"}}},"type":{"type":"humanoid","tags":["halfling"]},"alignment":["N"],"tokenCustom":true}

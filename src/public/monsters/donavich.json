@@ -1,1 +1,0 @@
-{"name":"Donavich","isNpc":true,"isNamedCreature":true,"source":"CoS","page":46,"_copy":{"name":"Acolyte","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the acolyte","with":"Donavich","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["L","G"]}

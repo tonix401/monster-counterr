@@ -1,1 +1,0 @@
-{"name":"Mad Maggie","isNpc":true,"isNamedCreature":true,"source":"BGDIA","page":74,"_copy":{"name":"Night Hag","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the hag","with":"Maggie","flags":"i"}}}}

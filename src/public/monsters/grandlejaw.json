@@ -1,1 +1,0 @@
-{"name":"Grandlejaw","isNpc":true,"isNamedCreature":true,"source":"PaBTSO","page":121,"_copy":{"name":"Hydra","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the hydra","with":"Grandlejaw","flags":"i"}}}}

@@ -1,1 +1,0 @@
-{"name":"Fidelio","isNpc":true,"isNamedCreature":true,"source":"WDMM","page":197,"_copy":{"name":"Ghost","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the ghost","with":"Fidelio","flags":"i"}}},"alignment":["L","G"],"hp":{"average":80,"formula":"10d8"},"languages":["Common"],"tokenCustom":true}

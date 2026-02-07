@@ -1,1 +1,0 @@
-{"name":"Ashann","isNpc":true,"isNamedCreature":true,"source":"CRCotN","page":115,"_copy":{"name":"Occult Initiate","source":"CRCotN","_mod":{"*":{"mode":"replaceTxt","replace":"the initiate","with":"Ashann","flags":"i"}}},"size":["S"],"type":{"type":"humanoid","tags":["gnome","sorcerer"]},"alignment":["C","N"]}

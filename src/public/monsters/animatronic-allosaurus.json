@@ -1,1 +1,0 @@
-{"name":"Animatronic Allosaurus","source":"KftGV","page":22,"_copy":{"name":"Allosaurus","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"allosaurus","with":"animatronic allosaurus"}}},"type":"construct","immune":["poison","psychic"],"conditionImmune":["charmed","frightened","paralyzed","poisoned"],"tokenCustom":true}

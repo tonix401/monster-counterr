@@ -1,1 +1,0 @@
-{"name":"Djeneba","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":173,"_copy":{"name":"Mage","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the mage","with":"Djeneba","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["C","N"]}

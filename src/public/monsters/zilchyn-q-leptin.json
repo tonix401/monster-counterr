@@ -1,1 +1,0 @@
-{"name":"Zilchyn Q'Leptin","isNpc":true,"isNamedCreature":true,"source":"OotA","page":137,"_copy":{"name":"Drow Mage","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the drow","with":"Zilchyn","flags":"i"}}}}

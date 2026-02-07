@@ -1,1 +1,0 @@
-{"name":"Darrett Highwater","isNpc":true,"isNamedCreature":true,"source":"DSotDQ","page":59,"_copy":{"name":"Knight","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the knight","with":"Darrett","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["L","G"]}

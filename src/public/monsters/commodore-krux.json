@@ -1,1 +1,0 @@
-{"name":"Commodore Krux","shortName":true,"isNpc":true,"isNamedCreature":true,"source":"LoX","page":22,"_copy":{"name":"Giff Shipmate","source":"BAM","_mod":{"*":{"mode":"replaceTxt","replace":"the giff","with":"Krux","flags":"i"}}}}

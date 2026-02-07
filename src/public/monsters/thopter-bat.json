@@ -1,1 +1,0 @@
-{"name":"Thopter (Bat)","source":"PSK","page":33,"_copy":{"name":"Bat","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"bat","with":"thopter"}}},"type":"construct","immune":["poison"],"conditionImmune":["charmed","poisoned"]}

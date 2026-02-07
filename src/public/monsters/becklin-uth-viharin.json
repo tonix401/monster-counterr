@@ -1,1 +1,0 @@
-{"name":"Becklin Uth Viharin","isNpc":true,"isNamedCreature":true,"source":"DSotDQ","page":55,"_copy":{"name":"Knight","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the knight","with":"Becklin","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["L","G"]}

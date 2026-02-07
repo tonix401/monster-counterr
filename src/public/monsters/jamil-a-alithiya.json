@@ -1,1 +1,0 @@
-{"name":"Jamil A'alithiya","isNpc":true,"isNamedCreature":true,"source":"CRCotN","page":83,"_copy":{"name":"Monastic High Curator","source":"CRCotN","_mod":{"*":{"mode":"replaceTxt","replace":"the high curator","with":"Jamil","flags":"i"}}},"size":["M"],"type":{"type":"humanoid","tags":["human","monk","wizard"]},"alignment":["C","G"]}

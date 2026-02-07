@@ -1,1 +1,0 @@
-{"name":"Shuushar the Awakened","isNpc":true,"isNamedCreature":true,"source":"OotA","page":7,"_copy":{"name":"Kuo-Toa","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the kuo-toa","with":"Shuushar","flags":"i"}}}}

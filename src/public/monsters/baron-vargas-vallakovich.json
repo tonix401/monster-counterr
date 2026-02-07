@@ -1,1 +1,0 @@
-{"name":"Baron Vargas Vallakovich","isNpc":true,"isNamedCreature":true,"source":"CoS","page":105,"_copy":{"name":"Noble","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the noble","with":"Vargas","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["N","E"]}

@@ -1,1 +1,0 @@
-{"name":"Ogre Lord Buhfal II","isNpc":true,"isNamedCreature":true,"source":"EGW","page":251,"_copy":{"name":"Ogre","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the ogre","with":"Lord Buhfal","flags":"i"}}},"alignment":["L","E"],"int":10,"tokenCustom":true}

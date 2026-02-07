@@ -1,1 +1,0 @@
-{"name":"Gildha Duhn","isNpc":true,"isNamedCreature":true,"source":"OoW","page":110,"_copy":{"name":"Acolyte","source":"MM","_templates":[{"name":"Half-Orc","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the acolyte","with":"Gildha","flags":"i"}}},"languageTags":["C","O","X"]}

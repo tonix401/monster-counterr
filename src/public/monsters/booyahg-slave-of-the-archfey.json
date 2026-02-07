@@ -1,1 +1,0 @@
-{"name":"Booyahg Slave of the Archfey","shortName":"Goblin","source":"VGM","page":42,"_copy":{"name":"Warlock of the Archfey","source":"VGM","_templates":[{"name":"Goblin","source":"DMG"}],"_mod":{"*":[{"mode":"replaceTxt","replace":"The warlock","with":"The goblin"},{"mode":"replaceTxt","replace":"the warlock","with":"the goblin"}]}},"tokenCustom":true}

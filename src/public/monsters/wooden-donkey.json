@@ -1,1 +1,0 @@
-{"name":"Wooden Donkey","source":"WDMM","page":84,"_copy":{"name":"Mule","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"mule","with":"donkey","flags":"i"}}},"type":"construct","senses":["blindsight 30 ft. (blind beyond this radius)"],"immune":["poison"],"conditionImmune":["blinded","charmed","frightened","paralyzed","petrified","poisoned"],"senseTags":["B"]}

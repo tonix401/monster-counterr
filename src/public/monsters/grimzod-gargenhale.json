@@ -1,1 +1,0 @@
-{"name":"Grimzod Gargenhale","isNpc":true,"isNamedCreature":true,"source":"LoX","page":32,"_copy":{"name":"Vampirate Captain","source":"BAM","_mod":{"*":{"mode":"replaceTxt","replace":"the captain","with":"Grimzod","flags":"i"}}},"alignment":["C","N"]}

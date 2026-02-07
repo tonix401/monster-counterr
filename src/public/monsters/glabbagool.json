@@ -1,1 +1,0 @@
-{"name":"Glabbagool","isNpc":true,"isNamedCreature":true,"source":"OotA","page":35,"_copy":{"name":"Gelatinous Cube","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the cube","with":"Glabbagool","flags":"i"}}},"int":10,"languages":["telepathy 60 ft."]}

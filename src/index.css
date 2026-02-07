@@ -234,3 +234,8 @@ hr {
   border-top: 1px solid var(--border);
   margin: var(--spacing-md) 0;
 }
+
+a {
+  color: var(--text);
+  text-decoration: underline;
+}

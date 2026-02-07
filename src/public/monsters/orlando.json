@@ -1,1 +1,0 @@
-{"name":"Orlando","isNpc":true,"isNamedCreature":true,"source":"QftIS","page":98,"_copy":{"name":"Noble","source":"MM","_templates":[{"name":"Human","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the noble","with":"Orlando","flags":"i"}}},"alignment":["N","G"],"ac":[11],"action":null}

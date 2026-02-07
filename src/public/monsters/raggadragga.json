@@ -1,1 +1,0 @@
-{"name":"Raggadragga","isNpc":true,"isNamedCreature":true,"source":"BGDIA","page":87,"_copy":{"name":"Wereboar","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the wereboar","with":"Raggadragga","flags":"i"}}},"hp":{"average":120,"formula":"12d8 + 24"}}

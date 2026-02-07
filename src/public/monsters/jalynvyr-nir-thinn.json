@@ -1,1 +1,0 @@
-{"name":"Jalynvyr Nir'Thinn","isNpc":true,"isNamedCreature":true,"source":"KftGV","page":155,"_copy":{"name":"Smoke Mephit","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the mephit","with":"Jalynvyr Nir'Thinn","flags":"i"}}},"languages":["Common","Elvish"],"tokenCustom":true}

@@ -40,4 +40,6 @@ export const ASSETS = {
   REDO_ICON: `${BASE_URL}/redo.svg`,
   SKULL_ICON: `${BASE_URL}/skull.svg`,
   BIN_ICON: `${BASE_URL}/bin.svg`,
+  KNIFE_ICON: `${BASE_URL}/knife.svg`,
+  HIDE_ICON: `${BASE_URL}/hide.svg`,
 } as const

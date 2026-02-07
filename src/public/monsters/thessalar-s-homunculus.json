@@ -1,1 +1,0 @@
-{"name":"Thessalar's Homunculus","isNpc":true,"isNamedCreature":true,"source":"IMR","page":35,"_copy":{"name":"Homunculus","source":"MM","_mod":{"action":{"mode":"appendArr","items":{"name":"Acidic Spittle","entries":["{@atk rw} {@hit 4} to hit, range 30 ft., one target. {@h}5 ({@damage 1d6 + 2}) acid damage."]}}}},"damageTags":["A","P"]}

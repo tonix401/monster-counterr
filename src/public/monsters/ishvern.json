@@ -1,1 +1,0 @@
-{"name":"Ishvern","isNpc":true,"isNamedCreature":true,"source":"DSotDQ","page":114,"_copy":{"name":"Sea Elf Scout","source":"DSotDQ","_mod":{"*":{"mode":"replaceTxt","replace":"the scout","with":"Ishvern","flags":"i"}}},"alignment":["N","G"]}

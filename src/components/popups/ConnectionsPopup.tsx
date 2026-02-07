@@ -19,7 +19,7 @@ const ConnectionsPopup: React.FC = () => {
     initializeHost()
   }, [initializeHost])
 
-  const clientUrl = `${window.location.origin}${BASE_URL}/client?host=${peerId}`
+  const clientUrl = `${window.location.origin}${BASE_URL}/#client?host=${peerId}`
 
   return (
     <Popup onClose={() => navigate('/')} title={t('connections')} width={520}>

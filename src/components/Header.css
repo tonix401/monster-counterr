@@ -1,0 +1,27 @@
+header {
+  padding: 24px 28px;
+  background: linear-gradient(135deg, rgba(124, 77, 255, 0.18), rgba(124, 77, 255, 0.05));
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header > h2 {
+  margin: 0;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+header > div {
+  display: flex;
+  gap: 12px;
+}
+
+#xp-counter {
+  font-weight: 600;
+  font-size: 18px;
+  padding: 0 12px;
+  align-self: center;
+}

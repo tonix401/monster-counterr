@@ -1,0 +1,11 @@
+.settings-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.settings-row > label {
+  user-select: none;
+}

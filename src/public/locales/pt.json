@@ -67,6 +67,22 @@
     "includeCurrentXp": "Incluir XP atual",
     "includeSettings": "Incluir configurações",
     "includeMonsters": "Inclua seus monstros atuais",
-    "fileSize": "Tamanho esperado do arquivo salvo:"
+    "fileSize": "Tamanho esperado do arquivo salvo:",
+    "source": "Fonte",
+    "blinded": "Cego",
+    "charmed": "Encantado",
+    "deafened": "Surdos",
+    "fatigued": "Cansado",
+    "frightened": "Com medo",
+    "grappled": "Agarrado",
+    "incapacitated": "Incapacitado",
+    "invisible": "Invisível",
+    "paralyzed": "Paralisado",
+    "petrified": "Petrificado",
+    "poisoned": "Envenenado",
+    "prone": "Propenso",
+    "restrained": "Contido",
+    "stunned": "Estupefato",
+    "unconscious": "Inconsciente"
   }
 }

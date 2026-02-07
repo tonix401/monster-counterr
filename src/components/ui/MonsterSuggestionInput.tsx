@@ -12,8 +12,7 @@ const MonsterSuggestionInput: React.FC<MonsterSuggestionInputProps> = ({ value, 
   const monsterIndex = useMonsterStore((state) => state.monsterIndex)
   const source = useMonsterStore((state) => state.source)
   const setSource = useMonsterStore((state) => state.setSource)
-  const t_name = useTerm('name')
-  const t_source = useTerm('source')
+  const t = useTerm()
 
   const sources = useMemo(
     () =>
@@ -28,7 +27,7 @@ const MonsterSuggestionInput: React.FC<MonsterSuggestionInputProps> = ({ value, 
     <div className="suggestion-input-container">
       <input
         type="text"
-        placeholder={t_source}
+        placeholder={t('source')}
         value={source ?? ''}
         onChange={(e) => setSource(e.target.value)}
         list="monster-sources-datalist"
@@ -41,7 +40,7 @@ const MonsterSuggestionInput: React.FC<MonsterSuggestionInputProps> = ({ value, 
       </datalist>
       <input
         id="monster-suggestion-input"
-        placeholder={t_name}
+        placeholder={t('name')}
         required
         value={value}
         onChange={(e) => onChange(e.target.value)}

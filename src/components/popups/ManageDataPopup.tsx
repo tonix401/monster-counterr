@@ -11,10 +11,7 @@ import { SAVE_FILE } from '@/constants'
 
 const ManageDataPopup: React.FC = () => {
   const navigate = useNavigate()
-  const t_manageData = useTerm('manageData')
-  const t_includeSettings = useTerm('includeSettings')
-  const t_includeCurrentXp = useTerm('includeCurrentXp')
-  const t_fileSize = useTerm('fileSize')
+  const t = useTerm()
 
   // Get statistics from store
   const monsters = useMonsterStore((state) => state.monsters)
@@ -38,7 +35,7 @@ const ManageDataPopup: React.FC = () => {
   const saveSize = new Blob([saveJson]).size
 
   return (
-    <Popup onClose={() => navigate('/menu')} title={t_manageData} width={520}>
+    <Popup onClose={() => navigate('/menu')} title={t('manageData')} width={520}>
       <div>
         <BinarySettingsRow
           settingKey="includeMonsters"
@@ -48,24 +45,24 @@ const ManageDataPopup: React.FC = () => {
         />
         <BinarySettingsRow
           settingKey="includeSettings"
-          label={t_includeSettings}
+          label={t('includeSettings')}
           value={exportSettings.includeSettings}
           onChange={(_, checked) => setExportSetting('includeSettings', checked)}
         />
         <BinarySettingsRow
           settingKey="includeCurrentXp"
-          label={t_includeCurrentXp}
+          label={t('includeCurrentXp')}
           value={exportSettings.includeCurrentXp}
           onChange={(_, checked) => setExportSetting('includeCurrentXp', checked)}
         />
         <BinarySettingsRow
           settingKey="minimizeJson"
-          label={`Minimize JSON (smaller file size)`}
+          label={t('minimizeJson')}
           value={exportSettings.minimizeJson}
           onChange={(_, checked) => setExportSetting('minimizeJson', checked)}
         />
         <div style={{ margin: '1.5em', fontSize: '0.93em', color: '#888', textAlign: 'center' }}>
-          {t_fileSize} <b>{saveSize.toLocaleString('en', { maximumFractionDigits: 0 })} bytes</b>
+          {t('fileSize')} <b>{saveSize.toLocaleString('en', { maximumFractionDigits: 0 })} bytes</b>
         </div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'row', gap: '1rem', alignItems: 'center' }}>

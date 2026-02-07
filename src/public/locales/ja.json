@@ -67,6 +67,22 @@
     "includeSettings": "設定を含める",
     "menu": "メニュー",
     "includeMonsters": "現在のモンスターを含める",
-    "fileSize": "予想される保存ファイルサイズ:"
+    "fileSize": "予想される保存ファイルサイズ:",
+    "source": "ソース",
+    "blinded": "盲目",
+    "charmed": "チャームド〜魔女3姉妹",
+    "deafened": "耳が聞こえない",
+    "fatigued": "疲れた",
+    "frightened": "恐ろしかった",
+    "grappled": "格闘",
+    "incapacitated": "無力",
+    "invisible": "見えない",
+    "paralyzed": "麻痺した",
+    "petrified": "石化した",
+    "poisoned": "毒殺された",
+    "prone": "うつ伏せ",
+    "restrained": "拘束された",
+    "stunned": "驚愕",
+    "unconscious": "無意識"
   }
 }

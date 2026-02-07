@@ -67,6 +67,22 @@
     "includeCurrentXp": "Inkludera aktuell XP",
     "menu": "Meny",
     "includeMonsters": "Inkludera dina nuvarande monster",
-    "fileSize": "Förväntad storlek på sparad fil:"
+    "fileSize": "Förväntad storlek på sparad fil:",
+    "source": "Källa",
+    "blinded": "Förblindad",
+    "charmed": "Betagen",
+    "deafened": "Dövdövad",
+    "fatigued": "Trött",
+    "frightened": "Skrämd",
+    "grappled": "Gripade",
+    "incapacitated": "Oförmögen",
+    "invisible": "Osynlig",
+    "paralyzed": "Lam",
+    "petrified": "Förstenad",
+    "poisoned": "Förgiftad",
+    "prone": "Benägen",
+    "restrained": "Återhållsam",
+    "stunned": "Förbluffad",
+    "unconscious": "Medvetslös"
   }
 }

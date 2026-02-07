@@ -2,6 +2,7 @@ import { useNotifications, useRemoveNotification } from '@/store'
 import type { Notification } from '@/store/slices/notificationSlice'
 import type React from 'react'
 import { useEffect } from 'react'
+import './NotificationsContainer.css'
 
 const Notification: React.FC<{ notification: Notification }> = ({ notification }) => {
   const removeNotification = useRemoveNotification()

@@ -13,12 +13,8 @@ const AddMonsterPopup: React.FC = () => {
 
   const addMonster = useMonsterStore((state) => state.addMonster)
   const navigate = useNavigate()
-
-  const t_addMonster = useTerm('addMonster')
-  const t_hp = useTerm('hp')
-  const t_amount = useTerm('amount')
-  const t_xp = useTerm('xp')
-
+  const t = useTerm()
+  
   const handleAdd = () => {
     const trimmedName = name.trim()
     const hpValue = parseInt(hp) || 1
@@ -43,7 +39,7 @@ const AddMonsterPopup: React.FC = () => {
         setName('')
         navigate('/')
       }}
-      title={t_addMonster}
+      title={t('addMonster')}
       width={300}
     >
       <form
@@ -57,26 +53,26 @@ const AddMonsterPopup: React.FC = () => {
           id="hp-input"
           required
           type="number"
-          placeholder={t_hp}
+          placeholder={t('hp')}
           value={hp}
           onChange={(e) => setHp(e.target.value)}
         />
         <input
           id="amount-input"
           type="number"
-          placeholder={t_amount}
+          placeholder={t('amount')}
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
         <input
           id="xp-input"
           type="number"
-          placeholder={t_xp}
+          placeholder={t('xp')}
           value={xp}
           onChange={(e) => setXp(e.target.value)}
         />
         <button type="submit" className="green-button">
-          {t_addMonster}
+          {t('addMonster')}
         </button>
       </form>
     </Popup>

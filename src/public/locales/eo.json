@@ -67,6 +67,22 @@
     "openMenu": "Malfermi Menuon",
     "includeCurrentXp": "Inkluzivi Nunan XP",
     "includeMonsters": "Inkluzivi viajn nunajn Monstrojn",
-    "fileSize": "Atendita grandeco de konservita dosiero:"
+    "fileSize": "Atendita grandeco de konservita dosiero:",
+    "source": "Fonto",
+    "blinded": "Blindigita",
+    "charmed": "Ĉarmaj Sorĉistinoj",
+    "deafened": "Surdigita",
+    "fatigued": "Laca",
+    "frightened": "Timigita",
+    "grappled": "Luktis",
+    "incapacitated": "Senkapabligita",
+    "invisible": "Nevidebla",
+    "paralyzed": "Paralizita",
+    "petrified": "Ŝtonigita",
+    "poisoned": "Venenigita",
+    "prone": "Kuŝanta",
+    "restrained": "Retenita",
+    "stunned": "Miregigita",
+    "unconscious": "Senkonscia"
   }
 }

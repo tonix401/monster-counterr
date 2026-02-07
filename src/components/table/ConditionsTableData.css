@@ -1,0 +1,18 @@
+.condition-tag {
+  background: transparent;
+  border-radius: 50%;
+  min-width: 80px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.add-condition-tag {
+  width: 100%;
+}
+
+.tag-list-item {
+  display: inline-block;
+  width: fit-content;
+  padding: 6px 12px;
+}

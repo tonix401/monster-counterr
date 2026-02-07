@@ -1,0 +1,45 @@
+table {
+  width: 100%;
+  text-align: center;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+th,
+td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  height: 100%;
+}
+
+th {
+  background: rgba(124, 77, 255, 0.08);
+  letter-spacing: 0.2px;
+  user-select: none;
+  white-space: nowrap;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.name-cell {
+  font-size: larger;
+}
+
+.status-cell {
+  font-weight: larger;
+}
+
+#col-actions {
+  width: 120px;
+}

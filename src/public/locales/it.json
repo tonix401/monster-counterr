@@ -67,6 +67,22 @@
     "menu": "Menu",
     "includeSettings": "Includi impostazioni",
     "includeMonsters": "Includi i tuoi mostri attuali",
-    "fileSize": "Dimensione prevista del file di salvataggio:"
+    "fileSize": "Dimensione prevista del file di salvataggio:",
+    "source": "Fonte",
+    "blinded": "Accecato",
+    "charmed": "Ammaliato",
+    "deafened": "Assordato",
+    "fatigued": "Affaticato",
+    "frightened": "Spaventato",
+    "grappled": "Afferrato",
+    "incapacitated": "Incapace",
+    "invisible": "Invisibile",
+    "paralyzed": "Paralizzato",
+    "petrified": "pietrificato",
+    "poisoned": "Avvelenato",
+    "prone": "Prono",
+    "restrained": "Trattenuto",
+    "stunned": "Stordito",
+    "unconscious": "Inconscio"
   }
 }

@@ -1,12 +1,20 @@
 import type { StateCreator } from 'zustand'
 import Peer, { type DataConnection } from 'peerjs'
 import type { MonsterSlice } from './monsterSlice'
+import type { MonsterStatus } from '@/types/Monster'
+
+export type ClientConnection = {
+  conn: DataConnection
+  name: string
+  lastActivity: number
+}
 
 export type ConnectionSliceState = {
   peer: Peer | null
   peerId: string | null
-  connections: DataConnection[]
+  connections: ClientConnection[]
   isConnecting: boolean
+  healthCheckInterval: number | null
 }
 
 export type ConnectionSliceActions = {
@@ -27,6 +35,7 @@ export const createConnectionSlice: StateCreator<
   peerId: null,
   connections: [],
   isConnecting: false,
+  healthCheckInterval: null,
 
   initializeHost: () => {
     if (get().peer) return
@@ -36,26 +45,79 @@ export const createConnectionSlice: StateCreator<
 
     peer.on('open', (id) => {
       set({ peerId: id, isConnecting: false })
+
+      // Start health check interval after peer is ready
+      const healthInterval = window.setInterval(() => {
+        const now = Date.now()
+        const timeout = 35000 // 35 seconds (ping interval is 20s)
+        set((state) => ({
+          connections: state.connections.filter((c) => {
+            const isAlive = now - c.lastActivity < timeout
+            if (!isAlive) {
+              console.log('Removing dead connection:', c.name)
+              c.conn.close()
+            }
+            return isAlive
+          }),
+        }))
+      }, 10000) // Check every 10 seconds
+
+      set({ healthCheckInterval: healthInterval })
     })
 
     peer.on('connection', (conn) => {
       conn.on('open', () => {
-        set((state) => ({
-          connections: [...state.connections, conn],
-        }))
-        // Send initial state
-        get().broadcastMonsters()
+        console.log('Client connected:', conn.peer)
+      })
+
+      conn.on('data', (data: any) => {
+        const now = Date.now()
+
+        if (data.type === 'client-name') {
+          // Check if connection already exists
+          const existingConn = get().connections.find((c) => c.conn.peer === conn.peer)
+          if (!existingConn) {
+            set((state) => ({
+              connections: [
+                ...state.connections,
+                { conn, name: data.name || 'Unknown Client', lastActivity: now },
+              ],
+            }))
+            // Send initial state
+            get().broadcastMonsters()
+          }
+        } else {
+          // Update lastActivity for any other message type
+          set((state) => ({
+            connections: state.connections.map((c) =>
+              c.conn.peer === conn.peer ? { ...c, lastActivity: now } : c
+            ),
+          }))
+
+          if (data.type === 'attack') {
+            // Handle attack from client - highlight the monster
+            const highlightMonster = (get() as any).highlightMonster
+            if (highlightMonster && data.monsterId) {
+              highlightMonster(data.monsterId)
+            }
+          } else if (data.type === 'ping') {
+            // Respond to ping with pong
+            if (conn.open) {
+              conn.send({ type: 'pong' })
+            }
+          }
+        }
       })
 
       conn.on('close', () => {
         set((state) => ({
-          connections: state.connections.filter((c) => c.peer !== conn.peer),
+          connections: state.connections.filter((c) => c.conn.peer !== conn.peer),
         }))
       })
 
       conn.on('error', () => {
         set((state) => ({
-          connections: state.connections.filter((c) => c.peer !== conn.peer),
+          connections: state.connections.filter((c) => c.conn.peer !== conn.peer),
         }))
       })
     })
@@ -73,14 +135,29 @@ export const createConnectionSlice: StateCreator<
     if (connections.length === 0) return
 
     const data = {
-      enemies: monsters.map((m) => ({
-        name: m.name + (m.number > 0 ? ` ${m.number}` : ''),
-        health: Math.round((m.hp / m.maxhp) * 100),
-        conditions: m.conditions,
-      })),
+      enemies: monsters
+        .filter((m) => !m.isHidden)
+        .map((m) => {
+          let status: MonsterStatus
+          if (m.hp <= 0) {
+            status = 'down'
+          } else if (m.hp <= m.maxhp / 4) {
+            status = 'badly-injured'
+          } else if (m.hp <= m.maxhp / 2) {
+            status = 'injured'
+          } else {
+            status = 'healthy'
+          }
+          return {
+            id: m.id,
+            name: m.name + (m.number > 0 ? ` ${m.number}` : ''),
+            status: status,
+            conditions: m.conditions,
+          }
+        }),
     }
 
-    connections.forEach((conn) => {
+    connections.forEach(({ conn }) => {
       if (conn.open) {
         conn.send(data)
       }
@@ -88,9 +165,12 @@ export const createConnectionSlice: StateCreator<
   },
 
   disconnectAll: () => {
-    const { peer, connections } = get()
-    connections.forEach((conn) => conn.close())
+    const { peer, connections, healthCheckInterval } = get()
+    connections.forEach(({ conn }) => conn.close())
     peer?.destroy()
-    set({ peer: null, peerId: null, connections: [] })
+    if (healthCheckInterval) {
+      window.clearInterval(healthCheckInterval)
+    }
+    set({ peer: null, peerId: null, connections: [], healthCheckInterval: null })
   },
 })

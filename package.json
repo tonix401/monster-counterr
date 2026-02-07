@@ -5,11 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "start": "node scripts/start.js",
     "preview": "vite preview",
     "dev": "vite",
     "update_terms": "node scripts/update_terms.js",
-    "generate_monster_index": "node scripts/generate_monster_index.js",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\""
   },
@@ -27,7 +25,6 @@
     "@types/peerjs": "^0.0.30",
     "@types/react": "19.2.5",
     "@types/react-dom": "19.2.3",
-    "@vitejs/plugin-basic-ssl": "^2.1.4",
     "@vitejs/plugin-react": "5.1.1",
     "eslint": "9.39.1",
     "eslint-config-prettier": "10.1.8",

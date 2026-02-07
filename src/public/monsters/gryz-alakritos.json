@@ -1,1 +1,0 @@
-{"name":"Gryz Alakritos","isNpc":true,"isNamedCreature":true,"source":"CRCotN","page":81,"_copy":{"name":"Scholarly Mastermind","source":"CRCotN","_templates":[{"name":"Goblin","source":"DMG"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the mastermind","with":"Gryz","flags":"i"}}},"type":{"type":"humanoid","tags":["goblin","wizard"]},"alignment":["N","G"]}

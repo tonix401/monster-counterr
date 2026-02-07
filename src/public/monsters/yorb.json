@@ -1,1 +1,0 @@
-{"name":"Yorb","isNpc":true,"isNamedCreature":true,"source":"ToA","page":108,"_copy":{"name":"Grung Elite Warrior","source":"VGM","_mod":{"*":{"mode":"replaceTxt","replace":"the grung","with":"Yorb","flags":"i"}},"_preserve":{"variant":true}}}

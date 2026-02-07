@@ -1,1 +1,0 @@
-{"name":"Kianna","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":42,"_copy":{"name":"Commoner","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the commoner","with":"Kianna","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["C","N"]}

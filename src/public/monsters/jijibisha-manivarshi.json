@@ -1,1 +1,0 @@
-{"name":"Jijibisha Manivarshi","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":128,"_copy":{"name":"Ultroloth","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the ultroloth","with":"Jijibisha","flags":"i"},"_":{"mode":"removeSpells","daily":{"3e":["{@spell dimension door}","{@spell fear}"],"1e":["{@spell fire storm}","{@spell mass suggestion}"]}}}}}

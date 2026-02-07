@@ -1,1 +1,0 @@
-{"name":"Nene","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":205,"_copy":{"name":"Hawk","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the hawk","with":"Nene","flags":"i"}}},"type":"fey","int":7,"languages":["Understands simple phrases and concepts in Common"]}

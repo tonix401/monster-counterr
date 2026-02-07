@@ -1,1 +1,0 @@
-{"name":"Gwyn Oresong","isNpc":true,"isNamedCreature":true,"source":"PaBTSO","page":8,"_copy":{"name":"Acolyte","source":"MM","_templates":[{"name":"Mountain Dwarf","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the acolyte","with":"Gwyn","flags":"i"}}},"alignment":["N","G"]}

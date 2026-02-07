@@ -1,1 +1,0 @@
-{"name":"Aradrine the Owl","isNpc":true,"isNamedCreature":true,"source":"CRCotN","page":82,"_copy":{"name":"Occult Silvertongue","source":"CRCotN","_templates":[{"name":"Goliath","source":"VGM"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the silvertongue","with":"Aradrine","flags":"i"}}},"type":{"type":"humanoid","tags":["goliath","sorcerer"]},"alignment":["L","N"]}

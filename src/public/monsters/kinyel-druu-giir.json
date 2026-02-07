@@ -1,1 +1,0 @@
-{"name":"Kinyel Druu'giir","isNpc":true,"isNamedCreature":true,"source":"OotA","page":134,"_copy":{"name":"Drow Assassin","source":"OotA","_mod":{"*":{"mode":"replaceTxt","replace":"the assassin","with":"Kinyel","flags":"i"}}},"traitTags":["Fey Ancestry","Sneak Attack","Sunlight Sensitivity"],"spellcastingTags":["I"]}

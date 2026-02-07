@@ -1,1 +1,0 @@
-{"name":"Reghed Warrior","source":"IDRotF","page":152,"_copy":{"name":"Tribal Warrior","source":"MM","_mod":{"*":[{"mode":"replaceTxt","replace":"tribal warrior","with":"warrior"}],"_":[{"mode":"addSkills","skills":{"survival":1}}]}},"skill":{"survival":"+4"},"languages":["Common"],"languageTags":["C"]}

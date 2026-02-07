@@ -1,1 +1,0 @@
-{"name":"Gorvan Ironheart","isNpc":true,"isNamedCreature":true,"source":"TftYP","page":151,"_copy":{"name":"Priest","source":"MM","_templates":[{"name":"Mountain Dwarf","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the priest","with":"Gorvan","flags":"i"}}}}

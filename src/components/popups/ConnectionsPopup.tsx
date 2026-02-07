@@ -24,23 +24,19 @@ const ConnectionsPopup: React.FC = () => {
   return (
     <Popup onClose={() => navigate('/')} title={t('connections')} width={520}>
       <div className="connections-container">
-        {isConnecting && <div>Connecting to signaling server...</div>}
+        {isConnecting && <div>{t('connectingToSignalingServer')}</div>}
         {peerId ? (
           <>
             <div className="qr-wrapper">
-              <QRCodeSVG value={clientUrl} size={256} />
+              {isConnecting ? null : <QRCodeSVG value={clientUrl} size={256} />}
             </div>
 
-            <div className="peer-info">
-              <p>Peer ID:</p>
-              <code className="peer-id-code">{peerId}</code>
-              <p>Client URL:</p>
-              {clientUrl}
-            </div>
+            <a href={clientUrl} target="_blank" rel="noopener noreferrer">
+              {t('connectionLink')}
+            </a>
 
             <div className="connections-list-section">
               <div className="connections-header">
-                <h3>Connected Clients ({connections.length})</h3>
                 <button
                   className="green-button stop-hosting-button"
                   onClick={() => {
@@ -48,17 +44,17 @@ const ConnectionsPopup: React.FC = () => {
                     navigate('/')
                   }}
                 >
-                  Stop Hosting
+                  {t('stopHosting')}
                 </button>
               </div>
               <ul className="connections-list">
                 {connections.length === 0 ? (
-                  <li className="no-connections">No clients connected</li>
+                  <li className="no-connections">{t('noClientsConnected')}</li>
                 ) : (
-                  connections.map((conn) => (
+                  connections.map(({ conn, name }) => (
                     <li key={conn.peer} className="connection-item">
-                      <span>{conn.peer}</span>
-                      <span className="connection-status">Connected</span>
+                      <span>{name}</span>
+                      <span className="connection-status">{t('connected')}</span>
                     </li>
                   ))
                 )}
@@ -66,7 +62,7 @@ const ConnectionsPopup: React.FC = () => {
             </div>
           </>
         ) : (
-          !isConnecting && <div>Failed to initialize connection.</div>
+          !isConnecting && <div>{t('failedToInitializeConnection')}</div>
         )}
       </div>
     </Popup>

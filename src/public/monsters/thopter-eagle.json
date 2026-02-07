@@ -1,1 +1,0 @@
-{"name":"Thopter (Eagle)","source":"PSK","page":33,"_copy":{"name":"Eagle","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"eagle","with":"thopter"}}},"type":"construct","immune":["poison"],"conditionImmune":["charmed","poisoned"]}

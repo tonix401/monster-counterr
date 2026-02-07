@@ -1,1 +1,0 @@
-{"name":"Tiefling Muralist","source":"IMR","page":17,"_copy":{"name":"Cultist","source":"MM","_templates":[{"name":"Tiefling","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"cultist","with":"muralist"}}},"tokenCustom":true,"languageTags":["C","I","X"],"damageTagsSpell":["F"]}

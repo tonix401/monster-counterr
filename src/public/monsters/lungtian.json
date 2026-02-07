@@ -1,1 +1,0 @@
-{"name":"Lungtian","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":136,"_copy":{"name":"Dryad","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the dryad","with":"Lungtian","flags":"i"}}},"alignment":["C","G"]}

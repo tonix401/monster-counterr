@@ -1,1 +1,0 @@
-{"name":"Fenthaza","isNpc":true,"isNamedCreature":true,"source":"ToA","page":113,"_copy":{"name":"Yuan-ti Nightmare Speaker","source":"VGM","_mod":{"*":{"mode":"replaceTxt","replace":"the yuan-ti","with":"Fenthaza","flags":"i"}}}}

@@ -1,1 +1,0 @@
-{"name":"Mennek Ariz","isNpc":true,"isNamedCreature":true,"source":"TftYP","page":157,"_copy":{"name":"Enchanter","source":"VGM","_mod":{"*":{"mode":"replaceTxt","replace":"the enchanter","with":"Mennek","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]}}

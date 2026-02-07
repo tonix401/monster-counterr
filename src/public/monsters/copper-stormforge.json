@@ -1,1 +1,0 @@
-{"name":"Copper Stormforge","isNpc":true,"isNamedCreature":true,"source":"WDMM","page":30,"_copy":{"name":"Scout","source":"MM","_templates":[{"name":"Shield Dwarf","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the scout","with":"Copper","flags":"i"}}},"alignment":["N","E"],"tokenCustom":true,"senseTags":["D"],"languageTags":["C","D","X"]}

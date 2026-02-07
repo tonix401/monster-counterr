@@ -1,1 +1,0 @@
-{"name":"Ekene-Afa","isNpc":true,"isNamedCreature":true,"source":"ToA","page":25,"_copy":{"name":"Gladiator","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the gladiator","with":"Ekene-Afa","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["L","G"]}

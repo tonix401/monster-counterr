@@ -1,1 +1,0 @@
-{"name":"Wurm","source":"PSZ","page":32,"_copy":{"name":"Purple Worm","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"\\bworm","with":"wurm"}}},"tokenCustom":true}

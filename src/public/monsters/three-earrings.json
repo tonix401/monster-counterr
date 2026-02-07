@@ -1,1 +1,0 @@
-{"name":"Three Earrings","isNpc":true,"isNamedCreature":true,"source":"EGW","page":211,"_copy":{"name":"Bandit Captain","source":"MM","_templates":[{"name":"Tabaxi","source":"VGM"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the captain","with":"Three Earrings"}}},"alignment":["N","E"],"tokenCustom":true}

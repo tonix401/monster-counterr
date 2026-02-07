@@ -1,1 +1,0 @@
-{"name":"Hjoldak Hollowhelm","isNpc":true,"isNamedCreature":true,"source":"PaBTSO","page":93,"_copy":{"name":"Psionic Ashenwight","source":"PaBTSO","_mod":{"*":{"mode":"replaceTxt","replace":"the ashenwight","with":"Hjoldak","flags":"i"}}},"alignment":["N"]}

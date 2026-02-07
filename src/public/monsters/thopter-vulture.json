@@ -1,1 +1,0 @@
-{"name":"Thopter (Vulture)","source":"PSK","page":33,"_copy":{"name":"Vulture","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"vulture","with":"thopter"}}},"type":"construct","immune":["poison"],"conditionImmune":["charmed","poisoned"]}

@@ -1,1 +1,0 @@
-{"name":"Lamai Tyenmo","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":20,"_copy":{"name":"Commoner","source":"MM","_templates":[{"name":"Rock Gnome","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the commoner","with":"Lamai","flags":"i"}}},"alignment":["L","G"]}

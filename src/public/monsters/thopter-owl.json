@@ -1,1 +1,0 @@
-{"name":"Thopter (Owl)","source":"PSK","page":33,"_copy":{"name":"Owl","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"owl","with":"thopter"}}},"type":"construct","immune":["poison"],"conditionImmune":["charmed","poisoned"]}

@@ -1,1 +1,0 @@
-{"name":"Cudgel Ironsmile","isNpc":true,"isNamedCreature":true,"source":"DSotDQ","page":58,"_copy":{"name":"Veteran","source":"MM","_templates":[{"name":"Hill Dwarf","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the veteran","with":"Cudgel","flags":"i"}}},"alignment":["N"]}

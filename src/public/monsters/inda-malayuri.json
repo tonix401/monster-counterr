@@ -1,1 +1,0 @@
-{"name":"Inda Malayuri","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":68,"_copy":{"name":"Deva","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the deva","with":"Inda","flags":"i"}}},"speed":{"walk":30}}

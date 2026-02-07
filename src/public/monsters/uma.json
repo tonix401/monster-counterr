@@ -1,1 +1,0 @@
-{"name":"Uma","isNpc":true,"isNamedCreature":true,"source":"QftIS","page":120,"_copy":{"name":"Knight","source":"MM","_templates":[{"name":"Human","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the knight","with":"Uma","flags":"i"}}}}

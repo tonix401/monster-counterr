@@ -1,1 +1,0 @@
-{"name":"Soulstinger Demon","source":"PSA","page":30,"_copy":{"name":"Bone Devil","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"devil","with":"demon"},"variant":"remove"}},"type":{"type":"fiend","tags":["demon"]}}

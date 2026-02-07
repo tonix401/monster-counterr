@@ -1,1 +1,0 @@
-{"name":"Enna Galakiir (Levels 1-4)","isNpc":true,"isNamedCreature":true,"source":"KftGV","page":8,"_copy":{"name":"Bandit","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the bandit","with":"Enna Galakiir","flags":"i"}}},"type":{"type":"humanoid","tags":["elf"]},"alignment":["N"],"tokenCustom":true}

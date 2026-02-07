@@ -1,1 +1,0 @@
-{"name":"Tyrant","alias":["Monstrosaur","Dreadmaw","Swordtooth","Regisaur"],"source":"PSX","page":31,"_copy":{"name":"Tyrannosaurus Rex","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"tyrannosaurus","with":"tyrant"}}}}

@@ -2,7 +2,6 @@ import type { StateCreator } from 'zustand'
 import { SAVE_FILE } from '@/constants'
 import type { Monster } from '@/types/Monster'
 import type { Settings } from '@/types/Settings'
-import type { MonsterIndex } from '@/types/MonsterDetails'
 import type { NotificationSlice } from './notificationSlice'
 
 export interface SaveData {
@@ -10,7 +9,6 @@ export interface SaveData {
   monsters: Monster[]
   currentXp: number
   settings: Settings
-  monsterIndex: Record<string, MonsterIndex>
 }
 
 export interface SaveFileExportSettings {

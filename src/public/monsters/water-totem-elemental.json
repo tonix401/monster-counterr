@@ -1,1 +1,0 @@
-{"name":"Water Totem Elemental","source":"PSX","page":38,"_copy":{"name":"Water Elemental","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"elemental","with":"totem elemental"}}},"tokenCustom":true}

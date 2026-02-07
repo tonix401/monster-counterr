@@ -1,1 +1,0 @@
-{"name":"Chishinix' Head","isNpc":true,"isNamedCreature":true,"source":"PaBTSO","page":194,"_copy":{"name":"Encephalon Gemmule","source":"PaBTSO","_mod":{"*":{"mode":"replaceTxt","replace":"gemmule","with":"head"},"trait":{"mode":"removeArr","names":"Encephalon Progeny"}}},"speed":{"walk":10}}

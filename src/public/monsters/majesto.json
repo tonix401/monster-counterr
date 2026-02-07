@@ -1,1 +1,0 @@
-{"name":"Majesto","isNpc":true,"isNamedCreature":true,"source":"CoS","page":115,"_copy":{"name":"Imp","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the imp","with":"Majesto","flags":"i"}}}}

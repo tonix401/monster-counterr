@@ -1,1 +1,0 @@
-{"name":"Yalah Gralhund","isNpc":true,"isNamedCreature":true,"source":"WDH","page":220,"_copy":{"name":"Noble","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the noble","with":"Yalah","flags":"i"}}},"type":{"type":"humanoid","tags":[{"tag":"human","prefix":"Tethyrian","prefixHidden":true}]},"int":16,"languages":["Common","Infernal"],"languageTags":["C","I"]}

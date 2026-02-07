@@ -17,6 +17,10 @@ td {
   height: 100%;
 }
 
+tr {
+  transition: all 0.5s ease-out;
+}
+
 th {
   background: var(--overlay-accent);
   letter-spacing: 0.2px;
@@ -41,5 +45,47 @@ tr:nth-child(even) td {
 }
 
 #col-actions {
-  width: 120px;
+  width: 170px;
+}
+
+#col-conditions {
+  width: 160px;
+}
+
+#col-status {
+  width: 140px;
+}
+
+#col-hp {
+  width: 140px;
+}
+
+@keyframes orange-pulse {
+  0% {
+    box-shadow:
+      0 0 8px rgba(255, 165, 0, 0.6),
+      0 0 16px rgba(255, 140, 0, 0.4),
+      inset 0 0 12px rgba(255, 165, 0, 0.2);
+    filter: brightness(1.05);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(255, 165, 0, 0.9),
+      0 0 40px rgba(255, 140, 0, 0.6),
+      inset 0 0 20px rgba(255, 165, 0, 0.4);
+    filter: brightness(1.15);
+  }
+  100% {
+    box-shadow:
+      0 0 8px rgba(255, 165, 0, 0.6),
+      0 0 16px rgba(255, 140, 0, 0.4),
+      inset 0 0 12px rgba(255, 165, 0, 0.2);
+    filter: brightness(1.05);
+  }
+}
+
+.highlighted-row {
+  animation: orange-pulse 2s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
 }

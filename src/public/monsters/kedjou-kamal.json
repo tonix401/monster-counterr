@@ -1,1 +1,0 @@
-{"name":"Kedjou Kamal","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":96,"_copy":{"name":"Priest","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the priest","with":"Kedjou","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["N","E"]}

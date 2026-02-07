@@ -96,13 +96,6 @@ export const useMonsterStore = create<MonsterCounterState>()(
             await get().loadLanguagePack(get().language)
             set({ isLoading: false })
             get().getMonsterIndex()
-
-            // Auto-broadcast monsters state to connections
-            api.subscribe((state, prevState) => {
-              if (state.monsters !== prevState.monsters && state.broadcastMonsters) {
-                state.broadcastMonsters()
-              }
-            })
           },
 
           setLoading: (loading: boolean): void => {
@@ -176,6 +169,13 @@ export const useMonsterStore = create<MonsterCounterState>()(
     }
   )
 )
+
+// Auto-broadcast monsters state to connections when monsters change
+useMonsterStore.subscribe((state, prevState) => {
+  if (state.monsters !== prevState.monsters && state.broadcastMonsters) {
+    state.broadcastMonsters()
+  }
+})
 
 // Selectors for optimized subscriptions
 export const useMonsters = (): Monster[] => useMonsterStore((state) => state.monsters)

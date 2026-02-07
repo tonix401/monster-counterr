@@ -1,1 +1,0 @@
-{"name":"Voalsh","isNpc":true,"isNamedCreature":true,"source":"PaBTSO","page":194,"_copy":{"name":"Mind Flayer Clairvoyant","source":"PaBTSO","_mod":{"*":{"mode":"replaceTxt","replace":"the mind flayer","with":"Voalsh","flags":"i"}}},"speed":{"walk":0,"fly":{"number":30,"condition":"(hover)"},"canHover":true},"conditionImmune":["blinded","charmed","frightened","prone"]}

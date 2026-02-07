@@ -1,1 +1,0 @@
-{"name":"Torbit","isNpc":true,"isNamedCreature":true,"source":"WDMM","page":115,"_copy":{"name":"Assassin","source":"MM","_templates":[{"name":"Bullywug","source":"DMG"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the assassin","with":"Torbit","flags":"i"}}},"alignment":["C","E"],"tokenCustom":true,"traitTags":["Amphibious","Sneak Attack"],"languageTags":["OTH","TC","X"]}

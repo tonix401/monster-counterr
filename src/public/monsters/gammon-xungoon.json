@@ -1,1 +1,0 @@
-{"name":"Gammon Xungoon","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":20,"_copy":{"name":"Commoner","source":"MM","_templates":[{"name":"Kobold","source":"DMG"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the commoner","with":"Gammon","flags":"i"}}},"alignment":["C","G"],"traitTags":["Pack Tactics","Sunlight Sensitivity"]}

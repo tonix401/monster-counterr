@@ -1,1 +1,0 @@
-{"name":"Ameyali","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":108,"_copy":{"name":"Priest","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the priest","with":"Ameyali","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["N","G"]}

@@ -1,1 +1,0 @@
-{"name":"Sovereign Basidia","isNpc":true,"isNamedCreature":true,"source":"OotA","page":88,"_copy":{"name":"Myconid Sovereign","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the myconid","with":"Basidia","flags":"i"}}},"damageTags":["B","I"],"conditionInflict":["incapacitated","poisoned","stunned"]}

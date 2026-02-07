@@ -1,1 +1,0 @@
-{"name":"Ireena Kolyana","isNpc":true,"isNamedCreature":true,"source":"CoS","page":44,"_copy":{"name":"Noble","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the noble","with":"Ireena","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["L","G"],"hp":{"average":14,"formula":"2d8"}}

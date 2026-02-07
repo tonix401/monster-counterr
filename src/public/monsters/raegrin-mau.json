@@ -1,1 +1,0 @@
-{"name":"Raegrin Mau","isNpc":true,"isNamedCreature":true,"source":"EGW","page":240,"_copy":{"name":"Cultist","source":"MM","_templates":[{"name":"Wood Elf","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the cultist","with":"Raegrin","flags":"i"}}},"tokenCustom":true,"traitTags":["Fey Ancestry"]}

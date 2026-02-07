@@ -1,1 +1,0 @@
-{"name":"Aljanor Keenblade","isNpc":true,"isNamedCreature":true,"source":"OotA","page":149,"_copy":{"name":"Knight","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the knight","with":"Aljanor","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"ac":[10]}

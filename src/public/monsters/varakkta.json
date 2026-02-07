@@ -1,1 +1,0 @@
-{"name":"Varakkta","isNpc":true,"isNamedCreature":true,"source":"PaBTSO","page":174,"_copy":{"name":"Githyanki Knight","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the githyanki","with":"Varakkta","flags":"i"}}}}

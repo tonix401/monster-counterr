@@ -6,11 +6,13 @@ import './QuickActionsTableData.css'
 
 interface QuickActionsTableDataProps {
   monsterId: string
+  isHidden?: boolean
 }
 
-const QuickActionsTableData: React.FC<QuickActionsTableDataProps> = ({ monsterId }) => {
+const QuickActionsTableData: React.FC<QuickActionsTableDataProps> = ({ monsterId, isHidden }) => {
   const killMonster = useMonsterStore((state) => state.killMonster)
   const removeMonster = useMonsterStore((state) => state.removeMonster)
+  const toggleHideMonster = useMonsterStore((state) => state.toggleHideMonster)
   const t = useTerm()
 
   const handleKill = () => {
@@ -19,6 +21,10 @@ const QuickActionsTableData: React.FC<QuickActionsTableDataProps> = ({ monsterId
 
   const handleRemove = () => {
     removeMonster(monsterId)
+  }
+
+  const handleHide = () => {
+    toggleHideMonster(monsterId)
   }
 
   return (
@@ -33,6 +39,13 @@ const QuickActionsTableData: React.FC<QuickActionsTableDataProps> = ({ monsterId
           onClick={handleRemove}
         >
           <img src={ASSETS.BIN_ICON} alt={t('removeMonster')} />
+        </button>
+        <button
+          className={"red-button icon-button" + (isHidden ? " monster-hidden-button" : "")}
+          title={isHidden ? t('showMonster') : t('hideMonster')}
+          onClick={handleHide}
+        >
+          <img src={ASSETS.HIDE_ICON} alt={isHidden ? t('showMonster') : t('hideMonster')} />
         </button>
       </div>
     </td>

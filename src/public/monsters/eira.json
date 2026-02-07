@@ -1,1 +1,0 @@
-{"name":"Eira","isNpc":true,"isNamedCreature":true,"source":"TftYP","page":159,"_copy":{"name":"Druid","source":"MM","_templates":[{"name":"Wood Elf","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the druid","with":"Eira","flags":"i"}}},"traitTags":["Fey Ancestry"]}

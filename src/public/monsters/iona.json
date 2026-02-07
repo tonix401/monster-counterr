@@ -1,1 +1,0 @@
-{"name":"Iona","isNamedCreature":true,"source":"PSZ","page":21,"_copy":{"name":"Solar","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"\\bthe solar\\b","with":"Iona","flags":"i"}}},"tokenCustom":true}

@@ -1,1 +1,0 @@
-{"name":"Ront","isNpc":true,"isNamedCreature":true,"source":"OotA","page":7,"_copy":{"name":"Orc","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the orc","with":"Ront","flags":"i"}}}}

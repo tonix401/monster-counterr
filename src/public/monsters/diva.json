@@ -1,1 +1,0 @@
-{"name":"Diva","source":"JttRC","page":72,"_copy":{"name":"Scout","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"scout","with":"diva"}}},"action":[{"name":"Multiattack","entries":["The scout makes two melee attacks."]},{"name":"Broken Bottle","entries":["{@atk mw} {@hit 4} to hit, reach 5 ft., one target. {@h}5 ({@damage 1d6 + 2}) piercing damage."]}]}

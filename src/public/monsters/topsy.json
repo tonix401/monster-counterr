@@ -1,1 +1,0 @@
-{"name":"Topsy","isNpc":true,"isNamedCreature":true,"source":"OotA","page":8,"_copy":{"name":"Wererat","source":"MM","_templates":[{"name":"Deep Gnome","source":"DMG"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the wererat","with":"Topsy","flags":"i"}}},"languages":["Gnomish","Terran","Undercommon"],"senseTags":["SD"]}

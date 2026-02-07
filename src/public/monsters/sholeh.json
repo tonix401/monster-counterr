@@ -1,1 +1,0 @@
-{"name":"Sholeh","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":14,"_copy":{"name":"Ancient Brass Dragon","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the dragon","with":"Sholeh","flags":"i"}}},"alignment":["N","G"],"conditionInflictLegendary":[]}

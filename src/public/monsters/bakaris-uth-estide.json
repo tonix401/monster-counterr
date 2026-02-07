@@ -1,1 +1,0 @@
-{"name":"Bakaris Uth Estide","isNpc":true,"isNamedCreature":true,"source":"DSotDQ","page":54,"_copy":{"name":"Noble","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the noble","with":"Bakaris","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["N","E"]}

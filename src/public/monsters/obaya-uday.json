@@ -1,1 +1,0 @@
-{"name":"Obaya Uday","isNpc":true,"isNamedCreature":true,"source":"WDH","page":20,"_copy":{"name":"Priest","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the priest","with":"Obaya","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["N","G"]}

@@ -1,1 +1,0 @@
-{"name":"Vocath","isNpc":true,"isNamedCreature":true,"source":"LoX","page":42,"_copy":{"name":"Mercane","source":"BAM","_mod":{"*":{"mode":"replaceTxt","replace":"the mercane","with":"Vocath","flags":"i"}}}}

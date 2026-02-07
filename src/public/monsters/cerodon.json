@@ -1,1 +1,0 @@
-{"name":"Cerodon","source":"PSA","page":37,"_copy":{"name":"Mammoth","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"mammoth","with":"cerodon"},"trait":{"mode":"appendArr","items":{"name":"Siege Monster","entries":["The cerodon deals double damage to objects and structures."]}}}},"traitTags":["Siege Monster"]}

@@ -1,1 +1,0 @@
-{"name":"Ghazrim DuLoc","isNpc":true,"isNamedCreature":true,"source":"OotA","page":141,"_copy":{"name":"Noble","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the noble","with":"Ghazrim","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]}}

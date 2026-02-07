@@ -1,1 +1,0 @@
-{"name":"Sheep","source":"SKT","page":142,"_copy":{"name":"Goat","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"goat","with":"sheep","flags":"i"},"trait":{"mode":"removeArr","names":"Charge"}}},"size":["S"],"hp":{"average":3,"formula":"1d6"},"speed":{"walk":30},"action":null,"traitTags":[]}

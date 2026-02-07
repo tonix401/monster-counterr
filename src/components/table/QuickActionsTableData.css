@@ -19,3 +19,7 @@
   vertical-align: middle;
   color: #fff;
 }
+
+.monster-hidden-button {
+  background: var(--accent);
+}

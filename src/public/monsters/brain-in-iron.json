@@ -1,1 +1,0 @@
-{"name":"Brain in Iron","source":"IMR","page":48,"_copy":{"name":"Brain in a Jar","source":"LLK","_mod":{"*":{"mode":"replaceTxt","replace":"brain in a jar","with":"brain in iron"}}},"size":["L"],"type":"construct","alignment":["L","N"],"ac":[{"ac":15,"from":["natural armor"]}],"speed":{"walk":20},"tokenCustom":true}

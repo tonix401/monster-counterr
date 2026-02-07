@@ -1,1 +1,0 @@
-{"name":"Amanisha Manivarshi","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":127,"_copy":{"name":"Spy","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the spy","with":"Amanisha","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["N","G"]}

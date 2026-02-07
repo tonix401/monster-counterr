@@ -1,1 +1,0 @@
-{"name":"Mormesk the Wraith","isNpc":true,"isNamedCreature":true,"source":"PaBTSO","page":70,"_copy":{"name":"Wraith","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the wraith","with":"Mormesk","flags":"i"}}}}

@@ -1,1 +1,0 @@
-{"name":"Orond Gralhund","isNpc":true,"isNamedCreature":true,"source":"WDH","page":213,"_copy":{"name":"Noble","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the noble","with":"Orond","flags":"i"}}},"type":{"type":"humanoid","tags":[{"tag":"human","prefix":"Tethyrian","prefixHidden":true}]},"alignment":["N","E"],"int":9,"languages":["Common"],"languageTags":["C"]}

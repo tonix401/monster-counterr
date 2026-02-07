@@ -1,1 +1,0 @@
-{"name":"Mattrim \"Threestrings\" Mereg","isNpc":true,"isNamedCreature":true,"source":"WDH","page":20,"_copy":{"name":"Bard","source":"VGM","_mod":{"*":{"mode":"replaceTxt","replace":"the bard","with":"Mattrim","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["L","G"]}

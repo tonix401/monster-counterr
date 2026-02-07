@@ -1,1 +1,0 @@
-{"name":"Kiril Stoyanovich","isNpc":true,"isNamedCreature":true,"source":"CoS","page":203,"_copy":{"name":"Werewolf","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the werewolf","with":"Kiril","flags":"i"}}},"hp":{"average":90,"formula":"9d8 + 18"}}

@@ -1,1 +1,0 @@
-{"name":"Torgja Stonecrusher (Levels 9-11)","isNpc":true,"isNamedCreature":true,"source":"KftGV","page":8,"_copy":{"name":"Veteran","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the veteran","with":"Torgja Stonecrusher","flags":"i"}}},"type":{"type":"humanoid","tags":["dwarf"]},"alignment":["C","N"],"tokenCustom":true}

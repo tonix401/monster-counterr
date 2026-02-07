@@ -1,1 +1,0 @@
-{"name":"Wei Feng Ying","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":188,"_copy":{"name":"Archmage","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the archmage","with":"Wei Feng","flags":"i"}}},"type":{"type":"humanoid","tags":["human"]},"alignment":["L","N"]}

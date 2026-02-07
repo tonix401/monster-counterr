@@ -1,1 +1,0 @@
-{"name":"Piccolo","isNpc":true,"isNamedCreature":true,"source":"CoS","page":118,"_copy":{"name":"Baboon","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the baboon","with":"Piccolo","flags":"i"}}}}

@@ -1,1 +1,0 @@
-{"name":"Demelin","isNpc":true,"isNamedCreature":true,"source":"DSotDQ","page":139,"_copy":{"name":"Archmage","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the archmage","with":"Demelin","flags":"i"}}},"type":{"type":"humanoid","tags":["elf"]},"alignment":["N"]}

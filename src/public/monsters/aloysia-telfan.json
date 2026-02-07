@@ -1,1 +1,0 @@
-{"name":"Aloysia Telfan","isNpc":true,"isNamedCreature":true,"source":"CRCotN","page":61,"_copy":{"name":"Occult Initiate","source":"CRCotN","_mod":{"*":{"mode":"replaceTxt","replace":"the initiate","with":"Aloysia","flags":"i"}}},"size":["M"],"type":{"type":"humanoid","tags":["elf","sorcerer"]},"alignment":["L","E"]}

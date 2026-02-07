@@ -1,1 +1,0 @@
-{"name":"Telepathic Pentacle","source":"IDRotF","page":244,"_copy":{"name":"Hydra","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"hydra","with":"Telepathic Pentacle"}}},"speed":{"walk":30,"swim":30,"climb":30},"tokenCustom":true}

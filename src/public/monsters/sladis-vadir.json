@@ -1,1 +1,0 @@
-{"name":"Sladis Vadir","isNpc":true,"isNamedCreature":true,"source":"OotA","page":135,"_copy":{"name":"Druid","source":"MM","_templates":[{"name":"High Elf","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the druid","with":"Sladis","flags":"i"},"languages":{"mode":"appendIfNotExistsArr","items":"Undercommon"}}},"alignment":["N","G"],"traitTags":["Fey Ancestry"]}

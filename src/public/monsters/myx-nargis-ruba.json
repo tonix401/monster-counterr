@@ -1,1 +1,0 @@
-{"name":"Myx Nargis Ruba","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":71,"_copy":{"name":"Noble","source":"MM","_templates":[{"name":"Orc","source":"DMG"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the noble","with":"Nargis","flags":"i"}}},"alignment":["N","E"],"traitTags":["Aggressive"]}

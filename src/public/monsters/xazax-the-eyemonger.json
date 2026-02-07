@@ -1,1 +1,0 @@
-{"name":"Xazax the Eyemonger","isNpc":true,"isNamedCreature":true,"source":"OotA","page":142,"_copy":{"name":"Beholder","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the beholder","with":"Xazax","flags":"i"}}}}

@@ -1,1 +1,0 @@
-{"name":"Princeps Kovik","isNpc":true,"isNamedCreature":true,"source":"BGDIA","page":91,"_copy":{"name":"Chain Devil","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the devil","with":"Kovik","flags":"i"}}}}

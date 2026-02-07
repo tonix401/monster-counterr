@@ -1,1 +1,0 @@
-{"name":"Sandesyl Morgia","isNpc":true,"isNamedCreature":true,"source":"HotDQ","page":81,"otherSources":[{"source":"ToD","page":98}],"_copy":{"name":"Vampire","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the vampire","with":"Sandesyl","flags":"i"}}}}

@@ -1,1 +1,0 @@
-{"name":"Dukha Bhatiyali","isNpc":true,"isNamedCreature":true,"source":"JttRC","page":124,"_copy":{"name":"Weretiger","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the weretiger","with":"Dukha","flags":"i"}}},"alignment":["N"]}

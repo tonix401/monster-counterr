@@ -1,1 +1,1 @@
-{"name":"Zalkoré","isNpc":true,"isNamedCreature":true,"source":"ToA","page":79,"_copy":{"name":"Medusa","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the medusa","with":"Zalkoré","flags":"i"}}},"tokenCustom":true,"hasToken":true}
+{"name":"Zalkoré","isNpc":true,"isNamedCreature":true,"source":"ToA","page":79,"_copy":{"name":"Medusa","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the medusa","with":"Zalkoré","flags":"i"}}},"tokenCustom":true}

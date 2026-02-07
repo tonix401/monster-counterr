@@ -1,1 +1,1 @@
-{"name":"Kevetta Dolindar","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":34,"_copy":{"name":"Lonely Sorrowsworn","source":"MPMM","_mod":{"*":{"mode":"replaceTxt","replace":"the sorrowsworn","with":"Kevetta","flags":"i"}}},"hasToken":true}
+{"name":"Kevetta Dolindar","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":34,"_copy":{"name":"Lonely Sorrowsworn","source":"MPMM","_mod":{"*":{"mode":"replaceTxt","replace":"the sorrowsworn","with":"Kevetta","flags":"i"}}}}

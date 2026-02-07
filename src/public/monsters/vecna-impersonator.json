@@ -1,1 +1,1 @@
-{"name":"Vecna Impersonator","source":"ToFW","page":26,"_copy":{"name":"Doppelganger","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"doppelganger","with":"impersonator"}}},"hasToken":true,"hasFluffImages":true,"fluff":{"name":"Vecna Impersonator","source":"ToFW","images":[{"type":"image","href":{"type":"internal","path":"bestiary/ToFW/VecnaImpersonator.webp"}}]}}
+{"name":"Vecna Impersonator","source":"ToFW","page":26,"_copy":{"name":"Doppelganger","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"doppelganger","with":"impersonator"}}}}

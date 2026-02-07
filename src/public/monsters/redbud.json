@@ -1,1 +1,1 @@
-{"name":"Redbud","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":66,"_copy":{"name":"Treant","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the treant","with":"Redbud","flags":"i"}}},"speed":{"walk":0},"hasToken":true}
+{"name":"Redbud","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":66,"_copy":{"name":"Treant","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"the treant","with":"Redbud","flags":"i"}}},"speed":{"walk":0}}

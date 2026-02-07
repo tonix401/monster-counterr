@@ -1,1 +1,1 @@
-{"name":"Jenks","isNpc":true,"isNamedCreature":true,"source":"WDH","page":63,"size":["S"],"type":{"type":"humanoid","tags":["human"]},"hasToken":true,"hasFluffImages":true,"fluff":{"name":"Jenks","source":"WDH","images":[{"type":"image","href":{"type":"internal","path":"bestiary/WDH/Summer-Scene.webp"}}]}}
+{"name":"Jenks","isNpc":true,"isNamedCreature":true,"source":"WDH","page":63,"size":["S"],"type":{"type":"humanoid","tags":["human"]}}

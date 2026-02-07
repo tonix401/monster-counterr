@@ -1,1 +1,1 @@
-{"name":"Tixie's Shield Guardian","isNpc":true,"isNamedCreature":true,"source":"KftGV","page":80,"_copy":{"name":"Shield Guardian","source":"MM","_mod":{"trait":{"mode":"removeArr","names":"Spell Storing"}}},"tokenCustom":true,"hasToken":true}
+{"name":"Tixie's Shield Guardian","isNpc":true,"isNamedCreature":true,"source":"KftGV","page":80,"_copy":{"name":"Shield Guardian","source":"MM","_mod":{"trait":{"mode":"removeArr","names":"Spell Storing"}}},"tokenCustom":true}

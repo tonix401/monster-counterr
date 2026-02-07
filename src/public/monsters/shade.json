@@ -1,1 +1,1 @@
-{"name":"Shade","source":"PSZ","page":28,"_copy":{"name":"Shadow","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"shade","with":"shadow"}}},"tokenCustom":true,"hasToken":true,"hasFluff":true,"hasFluffImages":true,"fluff":{"name":"Shade","source":"PSZ","_copy":{"name":"Spirit","source":"PSZ"}}}
+{"name":"Shade","source":"PSZ","page":28,"_copy":{"name":"Shadow","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"shade","with":"shadow"}}},"tokenCustom":true}

@@ -1,1 +1,1 @@
-{"name":"Khai Kiroth","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":157,"_copy":{"name":"Red Abishai","source":"MPMM","_mod":{"*":{"mode":"replaceTxt","replace":"the abishai","with":"Khai","flags":"i"}}},"hasToken":true}
+{"name":"Khai Kiroth","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":157,"_copy":{"name":"Red Abishai","source":"MPMM","_mod":{"*":{"mode":"replaceTxt","replace":"the abishai","with":"Khai","flags":"i"}}}}

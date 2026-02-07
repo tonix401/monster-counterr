@@ -1,1 +1,1 @@
-{"name":"Iaseda","isNpc":true,"isNamedCreature":true,"source":"QftIS","page":108,"_copy":{"name":"Acolyte","source":"MM","_templates":[{"name":"Human","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the acolyte","with":"Iaseda","flags":"i"}}},"alignment":["L","G"],"hasToken":true}
+{"name":"Iaseda","isNpc":true,"isNamedCreature":true,"source":"QftIS","page":108,"_copy":{"name":"Acolyte","source":"MM","_templates":[{"name":"Human","source":"PHB"}],"_mod":{"*":{"mode":"replaceTxt","replace":"the acolyte","with":"Iaseda","flags":"i"}}},"alignment":["L","G"]}

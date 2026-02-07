@@ -1,1 +1,1 @@
-{"name":"Squiddly","isNpc":true,"isNamedCreature":true,"source":"WDH","page":63,"size":["S"],"type":{"type":"humanoid","tags":["tiefling"]},"senses":["darkvision 60 ft."],"hasToken":true,"hasFluffImages":true,"fluff":{"name":"Squiddly","source":"WDH","images":[{"type":"image","href":{"type":"internal","path":"bestiary/WDH/Autumn-Scene.webp"}}]}}
+{"name":"Squiddly","isNpc":true,"isNamedCreature":true,"source":"WDH","page":63,"size":["S"],"type":{"type":"humanoid","tags":["tiefling"]},"senses":["darkvision 60 ft."]}

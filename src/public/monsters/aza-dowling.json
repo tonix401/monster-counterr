@@ -1,1 +1,1 @@
-{"name":"Aza Dowling","isNpc":true,"isNamedCreature":true,"source":"ToFW","page":17,"_copy":{"name":"Society of Sensation Muse","source":"MPP","_mod":{"*":{"mode":"replaceTxt","replace":"The muse","with":"Aza","flags":"i"}}},"hasToken":true}
+{"name":"Aza Dowling","isNpc":true,"isNamedCreature":true,"source":"ToFW","page":17,"_copy":{"name":"Society of Sensation Muse","source":"MPP","_mod":{"*":{"mode":"replaceTxt","replace":"The muse","with":"Aza","flags":"i"}}}}

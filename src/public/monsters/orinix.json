@@ -1,1 +1,1 @@
-{"name":"Orinix","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":129,"_copy":{"name":"Adult Lunar Dragon","source":"BAM","_mod":{"*":{"mode":"replaceTxt","replace":"the dragon","with":"Orinix","flags":"i"}}},"hasToken":true}
+{"name":"Orinix","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":129,"_copy":{"name":"Adult Lunar Dragon","source":"BAM","_mod":{"*":{"mode":"replaceTxt","replace":"the dragon","with":"Orinix","flags":"i"}}}}

@@ -1,1 +1,1 @@
-{"name":"Rezran \"Snake Eyes\" Agrodro","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":158,"_copy":{"name":"Green Abishai","source":"MPMM","_mod":{"*":{"mode":"replaceTxt","replace":"the abishai","with":"Rezran","flags":"i"}}},"hasToken":true}
+{"name":"Rezran \"Snake Eyes\" Agrodro","isNpc":true,"isNamedCreature":true,"source":"VEoR","page":158,"_copy":{"name":"Green Abishai","source":"MPMM","_mod":{"*":{"mode":"replaceTxt","replace":"the abishai","with":"Rezran","flags":"i"}}}}

@@ -1,1 +1,1 @@
-{"name":"Skeletal Owlbear","source":"IMR","page":36,"_copy":{"name":"Owlbear","source":"MM"},"type":"undead","immune":["poison"],"vulnerable":["bludgeoning"],"conditionImmune":["exhaustion","poisoned"],"tokenCustom":true,"hasToken":true}
+{"name":"Skeletal Owlbear","source":"IMR","page":36,"_copy":{"name":"Owlbear","source":"MM"},"type":"undead","immune":["poison"],"vulnerable":["bludgeoning"],"conditionImmune":["exhaustion","poisoned"],"tokenCustom":true}

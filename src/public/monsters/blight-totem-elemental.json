@@ -1,1 +1,1 @@
-{"name":"Blight Totem Elemental","source":"PSX","page":38,"_copy":{"name":"Vine Blight","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"blight","with":"blight totem"}}},"tokenCustom":true,"hasToken":true,"hasFluff":true,"fluff":{"name":"Blight Totem Elemental","source":"PSX","_copy":{"name":"Totem Elemental","source":"PSX"}}}
+{"name":"Blight Totem Elemental","source":"PSX","page":38,"_copy":{"name":"Vine Blight","source":"MM","_mod":{"*":{"mode":"replaceTxt","replace":"blight","with":"blight totem"}}},"tokenCustom":true}

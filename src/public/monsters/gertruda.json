@@ -1,1 +1,1 @@
-{"name":"Gertruda","isNpc":true,"isNamedCreature":true,"source":"CoS","page":68,"_copy":{"name":"Commoner","source":"MM"},"type":{"type":"humanoid","tags":["human"]},"alignment":["N","G"],"hasToken":true,"hasFluffImages":true,"fluff":{"name":"Gertruda","source":"CoS","images":[{"type":"image","href":{"type":"internal","path":"bestiary/CoS/Gertruda.webp"}}]}}
+{"name":"Gertruda","isNpc":true,"isNamedCreature":true,"source":"CoS","page":68,"_copy":{"name":"Commoner","source":"MM"},"type":{"type":"humanoid","tags":["human"]},"alignment":["N","G"]}

@@ -1,5 +1,5 @@
-import { useMonsterStore, useNotify } from '@/store'
-import { useTerm } from '@/store/index'
+import { useMonsterStore, useNotify } from '@/store/MonsterStore'
+import { useTerm } from '@/store/MonsterStore'
 
 const ImportFileButton = () => {
   const importData = useMonsterStore((state) => state.importData)

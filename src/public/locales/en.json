@@ -110,6 +110,11 @@
     "noHostIdProvided": "No host ID provided in URL",
     "connectionError": "Connection error",
     "hideMonster": "Hide this monster from connected players.",
-    "showMonster": "Show this monster to connected players."
+    "showMonster": "Show this monster to connected players.",
+    "maxReconnectAttemptsReached": "Maximum reconnection attempts reached. Please refresh the page to try again.",
+    "connectionLimitReached": "Connection limit reached. Maximum of 25 clients allowed.",
+    "rateLimitExceeded": "Too many messages sent. Please slow down.",
+    "invalidMessageReceived": "Invalid message received from server.",
+    "messageTooLarge": "Message too large to send."
   }
 }

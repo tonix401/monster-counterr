@@ -1,4 +1,4 @@
-export type MonsterStatus = "healthy" | "injured" | "badly-injured" | "down"
+export type MonsterStatus = 'healthy' | 'injured' | 'badly-injured' | 'down'
 
 export interface Monster {
   id: string

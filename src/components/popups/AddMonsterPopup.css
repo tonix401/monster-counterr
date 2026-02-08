@@ -1,5 +1,5 @@
 #add-monster-form > input {
-    display: block;
-    margin: var(--spacing-md) 0;
-    width: 100%;
+  display: block;
+  margin: var(--spacing-md) 0;
+  width: 100%;
 }

@@ -145,7 +145,7 @@ button {
 }
 
 input {
-  height: var(--button-height)
+  height: var(--button-height);
 }
 
 button:hover {

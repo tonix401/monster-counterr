@@ -1,6 +1,6 @@
 import React from 'react'
-import { useMonsterStore } from '@/store'
-import { useTerm } from '@/store/index'
+import { useMonsterStore } from '@/store/MonsterStore'
+import { useTerm } from '@/store/MonsterStore'
 import { ASSETS } from '@/constants'
 import './QuickActionsTableData.css'
 
@@ -41,7 +41,7 @@ const QuickActionsTableData: React.FC<QuickActionsTableDataProps> = ({ monsterId
           <img src={ASSETS.BIN_ICON} alt={t('removeMonster')} />
         </button>
         <button
-          className={"red-button icon-button" + (isHidden ? " monster-hidden-button" : "")}
+          className={'red-button icon-button' + (isHidden ? ' monster-hidden-button' : '')}
           title={isHidden ? t('showMonster') : t('hideMonster')}
           onClick={handleHide}
         >

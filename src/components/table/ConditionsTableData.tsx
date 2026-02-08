@@ -1,7 +1,7 @@
 import React from 'react'
 import type { Monster } from '@/types/Monster'
-import { useMonsterStore } from '@/store'
-import { useTerm } from '@/store/index'
+import { useMonsterStore } from '@/store/MonsterStore'
+import { useTerm } from '@/store/MonsterStore'
 import { CONDITIONS } from '@/constants'
 import './ConditionsTableData.css'
 

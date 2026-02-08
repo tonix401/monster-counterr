@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import type { Monster } from '@/types/Monster'
-import { useMonsterStore } from '@/store'
+import { useMonsterStore } from '@/store/MonsterStore'
 import './ChangeHpTableData.css'
 
 interface ChangeHpTableDataProps {

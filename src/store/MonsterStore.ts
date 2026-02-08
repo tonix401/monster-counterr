@@ -165,6 +165,7 @@ export const useMonsterStore = create<MonsterCounterState>()(
         language: state.language,
         source: state.source,
         xp: state.xp,
+        peerId: state.peerId,
       }),
     }
   )

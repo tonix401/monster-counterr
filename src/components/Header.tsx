@@ -1,8 +1,8 @@
 import React from 'react'
 import { useNavigate } from 'react-router'
-import { useMonsterStore, useCanUndo, useCanRedo } from '@/store'
+import { useMonsterStore, useCanUndo, useCanRedo } from '@/store/MonsterStore'
 import { useUndoRedoShortcuts } from '@/hooks/useKeyboardShortcut'
-import { useTerm } from '@/store/index'
+import { useTerm } from '@/store/MonsterStore'
 import { ASSETS } from '@/constants'
 import './Header.css'
 

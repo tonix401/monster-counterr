@@ -86,7 +86,7 @@
     "hp": {
       "special": "40 + 10 for each spell level above 4"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Aberrant Zealot (Tentacled)",
@@ -158,7 +158,7 @@
       "average": 150,
       "formula": "20d10 + 40"
     },
-    "xp": 0
+    "xp": 5900
   },
   {
     "name": "Abominable Yeti",
@@ -230,7 +230,7 @@
       "average": 229,
       "formula": "17d12 + 119"
     },
-    "xp": 0
+    "xp": 15000
   },
   {
     "name": "Adult Amonkhet Dragon",
@@ -239,7 +239,7 @@
       "average": 256,
       "formula": "19d12 + 133"
     },
-    "xp": 0
+    "xp": 18000
   },
   {
     "name": "Adult Black Dragon",
@@ -248,7 +248,7 @@
       "average": 195,
       "formula": "17d12 + 85"
     },
-    "xp": 0
+    "xp": 11500
   },
   {
     "name": "Adult Blue Dracolich",
@@ -266,7 +266,7 @@
       "average": 212,
       "formula": "17d12 + 102"
     },
-    "xp": 0
+    "xp": 15000
   },
   {
     "name": "Adult Brass Dragon",
@@ -275,7 +275,7 @@
       "average": 172,
       "formula": "15d12 + 75"
     },
-    "xp": 0
+    "xp": 10000
   },
   {
     "name": "Adult Bronze Dragon",
@@ -284,7 +284,7 @@
       "average": 212,
       "formula": "17d12 + 102"
     },
-    "xp": 0
+    "xp": 13000
   },
   {
     "name": "Adult Copper Dragon",
@@ -293,7 +293,7 @@
       "average": 184,
       "formula": "16d12 + 80"
     },
-    "xp": 0
+    "xp": 11500
   },
   {
     "name": "Adult Crystal Dragon",
@@ -302,7 +302,7 @@
       "average": 172,
       "formula": "15d12 + 75"
     },
-    "xp": 0
+    "xp": 8400
   },
   {
     "name": "Adult Deep Dragon",
@@ -311,7 +311,7 @@
       "average": 147,
       "formula": "14d12 + 56"
     },
-    "xp": 0
+    "xp": 7200
   },
   {
     "name": "Adult Emerald Dragon",
@@ -320,7 +320,7 @@
       "average": 207,
       "formula": "18d12 + 90"
     },
-    "xp": 0
+    "xp": 11500
   },
   {
     "name": "Adult Gold Dragon",
@@ -329,7 +329,7 @@
       "average": 243,
       "formula": "18d12 + 126"
     },
-    "xp": 0
+    "xp": 18000
   },
   {
     "name": "Adult Green Dragon",
@@ -338,7 +338,7 @@
       "average": 207,
       "formula": "18d12 + 90"
     },
-    "xp": 0
+    "xp": 13000
   },
   {
     "name": "Adult Kruthik",
@@ -365,7 +365,7 @@
       "average": 195,
       "formula": "17d12 + 85"
     },
-    "xp": 0
+    "xp": 13000
   },
   {
     "name": "Adult Oblex",
@@ -383,7 +383,7 @@
       "average": 256,
       "formula": "19d12 + 133"
     },
-    "xp": 0
+    "xp": 18000
   },
   {
     "name": "Adult Red Dragon",
@@ -392,7 +392,7 @@
       "average": 256,
       "formula": "19d12 + 133"
     },
-    "xp": 0
+    "xp": 18000
   },
   {
     "name": "Adult Sapphire Dragon",
@@ -410,7 +410,7 @@
       "average": 216,
       "formula": "16d12 + 112"
     },
-    "xp": 0
+    "xp": 15000
   },
   {
     "name": "Adult Solar Dragon",
@@ -428,7 +428,7 @@
       "average": 207,
       "formula": "18d12 + 90"
     },
-    "xp": 0
+    "xp": 13000
   },
   {
     "name": "Adult Time Dragon",
@@ -437,7 +437,7 @@
       "average": 250,
       "formula": "20d12 + 120"
     },
-    "xp": 0
+    "xp": 20000
   },
   {
     "name": "Adult Topaz Dragon",
@@ -446,7 +446,7 @@
       "average": 210,
       "formula": "20d12 + 80"
     },
-    "xp": 0
+    "xp": 10000
   },
   {
     "name": "Adult White Dragon",
@@ -455,7 +455,7 @@
       "average": 200,
       "formula": "16d12 + 96"
     },
-    "xp": 0
+    "xp": 10000
   },
   {
     "name": "Advanced Detention Drone",
@@ -896,7 +896,7 @@
       "average": 91,
       "formula": "14d8 + 28"
     },
-    "xp": 0
+    "xp": 1800
   },
   {
     "name": "Amble",
@@ -1013,7 +1013,7 @@
       "average": 187,
       "formula": "25d8 + 75"
     },
-    "xp": 0
+    "xp": 13000
   },
   {
     "name": "Amonkhet Mummy",
@@ -1112,7 +1112,7 @@
       "average": 444,
       "formula": "24d20 + 192"
     },
-    "xp": 0
+    "xp": 50000
   },
   {
     "name": "Ancient Amonkhet Dragon",
@@ -1121,7 +1121,7 @@
       "average": 507,
       "formula": "26d20 + 234"
     },
-    "xp": 0
+    "xp": 62000
   },
   {
     "name": "Ancient Black Dragon",
@@ -1130,7 +1130,7 @@
       "average": 367,
       "formula": "21d20 + 147"
     },
-    "xp": 0
+    "xp": 33000
   },
   {
     "name": "Ancient Blue Dragon",
@@ -1139,7 +1139,7 @@
       "average": 481,
       "formula": "26d20 + 208"
     },
-    "xp": 0
+    "xp": 50000
   },
   {
     "name": "Ancient Brass Dragon",
@@ -1148,7 +1148,7 @@
       "average": 332,
       "formula": "19d20 + 133"
     },
-    "xp": 0
+    "xp": 25000
   },
   {
     "name": "Ancient Bronze Dragon",
@@ -1157,7 +1157,7 @@
       "average": 444,
       "formula": "24d20 + 192"
     },
-    "xp": 0
+    "xp": 41000
   },
   {
     "name": "Ancient Copper Dragon",
@@ -1166,7 +1166,7 @@
       "average": 367,
       "formula": "21d20 + 147"
     },
-    "xp": 0
+    "xp": 33000
   },
   {
     "name": "Ancient Crystal Dragon",
@@ -1175,7 +1175,7 @@
       "average": 222,
       "formula": "12d20 + 96"
     },
-    "xp": 0
+    "xp": 22000
   },
   {
     "name": "Ancient Deep Crow",
@@ -1193,7 +1193,7 @@
       "average": 201,
       "formula": "13d20 + 65"
     },
-    "xp": 0
+    "xp": 20000
   },
   {
     "name": "Ancient Dragon Turtle",
@@ -1211,7 +1211,7 @@
       "average": 332,
       "formula": "19d20 + 133"
     },
-    "xp": 0
+    "xp": 33000
   },
   {
     "name": "Ancient Gold Dragon",
@@ -1220,7 +1220,7 @@
       "average": 546,
       "formula": "28d20 + 252"
     },
-    "xp": 0
+    "xp": 62000
   },
   {
     "name": "Ancient Green Dragon",
@@ -1229,7 +1229,7 @@
       "average": 402,
       "formula": "23d20 + 161"
     },
-    "xp": 0
+    "xp": 41000
   },
   {
     "name": "Ancient Lunar Dragon",
@@ -1247,7 +1247,7 @@
       "average": 330,
       "formula": "20d20 + 120"
     },
-    "xp": 0
+    "xp": 33000
   },
   {
     "name": "Ancient Red Dragon",
@@ -1256,7 +1256,7 @@
       "average": 507,
       "formula": "26d20 + 234"
     },
-    "xp": 0
+    "xp": 62000
   },
   {
     "name": "Ancient Sapphire Dragon",
@@ -1265,7 +1265,7 @@
       "average": 370,
       "formula": "20d20 + 160"
     },
-    "xp": 0
+    "xp": 41000
   },
   {
     "name": "Ancient Sea Serpent",
@@ -1283,7 +1283,7 @@
       "average": 468,
       "formula": "24d20 + 216"
     },
-    "xp": 0
+    "xp": 50000
   },
   {
     "name": "Ancient Solar Dragon",
@@ -1310,7 +1310,7 @@
       "average": 536,
       "formula": "29d20 + 232"
     },
-    "xp": 0
+    "xp": 90000
   },
   {
     "name": "Ancient Topaz Dragon",
@@ -1319,7 +1319,7 @@
       "average": 280,
       "formula": "17d20 + 102"
     },
-    "xp": 0
+    "xp": 25000
   },
   {
     "name": "Ancient White Dragon",
@@ -1328,7 +1328,7 @@
       "average": 333,
       "formula": "18d20 + 144"
     },
-    "xp": 0
+    "xp": 25000
   },
   {
     "name": "Andir Valmakos",
@@ -1337,7 +1337,7 @@
       "average": 11,
       "formula": "2d8 + 2"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Andras",
@@ -1543,7 +1543,7 @@
     "hp": {
       "special": "80"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Animated Object (Large)",
@@ -1551,7 +1551,7 @@
     "hp": {
       "special": "50"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Animated Object (Medium)",
@@ -1559,7 +1559,7 @@
     "hp": {
       "special": "40"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Animated Object (Small)",
@@ -1567,7 +1567,7 @@
     "hp": {
       "special": "25"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Animated Object (Tiny)",
@@ -1575,7 +1575,7 @@
     "hp": {
       "special": "20"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Animated Object",
@@ -1583,7 +1583,7 @@
     "hp": {
       "special": "10 (Medium or smaller), 20 (Large), 40 (Huge)"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Animated Rug of Smothering",
@@ -1600,7 +1600,7 @@
     "hp": {
       "special": "40"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Animated Statue of Lolth",
@@ -1653,7 +1653,7 @@
     "hp": {
       "special": "20"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Animatronic Allosaurus",
@@ -1698,7 +1698,7 @@
       "average": 75,
       "formula": "10d10 + 20"
     },
-    "xp": 0
+    "xp": 2300
   },
   {
     "name": "Anointed",
@@ -1752,7 +1752,7 @@
       "average": 7,
       "formula": "2d8 - 2"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Aquatic Ghoul",
@@ -1824,7 +1824,7 @@
       "average": 333,
       "formula": "29d10 + 174"
     },
-    "xp": 0
+    "xp": 33000
   },
   {
     "name": "Archaic",
@@ -1950,7 +1950,7 @@
       "average": 315,
       "formula": "42d8 + 126"
     },
-    "xp": 0
+    "xp": 33000
   },
   {
     "name": "Argentia Skywright",
@@ -2045,7 +2045,7 @@
   {
     "name": "Arrigal",
     "source": "CoS",
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Art Elemental Mascot",
@@ -2081,7 +2081,7 @@
       "average": 333,
       "formula": "18d20 + 144"
     },
-    "xp": 0
+    "xp": 25000
   },
   {
     "name": "Ash Zombie",
@@ -2234,7 +2234,7 @@
       "average": 256,
       "formula": "19d12 + 133"
     },
-    "xp": 0
+    "xp": 18000
   },
   {
     "name": "Asmodeus",
@@ -2423,7 +2423,7 @@
       "average": 13,
       "formula": "2d8 + 4"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Aunt Dellie",
@@ -2486,7 +2486,7 @@
       "average": 243,
       "formula": "18d12 + 126"
     },
-    "xp": 0
+    "xp": 18000
   },
   {
     "name": "Aurnozci",
@@ -2495,7 +2495,7 @@
       "average": 370,
       "formula": "20d20 + 160"
     },
-    "xp": 0
+    "xp": 41000
   },
   {
     "name": "Aurochs",
@@ -2593,7 +2593,7 @@
     "hp": {
       "special": "Half the HP maximum of its summoner"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Avi",
@@ -2737,7 +2737,7 @@
       "average": 11,
       "formula": "2d8 + 2"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Ayo Jabe (Tier 1)",
@@ -3312,7 +3312,7 @@
     "hp": {
       "special": "5 plus five times your Ranger level (the beast has a number of Hit Dice [d8s] equal to your Ranger level)"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Beast of the Sea",
@@ -3320,7 +3320,7 @@
     "hp": {
       "special": "5 plus five times your Ranger level (the beast has a number of Hit Dice [d8s] equal to your Ranger level)"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Beast of the Sky",
@@ -3328,7 +3328,7 @@
     "hp": {
       "special": "4 plus four times your Ranger level (the beast has a number of Hit Dice [d6s] equal to your Ranger level)"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Bebilith",
@@ -3373,7 +3373,7 @@
       "average": 190,
       "formula": "20d10 + 80"
     },
-    "xp": 0
+    "xp": 10000
   },
   {
     "name": "Bel",
@@ -3400,7 +3400,7 @@
       "average": 304,
       "formula": "32d8 + 160"
     },
-    "xp": 0
+    "xp": 41000
   },
   {
     "name": "Beldora",
@@ -3409,7 +3409,7 @@
       "average": 18,
       "formula": "4d8"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Beledros Witherbloom",
@@ -3489,7 +3489,7 @@
     "hp": {
       "special": "20 (Air only) or 30 (Land and Water only) + 5 for each spell level above 2"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Beucephalus",
@@ -3525,7 +3525,7 @@
       "average": 91,
       "formula": "14d8 + 28"
     },
-    "xp": 0
+    "xp": 2900
   },
   {
     "name": "Big Momma",
@@ -4368,7 +4368,7 @@
       "average": 7,
       "formula": "2d6"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Brazen Gorgon",
@@ -4431,7 +4431,7 @@
       "average": 7,
       "formula": "2d6"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Brontodon",
@@ -4517,7 +4517,7 @@
   {
     "name": "Brother Broumane",
     "source": "JttRC",
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Brother Morax",
@@ -4724,7 +4724,7 @@
       "average": 367,
       "formula": "21d20 + 147"
     },
-    "xp": 0
+    "xp": 33000
   },
   {
     "name": "Burnished Hart",
@@ -5065,7 +5065,7 @@
     "hp": {
       "special": "40 + 10 for each spell level above 5"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Centaur Mummy",
@@ -5470,7 +5470,7 @@
       "average": 402,
       "formula": "23d20 + 161"
     },
-    "xp": 0
+    "xp": 41000
   },
   {
     "name": "Clawfoot",
@@ -5892,7 +5892,7 @@
     "hp": {
       "special": "40 + 15 for each spell level above 4"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Constructed Commoner",
@@ -6333,7 +6333,7 @@
       "average": 200,
       "formula": "16d12 + 96"
     },
-    "xp": 0
+    "xp": 10000
   },
   {
     "name": "Crystal Battleaxe",
@@ -6395,7 +6395,7 @@
       "average": 195,
       "formula": "23d8 + 92"
     },
-    "xp": 0
+    "xp": 10000
   },
   {
     "name": "Cudgel Ironsmile",
@@ -6637,7 +6637,7 @@
     "hp": {
       "special": "10 + five times your bard level"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Dandylion",
@@ -6699,7 +6699,7 @@
       "average": 52,
       "formula": "8d8 + 16"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Dardew",
@@ -6780,7 +6780,7 @@
       "average": 27,
       "formula": "5d8 + 5"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Davian Martikov",
@@ -6933,7 +6933,7 @@
       "average": 195,
       "formula": "26d10 + 52"
     },
-    "xp": 0
+    "xp": 11500
   },
   {
     "name": "Deathless Rider",
@@ -7013,7 +7013,7 @@
     "hp": {
       "special": "5 + five times your level (the deck defender has a number of Hit Dice [d8s] equal to your level)"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Deep Crow",
@@ -7130,7 +7130,7 @@
       "average": 180,
       "formula": "72d4"
     },
-    "xp": 0
+    "xp": 20000
   },
   {
     "name": "Demobat",
@@ -7382,7 +7382,7 @@
       "average": 187,
       "formula": "25d8 + 75"
     },
-    "xp": 0
+    "xp": 13000
   },
   {
     "name": "Dimetrodon",
@@ -7463,7 +7463,7 @@
       "average": 9,
       "formula": "2d8"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Dispater",
@@ -7724,7 +7724,7 @@
       "average": 225,
       "formula": "18d12 + 108"
     },
-    "xp": 0
+    "xp": 18000
   },
   {
     "name": "Draconian Dreadnought",
@@ -7786,7 +7786,7 @@
     "hp": {
       "special": "50 + 10 for each spell level above 5"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Dracophage Subject",
@@ -7912,7 +7912,7 @@
       "average": 256,
       "formula": "19d12 + 133"
     },
-    "xp": 0
+    "xp": 18000
   },
   {
     "name": "Dragonbait",
@@ -8020,7 +8020,7 @@
       "average": 30,
       "formula": "8d10 + 40"
     },
-    "xp": 0
+    "xp": 1800
   },
   {
     "name": "Dragonsoul",
@@ -8046,7 +8046,7 @@
     "hp": {
       "special": "5 + five times your ranger level (the drake has a number of Hit Dice [d10s] equal to your ranger level)"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Drake (Large)",
@@ -8765,7 +8765,7 @@
       "average": 9,
       "formula": "2d8"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Dwarf Skeleton",
@@ -9231,7 +9231,7 @@
     "hp": {
       "special": "50 + 10 for each spell level above 4"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Elephant",
@@ -9317,7 +9317,7 @@
   {
     "name": "Elzerina Cassalanter",
     "source": "WDH",
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Ember",
@@ -9425,7 +9425,7 @@
       "average": 190,
       "formula": "20d10 + 80"
     },
-    "xp": 0
+    "xp": 10000
   },
   {
     "name": "Empyrean Iota",
@@ -9497,7 +9497,7 @@
       "average": 156,
       "formula": "24d8 + 48"
     },
-    "xp": 0
+    "xp": 7200
   },
   {
     "name": "Endelyn Moongrave",
@@ -9785,7 +9785,7 @@
       "average": 44,
       "formula": "8d8 + 8"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Exul",
@@ -9848,7 +9848,7 @@
       "average": 315,
       "formula": "42d8 + 126"
     },
-    "xp": 0
+    "xp": 33000
   },
   {
     "name": "F'yorl",
@@ -10163,7 +10163,7 @@
       "average": 212,
       "formula": "17d12 + 102"
     },
-    "xp": 0
+    "xp": 13000
   },
   {
     "name": "Felidar",
@@ -10288,7 +10288,7 @@
     "hp": {
       "special": "30 + 10 for each spell level above 3"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Feyr",
@@ -10386,7 +10386,7 @@
     "hp": {
       "special": "50 (Demon only) or 40 (Devil only) or 60 (Yugoloth only) + 15 for each spell level above 6"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Fierna",
@@ -11079,7 +11079,7 @@
       "average": 337,
       "formula": "27d10 + 189"
     },
-    "xp": 0
+    "xp": 50000
   },
   {
     "name": "Frilled Deathspitter",
@@ -11646,7 +11646,7 @@
       "average": 30,
       "formula": "4d8 + 12"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Ghost Dragon",
@@ -11853,7 +11853,7 @@
       "average": 19,
       "formula": "3d10 + 3"
     },
-    "xp": 0
+    "xp": 10
   },
   {
     "name": "Giant Flying Spider",
@@ -11924,7 +11924,7 @@
     "hp": {
       "special": "30 + 10 for each spell level above 4"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Giant Lightning Eel",
@@ -12716,7 +12716,7 @@
       "average": 212,
       "formula": "17d12 + 102"
     },
-    "xp": 0
+    "xp": 13000
   },
   {
     "name": "Gnarlid",
@@ -13067,7 +13067,7 @@
       "average": 187,
       "formula": "25d8 + 75"
     },
-    "xp": 0
+    "xp": 13000
   },
   {
     "name": "Gorthok the Thunder Boar",
@@ -13911,7 +13911,7 @@
     "hp": {
       "special": "8"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Half-Blue Dragon Gladiator",
@@ -14700,7 +14700,7 @@
     "hp": {
       "special": "1 + your Intelligence modifier + your artificer level (the homunculus has a number of Hit Dice [d4s] equal to your artificer level)"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Homunculus",
@@ -14862,7 +14862,7 @@
       "average": 11,
       "formula": "2d8 + 2"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Hrossk",
@@ -15609,7 +15609,7 @@
       "average": 11,
       "formula": "2d8 + 2"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Irisoth",
@@ -15662,7 +15662,7 @@
     "hp": {
       "special": "80"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Ironscale Hydra",
@@ -15725,7 +15725,7 @@
       "average": 200,
       "formula": "16d12 + 96"
     },
-    "xp": 0
+    "xp": 10000
   },
   {
     "name": "Ishel",
@@ -16072,7 +16072,7 @@
   {
     "name": "Jenks",
     "source": "WDH",
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Jermlaine",
@@ -16450,7 +16450,7 @@
       "average": 104,
       "formula": "19d8 + 19"
     },
-    "xp": 0
+    "xp": 3900
   },
   {
     "name": "Karavarix",
@@ -16468,7 +16468,7 @@
       "average": 468,
       "formula": "24d20 + 216"
     },
-    "xp": 0
+    "xp": 50000
   },
   {
     "name": "Karrnathi Undead Soldier",
@@ -16540,7 +16540,7 @@
       "average": 195,
       "formula": "23d8 + 92"
     },
-    "xp": 0
+    "xp": 10000
   },
   {
     "name": "Kedjou Kamal",
@@ -16666,7 +16666,7 @@
       "average": 195,
       "formula": "23d8 + 92"
     },
-    "xp": 0
+    "xp": 10000
   },
   {
     "name": "Kettlesteam the Kenku",
@@ -16851,7 +16851,7 @@
   {
     "name": "Kinyel Druu'giir",
     "source": "OotA",
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Kiril Stoyanovich",
@@ -17130,7 +17130,7 @@
       "average": 481,
       "formula": "26d20 + 208"
     },
-    "xp": 0
+    "xp": 50000
   },
   {
     "name": "Kraken Priest",
@@ -17148,7 +17148,7 @@
       "average": 481,
       "formula": "26d20 + 208"
     },
-    "xp": 0
+    "xp": 50000
   },
   {
     "name": "Kraul Death Priest",
@@ -17643,7 +17643,7 @@
       "average": 187,
       "formula": "25d8 + 75"
     },
-    "xp": 0
+    "xp": 13000
   },
   {
     "name": "Lesser Star Spawn Emissary",
@@ -17697,7 +17697,7 @@
       "average": 13,
       "formula": "2d8 + 4"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Lhammaruntosz",
@@ -17724,7 +17724,7 @@
       "average": 315,
       "formula": "42d8 + 126"
     },
-    "xp": 0
+    "xp": 33000
   },
   {
     "name": "Lichen Lich",
@@ -17760,7 +17760,7 @@
       "average": 59,
       "formula": "7d12 + 14"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Light Devourer",
@@ -18147,7 +18147,7 @@
       "average": 195,
       "formula": "23d8 + 92"
     },
-    "xp": 0
+    "xp": 10000
   },
   {
     "name": "Lorthuun",
@@ -18759,7 +18759,7 @@
       "average": 58,
       "formula": "9d8 + 18"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Markos Delphi",
@@ -18974,7 +18974,7 @@
     "hp": {
       "special": "1"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Medani Inquisitive",
@@ -19225,7 +19225,7 @@
       "average": 30,
       "formula": "4d10 + 8"
     },
-    "xp": 0
+    "xp": 200
   },
   {
     "name": "Merrow Haranguer",
@@ -19315,7 +19315,7 @@
       "average": 310,
       "formula": "27d12 + 135"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Miirym",
@@ -19522,7 +19522,7 @@
       "average": 22,
       "formula": "4d8 + 4"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Mirran",
@@ -19882,7 +19882,7 @@
       "average": 130,
       "formula": "20d8 + 40"
     },
-    "xp": 0
+    "xp": 7200
   },
   {
     "name": "Mormesk the Wraith",
@@ -20017,7 +20017,7 @@
       "average": 187,
       "formula": "25d8 + 75"
     },
-    "xp": 0
+    "xp": 13000
   },
   {
     "name": "Mummy",
@@ -20269,7 +20269,7 @@
       "average": 18,
       "formula": "4d8"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Narthus",
@@ -20301,7 +20301,7 @@
   {
     "name": "Nat",
     "source": "WDH",
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Nauk",
@@ -20337,7 +20337,7 @@
       "average": 27,
       "formula": "6d8"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Necrichor",
@@ -20976,7 +20976,7 @@
       "average": 195,
       "formula": "17d12 + 85"
     },
-    "xp": 0
+    "xp": 11500
   },
   {
     "name": "Nycaloth",
@@ -21287,7 +21287,7 @@
   {
     "name": "Ogruhl",
     "source": "CM",
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Oinoloth",
@@ -21458,7 +21458,7 @@
       "average": 367,
       "formula": "21d20 + 147"
     },
-    "xp": 0
+    "xp": 33000
   },
   {
     "name": "Orc Blade of Ilneval",
@@ -21575,7 +21575,7 @@
       "average": 9,
       "formula": "2d6 + 2"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Orien Enforcer",
@@ -21719,7 +21719,7 @@
       "average": 217,
       "formula": "29d8 + 87"
     },
-    "xp": 0
+    "xp": 18000
   },
   {
     "name": "Otherworldly Steed",
@@ -21727,7 +21727,7 @@
     "hp": {
       "special": "5 + 10 per spell level (the steed has a number of Hit Dice [d10s] equal to the spell's level)"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Othokent",
@@ -21745,7 +21745,7 @@
       "average": 16,
       "formula": "3d8 + 3"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Ott Steeltoes",
@@ -21894,7 +21894,7 @@
   {
     "name": "Paolo Maykapal",
     "source": "JttRC",
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Paper Bird",
@@ -23323,7 +23323,7 @@
     "hp": {
       "special": "40 + 10 for each spell level above 4th"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Reckoner",
@@ -23440,7 +23440,7 @@
       "average": 150,
       "formula": "20d10 + 40"
     },
-    "xp": 0
+    "xp": 5900
   },
   {
     "name": "Reduced-Threat Basilisk",
@@ -23467,7 +23467,7 @@
       "average": 190,
       "formula": "20d10 + 80"
     },
-    "xp": 0
+    "xp": 10000
   },
   {
     "name": "Reduced-Threat Black Pudding",
@@ -23845,7 +23845,7 @@
       "average": 315,
       "formula": "42d8 + 126"
     },
-    "xp": 0
+    "xp": 33000
   },
   {
     "name": "Replica Duodrone",
@@ -24439,7 +24439,7 @@
       "average": 95,
       "formula": "10d10 + 40"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Sacred Stone Monk",
@@ -24699,7 +24699,7 @@
       "average": 195,
       "formula": "23d8 + 92"
     },
-    "xp": 0
+    "xp": 10000
   },
   {
     "name": "Sandwurm",
@@ -24717,7 +24717,7 @@
       "average": 195,
       "formula": "23d8 + 92"
     },
-    "xp": 0
+    "xp": 10000
   },
   {
     "name": "Sangzor",
@@ -25077,7 +25077,7 @@
       "average": 105,
       "formula": "14d8 + 42"
     },
-    "xp": 0
+    "xp": 8400
   },
   {
     "name": "Sea Hag",
@@ -25095,7 +25095,7 @@
       "average": 1,
       "formula": "1d4 - 1"
     },
-    "xp": 0
+    "xp": 10
   },
   {
     "name": "Sea Lion",
@@ -25122,7 +25122,7 @@
       "average": 1,
       "formula": "1d4 - 1"
     },
-    "xp": 0
+    "xp": 10
   },
   {
     "name": "Seal",
@@ -25365,7 +25365,7 @@
       "average": 189,
       "formula": "18d12 + 72"
     },
-    "xp": 0
+    "xp": 10000
   },
   {
     "name": "Shadow Horror",
@@ -25409,7 +25409,7 @@
     "hp": {
       "special": "35 + 15 for each spell level above 3rd"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Shadow",
@@ -25508,7 +25508,7 @@
       "average": 27,
       "formula": "6d8"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Shambling Mound Totem Elemental",
@@ -25612,7 +25612,7 @@
   {
     "name": "Shatterskull Giant",
     "source": "PSZ",
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Shedrak of the Eyes",
@@ -25747,7 +25747,7 @@
       "average": 332,
       "formula": "19d20 + 133"
     },
-    "xp": 0
+    "xp": 25000
   },
   {
     "name": "Shoosuva",
@@ -25774,7 +25774,7 @@
       "average": 13,
       "formula": "3d8"
     },
-    "xp": 0
+    "xp": 10
   },
   {
     "name": "Shrieker",
@@ -25945,7 +25945,7 @@
       "average": 52,
       "formula": "8d8 + 16"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Sir Braford",
@@ -25995,7 +25995,7 @@
       "average": 22,
       "formula": "5d8"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Sire of Insanity",
@@ -26508,7 +26508,7 @@
       "average": 9,
       "formula": "2d6 + 2"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Snow Golem",
@@ -26778,7 +26778,7 @@
       "average": 36,
       "formula": "8d8"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Spellcaster (Mage)",
@@ -26787,7 +26787,7 @@
       "average": 36,
       "formula": "8d8"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Spellcaster",
@@ -26796,7 +26796,7 @@
       "average": 9,
       "formula": "2d8"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Spellix Romwod",
@@ -26832,7 +26832,7 @@
       "average": 170,
       "formula": "20d10 + 60"
     },
-    "xp": 0
+    "xp": 7200
   },
   {
     "name": "Sphinx of Secrets",
@@ -26850,7 +26850,7 @@
       "average": 199,
       "formula": "19d10 + 95"
     },
-    "xp": 0
+    "xp": 18000
   },
   {
     "name": "Sphinx of Wonder",
@@ -27089,7 +27089,7 @@
   {
     "name": "Squiddly",
     "source": "WDH",
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Squire",
@@ -27098,7 +27098,7 @@
       "average": 11,
       "formula": "2d8 + 2"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Squirt the Oilcan",
@@ -27143,7 +27143,7 @@
       "average": 216,
       "formula": "16d12 + 112"
     },
-    "xp": 0
+    "xp": 15000
   },
   {
     "name": "Stalker of Baphomet",
@@ -27286,7 +27286,7 @@
     "hp": {
       "special": "2 + your Intelligence modifier + five times your artificer level (the defender has a number of Hit Dice [d8s] equal to your artificer level)"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Steel Leaf Kavu",
@@ -28384,7 +28384,7 @@
       "average": 11,
       "formula": "2d6 + 4"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Tempest Hart",
@@ -28425,7 +28425,7 @@
   {
     "name": "Terenzio Cassalanter",
     "source": "WDH",
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Terra Stomper",
@@ -28650,7 +28650,7 @@
       "average": 256,
       "formula": "19d12 + 133"
     },
-    "xp": 0
+    "xp": 18000
   },
   {
     "name": "Theran Chimera",
@@ -29082,7 +29082,7 @@
       "average": 10,
       "formula": "4d4"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Tissina Khyret",
@@ -29973,7 +29973,7 @@
       "average": 212,
       "formula": "17d12 + 102"
     },
-    "xp": 0
+    "xp": 13000
   },
   {
     "name": "Undead Bulette",
@@ -30017,7 +30017,7 @@
     "hp": {
       "special": "30 (Ghostly and Putrid only) or 20 (Skeletal only) + 10 for each spell level above 3"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Undead Tree",
@@ -30089,7 +30089,7 @@
       "average": 58,
       "formula": "9d8 + 18"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Urstul Floxin",
@@ -30323,7 +30323,7 @@
       "average": 172,
       "formula": "23d8 + 69"
     },
-    "xp": 0
+    "xp": 11500
   },
   {
     "name": "Vampire Neonate",
@@ -30377,7 +30377,7 @@
       "average": 187,
       "formula": "22d8 + 88"
     },
-    "xp": 0
+    "xp": 13000
   },
   {
     "name": "Vampire Warden",
@@ -30404,7 +30404,7 @@
       "average": 195,
       "formula": "23d8 + 92"
     },
-    "xp": 0
+    "xp": 10000
   },
   {
     "name": "Vampiric Ixitxachitl Cleric",
@@ -30593,7 +30593,7 @@
       "average": 300,
       "formula": "40d8 + 120"
     },
-    "xp": 0
+    "xp": 33000
   },
   {
     "name": "Veldyskar",
@@ -31295,7 +31295,7 @@
       "average": 52,
       "formula": "8d8 + 16"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Warwyck Blastimoff",
@@ -31627,7 +31627,7 @@
     "hp": {
       "special": "5 + five times your druid level"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Will-o'-Wells",
@@ -31911,7 +31911,7 @@
   {
     "name": "Woodcrasher Baloth",
     "source": "PSZ",
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Wooden Donkey",
@@ -32028,7 +32028,7 @@
       "average": 190,
       "formula": "20d10 + 80"
     },
-    "xp": 0
+    "xp": 10000
   },
   {
     "name": "Xandala",
@@ -32064,7 +32064,7 @@
       "average": 190,
       "formula": "20d10 + 80"
     },
-    "xp": 0
+    "xp": 10000
   },
   {
     "name": "Xenk Yendar",
@@ -33135,7 +33135,7 @@
       "average": 117,
       "formula": "9d10 + 27"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Zendikar Dragon",
@@ -33225,7 +33225,7 @@
       "average": 22,
       "formula": "5d8"
     },
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Zikran",
@@ -33275,7 +33275,7 @@
   {
     "name": "Zisatta",
     "source": "JttRC",
-    "xp": 0
+    "xp": null
   },
   {
     "name": "Zlan",

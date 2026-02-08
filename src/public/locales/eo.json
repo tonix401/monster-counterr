@@ -110,6 +110,11 @@
     "connectionError": "Konekta eraro",
     "showMonster": "Montru ĉi tiun monstron al konektitaj ludantoj.",
     "hideMonster": "Kaŝu ĉi tiun monstron de konektitaj ludantoj.",
-    "badly-injured": "Grave Vundita"
+    "badly-injured": "Grave Vundita",
+    "maxReconnectAttemptsReached": "Maksimuma nombro da rekonektaj provoj atingita. Bonvolu refreŝigi la paĝon por provi denove.",
+    "connectionLimitReached": "Konekta limo atingita. Maksimume 25 klientoj permesitaj.",
+    "rateLimitExceeded": "Tro multaj mesaĝoj senditaj. Bonvolu malrapidiĝi.",
+    "invalidMessageReceived": "Malvalida mesaĝo ricevita de la servilo.",
+    "messageTooLarge": "Mesaĝo tro granda por sendi."
   }
 }

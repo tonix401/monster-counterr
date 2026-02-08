@@ -110,6 +110,11 @@
     "connectionError": "Erreur de connexion",
     "showMonster": "Montrez ce monstre aux joueurs connectés.",
     "hideMonster": "Cachez ce monstre aux joueurs connectés.",
-    "badly-injured": "Grièvement blessé"
+    "badly-injured": "Grièvement blessé",
+    "maxReconnectAttemptsReached": "Nombre maximal de tentatives de reconnexion atteint. Veuillez actualiser la page pour réessayer.",
+    "connectionLimitReached": "Limite de connexions atteinte. Maximum de 25 clients autorisés.",
+    "rateLimitExceeded": "Trop de messages envoyés. Veuillez ralentir.",
+    "invalidMessageReceived": "Message invalide reçu du serveur.",
+    "messageTooLarge": "Message trop volumineux pour être envoyé."
   }
 }

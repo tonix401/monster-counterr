@@ -1,6 +1,6 @@
 import React from 'react'
 import type { Monster } from '@/types/Monster'
-import { useMonsterStore } from '@/store'
+import { useMonsterStore } from '@/store/MonsterStore'
 import MonsterTableRow from '@/components/table/MonsterTableRow'
 import TableHeaderRow from '@/components/table/TableHeaderRow'
 import TableColgroup from '@/components/table/TableColgroup'

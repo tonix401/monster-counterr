@@ -7,7 +7,7 @@ import HpTableData from '@/components/table/HpTableData'
 import ChangeHpTableData from '@/components/table/ChangeHpTableData'
 import ConditionsTableData from '@/components/table/ConditionsTableData'
 import QuickActionsTableData from '@/components/table/QuickActionsTableData'
-import { useMonsterStore } from '@/store'
+import { useMonsterStore } from '@/store/MonsterStore'
 
 interface MonsterTableRowProps {
   monster: Monster
@@ -19,7 +19,9 @@ const MonsterTableRow: React.FC<MonsterTableRowProps> = ({ monster, settings }) 
 
   return (
     <tr className={highlightedMonsterId === monster.id ? 'highlighted-row' : ''}>
-      {settings.showQuickActions && <QuickActionsTableData isHidden={monster.isHidden} monsterId={monster.id} />}
+      {settings.showQuickActions && (
+        <QuickActionsTableData isHidden={monster.isHidden} monsterId={monster.id} />
+      )}
       <NameTableData monster={monster} />
       {settings.showConditions && <ConditionsTableData monster={monster} />}
       {settings.showStatus && <StatusTableData monster={monster} />}

@@ -1,5 +1,5 @@
-import { useTerm } from '@/store/index'
-import { useAvailableLanguages, useMonsterStore } from '@/store'
+import { useTerm } from '@/store/MonsterStore'
+import { useAvailableLanguages, useMonsterStore } from '@/store/MonsterStore'
 import React from 'react'
 import './LanguageSelectionRow.css'
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import type { Monster, MonsterStatus } from '@/types/Monster'
-import { useTerm } from '@/store'
+import { useTerm } from '@/store/MonsterStore'
 
 interface StatusTableDataProps {
   monster: Monster
@@ -8,7 +8,7 @@ interface StatusTableDataProps {
 
 const StatusTableData: React.FC<StatusTableDataProps> = ({ monster }) => {
   const t = useTerm()
-  
+
   let status: MonsterStatus = 'healthy'
   let color = ''
 

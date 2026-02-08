@@ -110,6 +110,11 @@
     "connectionError": "Anslutningsfel",
     "showMonster": "Visa detta monstret för anslutna spelare.",
     "hideMonster": "Dölj detta monstret från anslutna spelare.",
-    "badly-injured": "Svårt skadad"
+    "badly-injured": "Svårt skadad",
+    "maxReconnectAttemptsReached": "Maximalt antal återanslutningsförsök har uppnåtts. Uppdatera sidan för att försöka igen.",
+    "connectionLimitReached": "Anslutningsgränsen är nådd. Maximalt 25 klienter tillåtna.",
+    "rateLimitExceeded": "För många meddelanden skickade. Var vänlig sakta ner.",
+    "invalidMessageReceived": "Ogiltigt meddelande mottaget från servern.",
+    "messageTooLarge": "Meddelandet är för stort för att skickas."
   }
 }

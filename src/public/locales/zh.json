@@ -110,6 +110,11 @@
     "connectionError": "连接错误",
     "showMonster": "将这个怪物展示给已连接的玩家。",
     "hideMonster": "将这个怪物对已连接的玩家隐藏起来。",
-    "badly-injured": "重伤"
+    "badly-injured": "重伤",
+    "maxReconnectAttemptsReached": "已达到最大重连尝试次数。请刷新页面重试。",
+    "connectionLimitReached": "连接数已达上限。最多允许 25 个客户端同时连接。",
+    "rateLimitExceeded": "发送的消息过多，请减慢速度。",
+    "invalidMessageReceived": "从服务器收到无效消息。",
+    "messageTooLarge": "邮件内容过大，无法发送。"
   }
 }

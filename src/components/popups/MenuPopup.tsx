@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router'
 import Popup from './Popup'
-import { useTerm } from '@/store/index'
+import { useTerm } from '@/store/MonsterStore'
 
 const MenuPopup: React.FC = () => {
   const navigate = useNavigate()

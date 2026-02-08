@@ -1,4 +1,4 @@
-import { useNotifications, useRemoveNotification } from '@/store'
+import { useNotifications, useRemoveNotification } from '@/store/MonsterStore'
 import type { Notification } from '@/store/slices/notificationSlice'
 import type React from 'react'
 import { useEffect } from 'react'

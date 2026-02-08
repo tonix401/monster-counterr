@@ -110,6 +110,11 @@
     "connectionError": "Error sa koneksyon",
     "showMonster": "Ipakita ang halimaw na ito sa mga konektadong manlalaro.",
     "hideMonster": "Itago ang halimaw na ito mula sa mga konektadong manlalaro.",
-    "badly-injured": "Malubhang Nasugatan"
+    "badly-injured": "Malubhang Nasugatan",
+    "maxReconnectAttemptsReached": "Naabot na ang pinakamataas na pagtatangka sa muling pagkonekta. Paki-refresh ang pahina para subukang muli.",
+    "connectionLimitReached": "Naabot na ang limitasyon ng koneksyon. Maximum na 25 kliyente ang pinapayagan.",
+    "rateLimitExceeded": "Masyadong maraming mensahe ang naipadala. Pakibagal lang.",
+    "invalidMessageReceived": "Hindi wastong mensahe ang natanggap mula sa server.",
+    "messageTooLarge": "Masyadong malaki ang mensahe para maipadala."
   }
 }

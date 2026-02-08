@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import { QRCodeSVG } from 'qrcode.react'
 import Popup from './Popup'
-import { useMonsterStore, useTerm } from '@/store/index'
+import { useMonsterStore, useTerm } from '@/store/MonsterStore'
 import { BASE_URL } from '@/constants'
 import './ConnectionsPopup.css'
 
@@ -46,6 +46,9 @@ const ConnectionsPopup: React.FC = () => {
                 >
                   {t('stopHosting')}
                 </button>
+              </div>
+              <div className="connections-count">
+                {t('connectedClients')}: {connections.length} / 25
               </div>
               <ul className="connections-list">
                 {connections.length === 0 ? (

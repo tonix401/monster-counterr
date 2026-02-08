@@ -189,7 +189,6 @@
   transition: width var(--transition-base);
 }
 
-
 /* Tablet and Desktop */
 @media (min-width: 768px) {
   .client-view-container {

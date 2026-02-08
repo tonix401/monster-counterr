@@ -1,6 +1,6 @@
 import React from 'react'
 import type { Settings } from '@/types/Settings'
-import { useTerm } from '@/store/index'
+import { useTerm } from '@/store/MonsterStore'
 
 interface TableHeaderRowProps {
   settings: Settings

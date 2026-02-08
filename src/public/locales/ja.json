@@ -110,6 +110,11 @@
     "connectionError": "接続エラー",
     "showMonster": "このモンスターを接続中のプレイヤーに見せます。",
     "hideMonster": "このモンスターを接続中のプレイヤーから隠します。",
-    "badly-injured": "重傷"
+    "badly-injured": "重傷",
+    "maxReconnectAttemptsReached": "再接続の試行回数が最大に達しました。ページを更新してもう一度お試しください。",
+    "connectionLimitReached": "接続制限に達しました。最大 25 クライアントまで接続できます。",
+    "rateLimitExceeded": "送信したメッセージが多すぎます。速度を落としてください。",
+    "invalidMessageReceived": "サーバーから無効なメッセージを受信しました。",
+    "messageTooLarge": "メッセージが大きすぎて送信できません。"
   }
 }

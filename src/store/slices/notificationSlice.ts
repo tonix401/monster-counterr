@@ -4,7 +4,10 @@ export type Notification = {
   id?: string
   message: string
   type: 'info' | 'success' | 'error' | 'warning'
-  duration?: number // in milliseconds
+  /**
+   * Duration in ms, standard duration is 3000ms (3 seconds)
+   */
+  duration?: number
 }
 
 export type NotificationSlice = {
@@ -19,7 +22,6 @@ export const createNotificationSlice: StateCreator<NotificationSlice, [], [], No
   queue: [],
 
   notify: (notification: Notification): void => {
-    console.log('Notification:', notification)
     notification.id = crypto.randomUUID()
     set((state) => ({
       queue: [...state.queue, notification],

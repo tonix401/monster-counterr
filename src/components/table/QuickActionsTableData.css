@@ -7,7 +7,7 @@
 .icon-button {
   vertical-align: middle;
   background: var(--card);
-  border: 1px solid var(--border);
+  border: var(--borderwidth) solid var(--border);
   border-radius: var(--radius-md);
   width: auto;
   padding: 0 var(--spacing-sm);

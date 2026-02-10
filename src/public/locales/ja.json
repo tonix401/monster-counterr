@@ -115,6 +115,11 @@
     "connectionLimitReached": "接続制限に達しました。最大 25 クライアントまで接続できます。",
     "rateLimitExceeded": "送信したメッセージが多すぎます。速度を落としてください。",
     "invalidMessageReceived": "サーバーから無効なメッセージを受信しました。",
-    "messageTooLarge": "メッセージが大きすぎて送信できません。"
+    "messageTooLarge": "メッセージが大きすぎて送信できません。",
+    "templateName": "テンプレートを選択",
+    "customizeMonster": "モンスターをカスタマイズ",
+    "noResults": "結果が見つかりませんでした。",
+    "moreResults": "{results} 件以上...",
+    "startTypingToSearch": "入力を開始してください..."
   }
 }

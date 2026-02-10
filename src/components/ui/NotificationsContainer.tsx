@@ -3,6 +3,7 @@ import type { Notification } from '@/store/slices/notificationSlice'
 import type React from 'react'
 import { useEffect } from 'react'
 import './NotificationsContainer.css'
+import { TIMING } from '@/constants'
 
 const Notification: React.FC<{ notification: Notification }> = ({ notification }) => {
   const removeNotification = useRemoveNotification()
@@ -10,7 +11,7 @@ const Notification: React.FC<{ notification: Notification }> = ({ notification }
   useEffect(() => {
     setTimeout(() => {
       removeNotification(notification.id!)
-    }, 3000)
+    }, notification.duration ?? TIMING.DEFAULT_NOTIFICATION_DURATION)
   }, [])
 
   return (

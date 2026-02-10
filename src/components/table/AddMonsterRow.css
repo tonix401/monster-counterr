@@ -1,0 +1,17 @@
+.add-monster-row-button {
+    width: 100%;
+    background: transparent;
+}
+
+.add-monster-row-button:hover > img {
+    opacity: 1;
+}
+
+.add-monster-row-button > img {
+    opacity: 0.5;
+}
+
+.add-monster-row-button-icon {
+    width: 24px;
+    height: 24px;
+}

@@ -45,13 +45,18 @@ vi.mock('peerjs', () => {
   }
 })
 
-type TestStore = ConnectionSlice & MonsterSlice & { settings: Settings }
+type TestStore = ConnectionSlice &
+  MonsterSlice & {
+    settings: Settings
+    notify: (notification: { message: string; type: string }) => void
+  }
 
 const createTestStore = () => {
   return create<TestStore>()((set, get, api) => {
     const monsterSlice = createMonsterSlice(set, get, api)
 
     return {
+      notify: vi.fn(),
       settings: {
         showQuickActions: true,
         showStatus: true,

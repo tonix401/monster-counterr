@@ -115,6 +115,11 @@
     "connectionLimitReached": "Naabot na ang limitasyon ng koneksyon. Maximum na 25 kliyente ang pinapayagan.",
     "rateLimitExceeded": "Masyadong maraming mensahe ang naipadala. Pakibagal lang.",
     "invalidMessageReceived": "Hindi wastong mensahe ang natanggap mula sa server.",
-    "messageTooLarge": "Masyadong malaki ang mensahe para maipadala."
+    "messageTooLarge": "Masyadong malaki ang mensahe para maipadala.",
+    "templateName": "Pumili ng template",
+    "customizeMonster": "I-customize ang iyong halimaw",
+    "noResults": "Walang nakitang resulta.",
+    "moreResults": "{results} higit pa ...",
+    "startTypingToSearch": "Simulan ang pag-type..."
   }
 }

@@ -5,6 +5,7 @@ import { useTerm } from '@/store/MonsterStore'
 import { useNavigate } from 'react-router'
 import './AddMonsterPopup.css'
 import type { MonsterIndexEntryHp } from '@/store/slices/monsterSlice'
+import { DropdownInput } from '../ui/DropdownInput'
 
 const AddMonsterPopup: React.FC = () => {
   const monsterIndex = useMonsterStore((state) => state.monsterIndex)
@@ -14,6 +15,7 @@ const AddMonsterPopup: React.FC = () => {
   const navigate = useNavigate()
   const t = useTerm()
 
+  const [templateName, setTemplateName] = useState('')
   const [name, setName] = useState('')
   const [hp, setHp] = useState('')
   const [amount, setAmount] = useState('')
@@ -37,7 +39,7 @@ const AddMonsterPopup: React.FC = () => {
       .replace(/^-+|-+$/g, '')
 
   const handleAdd = () => {
-    const trimmedName = name.trim()
+    const trimmedName = templateName.trim()
     const hpValue = parseInt(hp) || 1
     const amountValue = parseInt(amount) || 1
     addMonster(
@@ -46,7 +48,7 @@ const AddMonsterPopup: React.FC = () => {
       hpValue,
       amountValue
     )
-    setName('')
+    setTemplateName('')
     setHp('')
     setAmount('')
     navigate('/')
@@ -65,7 +67,7 @@ const AddMonsterPopup: React.FC = () => {
   }
 
   const suggestionInputOnChange = (value: string) => {
-    setName(value)
+    setTemplateName(value)
     const matchedEntry = Object.values(monsterIndex).find(
       (entry) => entry.name.toLowerCase() === value.toLowerCase().trim()
     )
@@ -73,9 +75,17 @@ const AddMonsterPopup: React.FC = () => {
       setIsCustom(false)
       setHPFromindexEntry(matchedEntry.hp)
       setXp(matchedEntry.xp?.toString() || '')
+      setName(matchedEntry.name)
     } else {
       setIsCustom(true)
     }
+  }
+
+  const handleTemplateNameChange = (value: string) => {
+    if (name.trim() === '') {
+      setName(value)
+    }
+    suggestionInputOnChange(value)
   }
 
   return (
@@ -83,7 +93,7 @@ const AddMonsterPopup: React.FC = () => {
       onClose={() => {
         setAmount('')
         setHp('')
-        setName('')
+        setTemplateName('')
         navigate('/')
       }}
       title={t('addMonster')}
@@ -96,50 +106,31 @@ const AddMonsterPopup: React.FC = () => {
         }}
         id="add-monster-form"
       >
-        <input
-          id="add-monster-source-input"
-          type="text"
-          placeholder={t('source')}
-          value={source ?? ''}
-          onChange={(e) => setSource(e.target.value)}
-          list="monster-sources-datalist"
-          onFocus={() => setSource(null)}
-        />
-        <datalist id="monster-sources-datalist">
-          {sources.map((entry) => (
-            <option key={entry} value={entry} />
-          ))}
-        </datalist>
-        <input
-          id="add-monster-name-input"
-          placeholder={t('name')}
-          required
-          value={name}
-          onChange={(e) => suggestionInputOnChange(e.target.value)}
-          list="monster-names-datalist"
-        />
-        <datalist id="monster-names-datalist">
-          {Object.values(monsterIndex)
-            .filter((entry) => (source ? entry.source === source : true))
-            .map((entry) => (
-              <option key={entry.name} value={entry.name} />
-            ))}
-        </datalist>
-        <input
-          id="hp-input"
-          required
-          type="number"
-          placeholder={t('hp')}
-          value={hp}
-          onChange={(e) => setHp(e.target.value)}
-        />
-        <input
-          id="xp-input"
-          type="number"
-          placeholder={t('xp')}
-          value={xp}
-          onChange={(e) => setXp(e.target.value)}
-        />
+        <div id="monster-template-inputs">
+          <DropdownInput
+            id="add-monster-template-source-input"
+            onChange={(value) => setSource(value === '' ? 'all' : value)}
+            placeholder={t('source')}
+            options={sources.map((entry) => ({
+              value: entry,
+              label: entry,
+            }))}
+            maxEntries={10}
+          />
+          <DropdownInput
+            id="add-monster-template-name-input"
+            onChange={handleTemplateNameChange}
+            placeholder={t('templateName')}
+            options={Object.values(monsterIndex)
+              .filter((entry) => (source === 'all' ? true : entry.source === source))
+              .map((entry) => ({
+                value: entry.name,
+                label: entry.name,
+              }))}
+            required
+            maxEntries={10}
+          />
+        </div>
         <input
           id="amount-input"
           type="number"
@@ -147,6 +138,34 @@ const AddMonsterPopup: React.FC = () => {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
+        <details>
+          <summary>{t('customizeMonster')}</summary>
+          <input
+            id="add-monster-name-input"
+            value={name}
+            required
+            onChange={(e) => setName(e.target.value)}
+            placeholder={t('name')}
+            autoComplete="off"
+          />
+          <input
+            id="hp-input"
+            required
+            type="number"
+            placeholder={t('hp')}
+            value={hp}
+            onChange={(e) => setHp(e.target.value)}
+            autoComplete="off"
+          />
+          <input
+            id="xp-input"
+            type="number"
+            placeholder={t('xp')}
+            value={xp}
+            onChange={(e) => setXp(e.target.value)}
+            autoComplete="off"
+          />
+        </details>
         <button type="submit" className="green-button">
           {t('addMonster')}
         </button>

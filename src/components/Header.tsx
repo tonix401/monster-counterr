@@ -1,17 +1,12 @@
 import React from 'react'
 import { useNavigate } from 'react-router'
-import { useMonsterStore, useCanUndo, useCanRedo } from '@/store/MonsterStore'
+import { useMonsterStore, useCanUndo, useCanRedo, useXp } from '@/store/MonsterStore'
 import { useUndoRedoShortcuts } from '@/hooks/useKeyboardShortcut'
 import { useTerm } from '@/store/MonsterStore'
 import { ASSETS } from '@/constants'
 import './Header.css'
 
-interface HeaderProps {
-  xpDisplay: number
-  onResetXp: () => void
-}
-
-const Header: React.FC<HeaderProps> = ({ xpDisplay, onResetXp }) => {
+const Header: React.FC = () => {
   const navigate = useNavigate()
   const settings = useMonsterStore((state) => state.settings)
   const clearMonsters = useMonsterStore((state) => state.clearMonsters)
@@ -22,6 +17,8 @@ const Header: React.FC<HeaderProps> = ({ xpDisplay, onResetXp }) => {
   const canUndo = useCanUndo()
   const canRedo = useCanRedo()
   const t = useTerm()
+  const xp = useXp()
+  const resetXp = useMonsterStore((state) => state.resetXp)
 
   // Enable keyboard shortcuts
   useUndoRedoShortcuts(undo, redo)
@@ -61,9 +58,9 @@ const Header: React.FC<HeaderProps> = ({ xpDisplay, onResetXp }) => {
             id="xp-counter"
             className="red-button transparent-button"
             title={t('resetXpCounter')}
-            onClick={onResetXp}
+            onClick={resetXp}
           >
-            {xpDisplay} {t('xp')}
+            {xp} {t('xp')}
           </button>
         )}
       </div>
@@ -77,13 +74,6 @@ const Header: React.FC<HeaderProps> = ({ xpDisplay, onResetXp }) => {
         </button>
         <button className="red-button" onClick={removeDead} title={t('removeDeadTooltip')}>
           {t('removeDead')}
-        </button>
-        <button
-          className="green-button"
-          onClick={() => navigate('add')}
-          title={t('addNewMonsters')}
-        >
-          {t('add')}
         </button>
       </div>
     </header>

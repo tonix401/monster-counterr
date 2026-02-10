@@ -1,0 +1,183 @@
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { fuzzySort } from './DropdownInputHelper'
+import './DropdownInput.css'
+import { useTerm } from '@/store/MonsterStore'
+
+type DropdownOption = {
+  value: string
+  label: string
+}
+
+type DropdownInputProps = {
+  options: DropdownOption[]
+  placeholder?: string
+  required?: boolean
+  id?: string
+  maxEntries?: number
+  onChange: (value: string) => void
+}
+
+export const DropdownInput: React.FC<DropdownInputProps> = ({
+  options,
+  placeholder,
+  required,
+  id,
+  maxEntries,
+  onChange,
+}) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const [isFocused, setIsFocused] = useState(false) // no open && focused is possible
+  const [inputValue, setInputValue] = useState('')
+  const [highlightedIdx, setHighlightedIdx] = useState(-1)
+  const [offset, setOffset] = useState(0)
+  const [portalStyle, setPortalStyle] = useState<React.CSSProperties | null>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const t = useTerm()
+
+  const currMaxEntries = (maxEntries ?? 5) - (offset > 0 ? 1 : 0)
+
+  const updatePortalStyle = () => {
+    const rect = inputRef.current?.getBoundingClientRect()
+    setPortalStyle(rect ? { top: rect.bottom + 3, left: rect.left, width: rect.width } : null)
+  }
+
+  useLayoutEffect(() => {
+    if (!isOpen) return
+    updatePortalStyle()
+  }, [isOpen])
+
+  useEffect(() => {
+    if (!isOpen) return
+    updatePortalStyle()
+    window.addEventListener('resize', updatePortalStyle)
+    return () => window.removeEventListener('resize', updatePortalStyle)
+  }, [isOpen])
+
+  const sortedOptions = fuzzySort(options, inputValue).filter(
+    (_, i) => i < currMaxEntries + offset && i >= offset
+  )
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setInputValue(value)
+    setIsOpen(value.length > 0)
+    setHighlightedIdx(0)
+    onChange(value)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!isOpen || sortedOptions.length === 0) return
+    if (e.key === 'ArrowDown') {
+      if (highlightedIdx === currMaxEntries - 1) {
+        setOffset((o) => Math.min(o + 1, options.length - currMaxEntries))
+      }
+      setHighlightedIdx((idx) => Math.min(idx + 1, sortedOptions.length - 1))
+      e.preventDefault()
+    } else if (e.key === 'ArrowUp') {
+      if (highlightedIdx === 0 && offset > 0) {
+        setOffset((o) => Math.max(o - 1, 0))
+      }
+      setHighlightedIdx((idx) => Math.max(idx - 1, 0))
+      e.preventDefault()
+    } else if (e.key === 'Enter') {
+      const selected = sortedOptions[highlightedIdx]
+      if (selected) {
+        setInputValue(selected.label)
+        setIsOpen(false)
+        onChange(selected.label)
+      }
+      e.preventDefault()
+    } else if (e.key === 'Escape') {
+      setIsOpen(false)
+      e.preventDefault()
+    }
+  }
+
+  const handleOptionClick = (option: DropdownOption) => {
+    setInputValue(option.label)
+    setIsOpen(false)
+    onChange(option.label)
+  }
+
+  const handleClearValue = () => {
+    setInputValue('')
+    onChange('')
+  }
+
+  return (
+    <div className="dropdown-input-container" id={id}>
+      <input
+        id="dropdown-input"
+        type="text"
+        value={inputValue}
+        required={required}
+        onKeyDown={handleKeyDown}
+        onChange={handleInputChange}
+        onFocus={() => {
+          setIsOpen(true)
+          handleClearValue()
+          setIsFocused(true)
+        }}
+        onBlur={() => {
+          setIsFocused(false)
+          setIsOpen(false)
+          setHighlightedIdx(-1)
+        }}
+        ref={inputRef}
+        autoComplete="off"
+        placeholder={isFocused ? t('startTypingToSearch') : placeholder}
+        style={isOpen ? { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 } : {}}
+      />
+      {isOpen &&
+        portalStyle &&
+        createPortal(
+          <>
+            {sortedOptions.length > 0 && (
+              <div className="dropdown-options-container" style={portalStyle}>
+                {offset > 0 && (
+                  <div
+                    key={'__top_more_results__'}
+                    className={'dropdown-option no-option'}
+                    onMouseEnter={() => setHighlightedIdx(-1)}
+                  >
+                    {t('moreResults', { results: offset })}
+                  </div>
+                )}
+                {sortedOptions.map((option, idx) => (
+                  <div
+                    key={option.value}
+                    className={'dropdown-option' + (idx === highlightedIdx ? ' highlighted' : '')}
+                    onMouseDown={() => handleOptionClick(option)}
+                    onMouseEnter={() => setHighlightedIdx(idx)}
+                    title={option.label}
+                  >
+                    {option.label}
+                  </div>
+                ))}
+                {options.length > currMaxEntries + offset && (
+                  <div
+                    key={'__bottom_more_results__'}
+                    className={'dropdown-option no-option'}
+                    onMouseEnter={() => setHighlightedIdx(-1)}
+                  >
+                    {t('moreResults', { results: options.length - currMaxEntries - offset })}
+                  </div>
+                )}
+                {options.length == 0 && (
+                  <div
+                    key={'__no_option__'}
+                    className={'dropdown-option no-option'}
+                    onMouseEnter={() => setHighlightedIdx(-1)}
+                  >
+                    {t('noResults')}
+                  </div>
+                )}
+              </div>
+            )}
+          </>,
+          document.body
+        )}
+    </div>
+  )
+}

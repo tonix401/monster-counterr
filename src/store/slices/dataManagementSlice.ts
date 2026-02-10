@@ -27,6 +27,12 @@ export type DataManagementSlice = {
   importData: (data: unknown) => boolean
 }
 
+type DataManagementDeps = {
+  monsters: Monster[]
+  xp: number
+  settings: Settings
+} & Pick<NotificationSlice, 'notify'>
+
 const isSaveData = (data: unknown): data is Partial<SaveData> => {
   if (typeof data !== 'object' || data === null) return false
   const d = data as Partial<SaveData>
@@ -35,7 +41,7 @@ const isSaveData = (data: unknown): data is Partial<SaveData> => {
 }
 
 export const createDataManagementSlice: StateCreator<
-  DataManagementSlice & { monsters: Monster[]; xp: number; settings: Settings } & NotificationSlice,
+  DataManagementSlice & DataManagementDeps,
   [],
   [],
   DataManagementSlice

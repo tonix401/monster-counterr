@@ -115,6 +115,11 @@
     "connectionLimitReached": "접속 제한에 도달했습니다. 최대 25명의 클라이언트만 허용됩니다.",
     "rateLimitExceeded": "너무 많은 메시지가 전송되었습니다. 속도를 줄여주세요.",
     "invalidMessageReceived": "서버에서 잘못된 메시지를 수신했습니다.",
-    "messageTooLarge": "메시지 용량이 너무 커서 전송할 수 없습니다."
+    "messageTooLarge": "메시지 용량이 너무 커서 전송할 수 없습니다.",
+    "templateName": "템플릿을 선택하세요",
+    "customizeMonster": "나만의 몬스터를 꾸며보세요",
+    "noResults": "검색 결과가 없습니다.",
+    "moreResults": "{results} 더보기...",
+    "startTypingToSearch": "입력을 시작하세요..."
   }
 }

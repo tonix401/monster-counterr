@@ -2,7 +2,7 @@
   background: transparent;
   min-width: 80px;
   margin-bottom: var(--spacing-sm);
-  border: 1px solid var(--border);
+  border: var(--borderwidth) solid var(--border);
   border-radius: var(--radius-md);
 }
 

@@ -16,7 +16,7 @@
   padding: var(--spacing-lg) var(--spacing-xl);
   background: var(--overlay-accent);
   border-radius: 15px;
-  border: 1px solid var(--border);
+  border: var(--borderwidth) solid var(--border);
 }
 .client-view-header select {
   width: auto;
@@ -26,7 +26,6 @@
 .client-language-select {
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: 50px;
-  border: 1px solid var(--border);
   background: var(--overlay-medium);
   color: var(--text);
   font-size: var(--font-base);
@@ -71,7 +70,7 @@
 /* Enemy Cards */
 .client-enemy-row {
   background: var(--card);
-  border: 1px solid var(--border);
+  border: var(--borderwidth) solid var(--border);
   border-radius: 15px;
   padding: var(--spacing-lg);
   box-shadow: var(--shadow-sm);
@@ -112,7 +111,7 @@
   margin-top: var(--spacing-sm);
   font-size: var(--font-md);
   font-weight: 600;
-  border: 1px solid var(--border);
+  border: var(--borderwidth) solid var(--border);
 }
 
 /* Empty State */

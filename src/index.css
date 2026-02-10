@@ -60,6 +60,9 @@
   --font-base: 14px;
   --font-lg: 18px;
   --font-xl: 23px;
+
+  /* borders */
+  --borderwidth: 2px;
 }
 
 body {
@@ -68,8 +71,7 @@ body {
   color: var(--text);
   display: flex;
   justify-content: center;
-  min-height: 100vh;
-  padding: var(--spacing-xl);
+  height: 100vh;
 }
 
 #root {
@@ -168,14 +170,14 @@ button:active {
 
 .transparent-button {
   background: transparent;
-  border: 1px solid var(--border);
+  border: var(--borderwidth) solid var(--border);
   color: var(--text);
 }
 
 select {
   width: 100%;
   padding: var(--spacing-md) var(--spacing-sm);
-  border: 1px solid var(--border);
+  border: var(--borderwidth) solid var(--border);
   border-radius: var(--radius-md);
   background: var(--overlay-medium);
   color: var(--text);
@@ -196,7 +198,7 @@ input[type='checkbox'] {
   accent-color: var(--accent);
   border-radius: 20%;
   vertical-align: middle;
-  border: 2px solid var(--border);
+  border: var(--borderwidth) solid var(--border);
   appearance: none;
   -webkit-appearance: none;
   outline: none;
@@ -231,7 +233,7 @@ input[type='checkbox']:checked {
 
 hr {
   border: none;
-  border-top: 1px solid var(--border);
+  border-top: var(--borderwidth) solid var(--border);
   margin: var(--spacing-md) 0;
 }
 

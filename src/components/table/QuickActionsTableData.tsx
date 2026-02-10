@@ -1,5 +1,5 @@
 import React from 'react'
-import { useMonsterStore } from '@/store/MonsterStore'
+import { useMonsterStore, useNotify } from '@/store/MonsterStore'
 import { useTerm } from '@/store/MonsterStore'
 import { ASSETS } from '@/constants'
 import './QuickActionsTableData.css'
@@ -13,6 +13,7 @@ const QuickActionsTableData: React.FC<QuickActionsTableDataProps> = ({ monsterId
   const killMonster = useMonsterStore((state) => state.killMonster)
   const removeMonster = useMonsterStore((state) => state.removeMonster)
   const toggleHideMonster = useMonsterStore((state) => state.toggleHideMonster)
+  const notify = useNotify()
   const t = useTerm()
 
   const handleKill = () => {
@@ -25,6 +26,10 @@ const QuickActionsTableData: React.FC<QuickActionsTableDataProps> = ({ monsterId
 
   const handleHide = () => {
     toggleHideMonster(monsterId)
+    notify({
+      type: 'success',
+      message: isHidden ? t('monsterWillBeShown') : t('monsterWillBeHidden'),
+    })
   }
 
   return (
@@ -41,11 +46,15 @@ const QuickActionsTableData: React.FC<QuickActionsTableDataProps> = ({ monsterId
           <img src={ASSETS.BIN_ICON} alt={t('removeMonster')} />
         </button>
         <button
-          className={'red-button icon-button' + (isHidden ? ' monster-hidden-button' : '')}
+          className={'green-button icon-button' + (isHidden ? ' monster-hidden-button' : '')}
           title={isHidden ? t('showMonster') : t('hideMonster')}
           onClick={handleHide}
         >
-          <img src={ASSETS.HIDE_ICON} alt={isHidden ? t('showMonster') : t('hideMonster')} />
+          {isHidden ? (
+            <img src={ASSETS.HIDE_ICON} alt={t('showMonster')} />
+          ) : (
+            <img src={ASSETS.SHOW_ICON} alt={t('hideMonster')} />
+          )}
         </button>
       </div>
     </td>

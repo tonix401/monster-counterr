@@ -1,13 +1,9 @@
 import React from 'react'
-import type { Settings } from '@/types/Settings'
-import { useTerm } from '@/store/MonsterStore'
+import { useSettings, useTerm } from '@/store/MonsterStore'
 
-interface TableHeaderRowProps {
-  settings: Settings
-}
-
-const TableHeaderRow: React.FC<TableHeaderRowProps> = ({ settings }) => {
+const TableHeaderRow: React.FC = () => {
   const t = useTerm()
+  const settings = useSettings()
 
   const headers: { key: string; label: string }[] = []
 
@@ -22,7 +18,7 @@ const TableHeaderRow: React.FC<TableHeaderRowProps> = ({ settings }) => {
     <tr>
       {headers.map((header) => (
         <th key={header.key} id={`header-row-${header.key}`}>
-          {header.label}
+          <span>{header.label}</span>
         </th>
       ))}
     </tr>

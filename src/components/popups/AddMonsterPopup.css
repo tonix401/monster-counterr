@@ -1,5 +1,26 @@
-#add-monster-form > input {
-  display: block;
-  margin: var(--spacing-md) 0;
+#add-monster-form {
+  display: flex;
+  flex-direction: column;
+}
+
+#add-monster-form summary {
+  margin-bottom: var(--spacing-lg);
+}
+
+#add-monster-form input {
   width: 100%;
+  margin-bottom: var(--spacing-lg);
+}
+
+#monster-template-inputs {
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+#add-monster-template-source-input {
+  flex: 1;
+}
+
+#add-monster-template-name-input {
+  flex: 3;
 }

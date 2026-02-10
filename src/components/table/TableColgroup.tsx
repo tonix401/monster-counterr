@@ -1,11 +1,9 @@
 import React from 'react'
-import type { Settings } from '@/types/Settings'
+import { useSettings } from '@/store/MonsterStore'
 
-interface TableColgroupProps {
-  settings: Settings
-}
+const TableColgroup: React.FC = () => {
+  const settings = useSettings()
 
-const TableColgroup: React.FC<TableColgroupProps> = ({ settings }) => {
   const cols: string[] = []
 
   if (settings.showQuickActions) cols.push('actions')

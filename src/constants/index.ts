@@ -43,6 +43,8 @@ export const ASSETS = {
   BIN_ICON: `${BASE_URL}/bin.svg`,
   KNIFE_ICON: `${BASE_URL}/knife.svg`,
   HIDE_ICON: `${BASE_URL}/hide.svg`,
+  SHOW_ICON: `${BASE_URL}/show.svg`,
+  ADD_ICON: `${BASE_URL}/add.svg`,
 } as const
 
 export const CONNECTION = {
@@ -61,4 +63,8 @@ export const CONNECTION = {
   MAX_CONNECTIONS: 25,
   MAX_MESSAGE_SIZE: 102400, // 100KB
   MAX_MESSAGES_PER_SECOND: 10,
+} as const
+
+export const TIMING = {
+  DEFAULT_NOTIFICATION_DURATION: 3000, // 3 seconds
 } as const

@@ -1,21 +1,20 @@
 import React from 'react'
 import type { Monster } from '@/types/Monster'
-import type { Settings } from '@/types/Settings'
 import NameTableData from '@/components/table/NameTableData'
 import StatusTableData from '@/components/table/StatusTableData'
 import HpTableData from '@/components/table/HpTableData'
 import ChangeHpTableData from '@/components/table/ChangeHpTableData'
 import ConditionsTableData from '@/components/table/ConditionsTableData'
 import QuickActionsTableData from '@/components/table/QuickActionsTableData'
-import { useMonsterStore } from '@/store/MonsterStore'
+import { useMonsterStore, useSettings } from '@/store/MonsterStore'
 
 interface MonsterTableRowProps {
   monster: Monster
-  settings: Settings
 }
 
-const MonsterTableRow: React.FC<MonsterTableRowProps> = ({ monster, settings }) => {
+const MonsterTableRow: React.FC<MonsterTableRowProps> = ({ monster }) => {
   const highlightedMonsterId = useMonsterStore((state) => state.highlightedMonsterId)
+  const settings = useSettings()
 
   return (
     <tr className={highlightedMonsterId === monster.id ? 'highlighted-row' : ''}>

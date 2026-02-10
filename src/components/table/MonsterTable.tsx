@@ -1,27 +1,25 @@
 import React from 'react'
-import type { Monster } from '@/types/Monster'
-import { useMonsterStore } from '@/store/MonsterStore'
+import { useMonsters } from '@/store/MonsterStore'
 import MonsterTableRow from '@/components/table/MonsterTableRow'
 import TableHeaderRow from '@/components/table/TableHeaderRow'
 import TableColgroup from '@/components/table/TableColgroup'
 import './MonsterTable.css'
+import { AddMonsterRow } from './AddMonsterRow'
 
-interface MonsterTableProps {
-  monsters: Monster[]
-}
-
-const MonsterTable: React.FC<MonsterTableProps> = ({ monsters }) => {
-  const settings = useMonsterStore((state) => state.settings)
+const MonsterTable: React.FC = () => {
+  const monsters = useMonsters()
+  
   return (
     <table>
-      <TableColgroup settings={settings} />
+      <TableColgroup />
       <thead>
-        <TableHeaderRow settings={settings} />
+        <TableHeaderRow />
       </thead>
       <tbody>
         {monsters.map((monster) => (
-          <MonsterTableRow key={monster.id} monster={monster} settings={settings} />
+          <MonsterTableRow key={monster.id} monster={monster} />
         ))}
+        <AddMonsterRow />
       </tbody>
     </table>
   )

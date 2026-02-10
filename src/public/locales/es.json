@@ -115,6 +115,11 @@
     "connectionLimitReached": "Se alcanzó el límite de conexión. Se permite un máximo de 25 clientes.",
     "rateLimitExceeded": "Se enviaron demasiados mensajes. Por favor, disminuya la velocidad.",
     "invalidMessageReceived": "Mensaje no válido recibido del servidor.",
-    "messageTooLarge": "Mensaje demasiado grande para enviar."
+    "messageTooLarge": "Mensaje demasiado grande para enviar.",
+    "templateName": "Seleccione una plantilla",
+    "customizeMonster": "Personaliza tu monstruo",
+    "noResults": "No se encontraron resultados.",
+    "moreResults": "{results} más...",
+    "startTypingToSearch": "Empieza a escribir..."
   }
 }

@@ -115,6 +115,11 @@
     "connectionLimitReached": "Connection limit reached. Maximum of 25 clients allowed.",
     "rateLimitExceeded": "Too many messages sent. Please slow down.",
     "invalidMessageReceived": "Invalid message received from server.",
-    "messageTooLarge": "Message too large to send."
+    "messageTooLarge": "Message too large to send.",
+    "templateName": "Select a template",
+    "customizeMonster": "Customize your monster",
+    "startTypingToSearch": "Start typing...",
+    "noResults": "No results found.",
+    "moreResults": "{results} more ..."
   }
 }

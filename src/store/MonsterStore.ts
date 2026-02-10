@@ -33,15 +33,13 @@ type MonsterCounterCoreState = MonsterSlice &
     // Initialization
     initialize: () => Promise<void>
     setLoading: (loading: boolean) => void
-    loadLanguagePack: (language: string) => Promise<void>
-    loadAvailableLanguages: () => Promise<void>
   }
 
-type MonsterCounterState = MonsterCounterCoreState &
+export type MonsterCounterStore = MonsterCounterCoreState &
   TemporalState<MonsterCounterCoreState> &
   TemporalActions
 
-export const useMonsterStore = create<MonsterCounterState>()(
+export const useMonsterStore = create<MonsterCounterStore>()(
   persist(
     temporal(
       (set, get, api) =>
@@ -195,7 +193,7 @@ export const useLoadLanguagePack = (): ((language: string) => Promise<void>) =>
 export const useAvailableLanguages = (): { key: string; name: string }[] =>
   useMonsterStore((state) => state.availableLanguages)
 
-export const useTerm = (): ((key: string) => string) => {
+export const useTerm = (): ((key: string, params?: Record<string, string | number>) => string) => {
   useMonsterStore((state) => state.language) // for rerenders on language change
   return useMonsterStore((state) => state.getTerm)
 }

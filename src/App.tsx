@@ -3,7 +3,7 @@ import { Outlet } from 'react-router'
 import './App.css'
 import MonsterTable from '@/components/table/MonsterTable'
 import Header from '@/components/Header'
-import { useMonsterStore, useMonsters, useXp, useIsLoading } from '@/store/MonsterStore'
+import { useMonsterStore, useIsLoading } from '@/store/MonsterStore'
 import { NotificationContainer } from './components/ui/NotificationsContainer'
 
 function App() {
@@ -13,11 +13,7 @@ function App() {
     initialize()
   }, [initialize])
 
-  const xp = useXp()
-  const monsters = useMonsters()
   const isLoading = useIsLoading()
-
-  const resetXp = useMonsterStore((state) => state.resetXp)
 
   if (isLoading) {
     return (
@@ -51,9 +47,9 @@ function App() {
 
   return (
     <div className="app">
-      <Header xpDisplay={xp} onResetXp={resetXp} />
+      <Header />
       <div id="monsterList">
-        <MonsterTable monsters={monsters} />
+        <MonsterTable />
       </div>
       <Outlet />
       <NotificationContainer />

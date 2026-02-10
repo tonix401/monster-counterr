@@ -2,7 +2,7 @@
   width: 100%;
   height: 80vh;
   border-radius: var(--radius-xl);
-  border: var(--border) 2px solid;
+  border: var(--border) var(--borderwidth) solid;
 }
 
 #monster-info-link {

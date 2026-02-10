@@ -15,7 +15,7 @@ export type MonsterIndexEntryHp =
 
 export type MonsterIndexEntry = {
   name: string
-  source: string
+  source: string | "all"
   hp: MonsterIndexEntryHp
   xp: number
 }
@@ -23,7 +23,7 @@ export type MonsterIndexEntry = {
 export type MonsterSliceState = {
   monsters: Monster[]
   monsterIndex: Record<string, MonsterIndexEntry>
-  source: string | null
+  source: string | "all"
   highlightedMonsterId: string | null
 }
 
@@ -36,7 +36,7 @@ export type MonsterSliceActions = {
   addMonsterCondition: (monsterId: string, condition: string) => void
   removeMonsterCondition: (monsterId: string, condition: string) => void
   getMonsterIndex: () => Promise<void>
-  setSource: (source: string | null) => void
+  setSource: (source: string | "all") => void
   highlightMonster: (monsterId: string) => void
   toggleHideMonster: (monsterId: string) => void
 }
@@ -51,7 +51,7 @@ export const createMonsterSlice: StateCreator<
 > = (set) => ({
   monsters: [],
   monsterIndex: {},
-  source: null,
+  source: "all",
   highlightedMonsterId: null,
 
   addMonster: (
@@ -168,7 +168,7 @@ export const createMonsterSlice: StateCreator<
     }))
   },
 
-  setSource: (source: string | null): void => {
+  setSource: (source: string | "all"): void => {
     set({ source })
   },
 

@@ -2,8 +2,8 @@
   width: 100%;
   max-width: 1200px;
   background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-2xl);
+  border-left: var(--borderwidth) solid var(--border);
+  border-right: var(--borderwidth) solid var(--border);
   box-shadow: var(--shadow-xl);
   overflow: hidden;
 }
@@ -33,7 +33,7 @@
 .skeleton-header {
   padding: var(--spacing-xl) var(--spacing-2xl);
   background: linear-gradient(135deg, rgba(124, 77, 255, 0.18), var(--overlay-accent-light));
-  border-bottom: 1px solid var(--border);
+  border-bottom: var(--borderwidth) solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -69,7 +69,7 @@
   margin-bottom: var(--spacing-md);
   background: var(--overlay-light);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
+  border: var(--borderwidth) solid var(--border);
 }
 
 .skeleton-table-cell {
@@ -83,7 +83,6 @@
 
 #monsterList {
   margin: 0;
-  padding: var(--spacing-xl) var(--spacing-2xl) var(--spacing-3xl);
   list-style: none;
   overflow: scroll;
   max-height: 87.5vh;

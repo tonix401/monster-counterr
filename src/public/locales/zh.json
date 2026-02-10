@@ -115,6 +115,11 @@
     "connectionLimitReached": "连接数已达上限。最多允许 25 个客户端同时连接。",
     "rateLimitExceeded": "发送的消息过多，请减慢速度。",
     "invalidMessageReceived": "从服务器收到无效消息。",
-    "messageTooLarge": "邮件内容过大，无法发送。"
+    "messageTooLarge": "邮件内容过大，无法发送。",
+    "templateName": "选择模板",
+    "customizeMonster": "自定义你的怪物",
+    "noResults": "未找到结果。",
+    "moreResults": "{results} 更多...",
+    "startTypingToSearch": "开始输入……"
   }
 }

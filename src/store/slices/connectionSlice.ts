@@ -1,10 +1,11 @@
 import type { StateCreator } from 'zustand'
 import Peer, { type DataConnection } from 'peerjs'
-import type { MonsterSlice } from './monsterSlice'
 import type { MonsterStatus } from '@/types/Monster'
 import { CONNECTION } from '@/constants'
+import type { MonsterSlice } from './monsterSlice'
+import type { NotificationSlice } from './notificationSlice'
 
-// Message validation types
+// Message types
 interface PingMessage {
   type: 'ping'
 }
@@ -34,25 +35,23 @@ export type ClientConnection = {
   lastMessageReset: number
 }
 
-export type ConnectionSliceState = {
+export type ConnectionSlice = {
   peer: Peer | null
   peerId: string | null
   connections: ClientConnection[]
   isConnecting: boolean
   healthCheckInterval: number | null
   pingIntervalId: number | null
-}
-
-export type ConnectionSliceActions = {
   initializeHost: () => void
   broadcastMonsters: () => void
   disconnectAll: () => void
 }
 
-export type ConnectionSlice = ConnectionSliceState & ConnectionSliceActions
+type ConnectionDeps = Pick<MonsterSlice, 'monsters' | 'highlightMonster'> &
+  Pick<NotificationSlice, 'notify'>
 
 export const createConnectionSlice: StateCreator<
-  ConnectionSlice & MonsterSlice,
+  ConnectionSlice & ConnectionDeps,
   [],
   [],
   ConnectionSlice
@@ -124,6 +123,116 @@ export const createConnectionSlice: StateCreator<
     set({ pingIntervalId: intervalId })
   }
 
+  const startHealthCheck = (): void => {
+    const healthInterval = window.setInterval(() => {
+      const now = Date.now()
+      set((state) => ({
+        connections: state.connections.filter((c) => {
+          const isAlive = now - c.lastActivity < CONNECTION.CONNECTION_TIMEOUT_MS
+          if (!isAlive) {
+            console.log('Removing inactive connection:', c.name)
+            c.conn.close()
+          }
+          return isAlive
+        }),
+      }))
+    }, CONNECTION.HEALTH_CHECK_INTERVAL_MS)
+
+    set({ healthCheckInterval: healthInterval })
+  }
+
+  const removeConnection = (peerId: string): void => {
+    set((state) => ({
+      connections: state.connections.filter((c) => c.conn.peer !== peerId),
+    }))
+  }
+
+  const handlePeerOpen = (id: string): void => {
+    set({ peerId: id, isConnecting: false })
+    startPingInterval()
+    startHealthCheck()
+  }
+
+  const handleConnection = (conn: DataConnection): void => {
+    // Check connection limit
+    if (get().connections.length >= CONNECTION.MAX_CONNECTIONS) {
+      console.warn('Connection limit reached, rejecting connection')
+      conn.close()
+      return
+    }
+
+    conn.on('open', () => {
+      console.log('Client connected:', conn.peer)
+    })
+
+    conn.on('data', (data: unknown) => {
+      const now = Date.now()
+
+      // Validate message size
+      if (!checkMessageSize(data)) {
+        console.error('Message too large from client:', conn.peer)
+        return
+      }
+
+      // Validate message structure
+      if (!validateIncomingMessage(data)) {
+        console.error('Invalid message from client:', conn.peer)
+        return
+      }
+
+      if (data.type === 'client-name') {
+        // Check if connection already exists
+        const existingConn = get().connections.find((c) => c.conn.peer === conn.peer)
+        if (!existingConn) {
+          get().notify({
+            type: 'info',
+            message: data.name || 'Unknown Client',
+          })
+          set((state) => ({
+            connections: [
+              ...state.connections,
+              {
+                conn,
+                name: data.name || 'Unknown Client',
+                lastActivity: now,
+                messageCount: 0,
+                lastMessageReset: now,
+              },
+            ],
+          }))
+          // Send initial state
+          get().broadcastMonsters()
+        }
+        return
+      }
+
+      // Find and check rate limit for this connection
+      const connection = get().connections.find((c) => c.conn.peer === conn.peer)
+      if (!connection) return
+
+      if (!checkRateLimit(connection)) {
+        console.warn('Rate limit exceeded for client:', connection.name)
+        return
+      }
+
+      // Update lastActivity
+      set((state) => ({
+        connections: state.connections.map((c) =>
+          c.conn.peer === conn.peer ? { ...c, lastActivity: now } : c
+        ),
+      }))
+
+      if (data.type === 'attack') {
+        get().highlightMonster(data.monsterId)
+      } else if (data.type === 'ping') {
+        sendToConnection(conn, { type: 'pong' })
+      }
+    })
+
+    conn.on('close', () => removeConnection(conn.peer))
+    conn.on('error', () => removeConnection(conn.peer))
+  }
+
   return {
     peer: null,
     peerId: null,
@@ -141,118 +250,8 @@ export const createConnectionSlice: StateCreator<
       const storedPeerId = get().peerId
       const peer = storedPeerId ? new Peer(storedPeerId) : new Peer()
 
-      peer.on('open', (id) => {
-        set({ peerId: id, isConnecting: false })
-
-        // Start bidirectional health checks
-        startPingInterval()
-
-        // Start health check interval after peer is ready
-        const healthInterval = window.setInterval(() => {
-          const now = Date.now()
-          set((state) => ({
-            connections: state.connections.filter((c) => {
-              const isAlive = now - c.lastActivity < CONNECTION.CONNECTION_TIMEOUT_MS
-              if (!isAlive) {
-                console.log('Removing inactive connection:', c.name)
-                c.conn.close()
-              }
-              return isAlive
-            }),
-          }))
-        }, CONNECTION.HEALTH_CHECK_INTERVAL_MS)
-
-        set({ healthCheckInterval: healthInterval })
-      })
-
-      peer.on('connection', (conn) => {
-        // Check connection limit
-        if (get().connections.length >= CONNECTION.MAX_CONNECTIONS) {
-          console.warn('Connection limit reached, rejecting connection')
-          conn.close()
-          return
-        }
-
-        conn.on('open', () => {
-          console.log('Client connected:', conn.peer)
-        })
-
-        conn.on('data', (data: unknown) => {
-          const now = Date.now()
-
-          // Validate message size
-          if (!checkMessageSize(data)) {
-            console.error('Message too large from client:', conn.peer)
-            return
-          }
-
-          // Validate message structure
-          if (!validateIncomingMessage(data)) {
-            console.error('Invalid message from client:', conn.peer)
-            return
-          }
-
-          if (data.type === 'client-name') {
-            // Check if connection already exists
-            const existingConn = get().connections.find((c) => c.conn.peer === conn.peer)
-            if (!existingConn) {
-              set((state) => ({
-                connections: [
-                  ...state.connections,
-                  {
-                    conn,
-                    name: data.name || 'Unknown Client',
-                    lastActivity: now,
-                    messageCount: 0,
-                    lastMessageReset: now,
-                  },
-                ],
-              }))
-              // Send initial state
-              get().broadcastMonsters()
-            }
-          } else {
-            // Find and check rate limit for this connection
-            const connection = get().connections.find((c) => c.conn.peer === conn.peer)
-            if (!connection) return
-
-            if (!checkRateLimit(connection)) {
-              console.warn('Rate limit exceeded for client:', connection.name)
-              return
-            }
-
-            // Update lastActivity
-            set((state) => ({
-              connections: state.connections.map((c) =>
-                c.conn.peer === conn.peer ? { ...c, lastActivity: now } : c
-              ),
-            }))
-
-            if (data.type === 'attack') {
-              // Handle attack from client - highlight the monster
-              const monsterSlice = get() as unknown as MonsterSlice
-              if (monsterSlice.highlightMonster && data.monsterId) {
-                monsterSlice.highlightMonster(data.monsterId)
-              }
-            } else if (data.type === 'ping') {
-              // Respond to ping with pong
-              sendToConnection(conn, { type: 'pong' })
-            }
-          }
-        })
-
-        conn.on('close', () => {
-          set((state) => ({
-            connections: state.connections.filter((c) => c.conn.peer !== conn.peer),
-          }))
-        })
-
-        conn.on('error', () => {
-          set((state) => ({
-            connections: state.connections.filter((c) => c.conn.peer !== conn.peer),
-          }))
-        })
-      })
+      peer.on('open', handlePeerOpen)
+      peer.on('connection', handleConnection)
 
       peer.on('error', (err) => {
         console.error('PeerJS error:', err)
@@ -263,32 +262,9 @@ export const createConnectionSlice: StateCreator<
           peer.destroy()
           set({ peer: null, peerId: null })
 
-          // Retry with a new ID
           const newPeer = new Peer()
-
-          newPeer.on('open', (id) => {
-            set({ peerId: id, isConnecting: false })
-            startPingInterval()
-
-            const healthInterval = window.setInterval(() => {
-              const now = Date.now()
-              set((state) => ({
-                connections: state.connections.filter((c) => {
-                  const isAlive = now - c.lastActivity < CONNECTION.CONNECTION_TIMEOUT_MS
-                  if (!isAlive) {
-                    console.log('Removing inactive connection:', c.name)
-                    c.conn.close()
-                  }
-                  return isAlive
-                }),
-              }))
-            }, CONNECTION.HEALTH_CHECK_INTERVAL_MS)
-
-            set({ healthCheckInterval: healthInterval })
-          })
-
-          // Copy connection handler to new peer
-          newPeer.on('connection', peer.listeners('connection')[0] as any)
+          newPeer.on('open', handlePeerOpen)
+          newPeer.on('connection', handleConnection)
           newPeer.on('error', (newErr) => {
             console.error('PeerJS error:', newErr)
             set({ isConnecting: false })

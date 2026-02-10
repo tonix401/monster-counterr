@@ -115,6 +115,11 @@
     "connectionLimitReached": "Verbindungslimit erreicht. Maximal 25 Clients zulässig.",
     "rateLimitExceeded": "Es wurden zu viele Nachrichten gesendet. Bitte verlangsamen Sie das Tempo.",
     "invalidMessageReceived": "Ungültige Nachricht vom Server empfangen.",
-    "messageTooLarge": "Nachricht zu groß zum Senden."
+    "messageTooLarge": "Nachricht zu groß zum Senden.",
+    "templateName": "Wählen Sie eine Vorlage aus",
+    "customizeMonster": "Gestalte dein Monster individuell",
+    "noResults": "Keine Ergebnisse gefunden.",
+    "moreResults": "{results} mehr ...",
+    "startTypingToSearch": "Beginnen Sie mit der Eingabe..."
   }
 }

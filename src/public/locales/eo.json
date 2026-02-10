@@ -115,6 +115,11 @@
     "connectionLimitReached": "Konekta limo atingita. Maksimume 25 klientoj permesitaj.",
     "rateLimitExceeded": "Tro multaj mesaĝoj senditaj. Bonvolu malrapidiĝi.",
     "invalidMessageReceived": "Malvalida mesaĝo ricevita de la servilo.",
-    "messageTooLarge": "Mesaĝo tro granda por sendi."
+    "messageTooLarge": "Mesaĝo tro granda por sendi.",
+    "templateName": "Elektu ŝablonon",
+    "customizeMonster": "Personigu vian monstron",
+    "noResults": "Neniuj rezultoj trovitaj.",
+    "moreResults": "{results} pli ...",
+    "startTypingToSearch": "Komencu tajpi..."
   }
 }

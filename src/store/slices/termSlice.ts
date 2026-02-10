@@ -21,13 +21,20 @@ export const createTermSlice: StateCreator<
   language: 'en',
   availableLanguages: [{ key: 'en', name: 'English' }],
 
-  getTerm: (key: string): string => {
+  getTerm: (key: string, params?: Record<string, string | number>): string => {
     const state = get()
     const isLoading = state.isLoading
     const term = state.terms[key]
 
     if (!term && !isLoading) {
       return key
+    }
+
+    if (params) {
+      return Object.keys(params).reduce((acc, paramKey) => {
+        const paramValue = params[paramKey]
+        return acc.replace(`{${paramKey}}`, String(paramValue))
+      }, term)
     }
 
     return term

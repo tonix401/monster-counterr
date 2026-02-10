@@ -21,6 +21,7 @@ const AddMonsterPopup: React.FC = () => {
   const [amount, setAmount] = useState('')
   const [xp, setXp] = useState('')
   const [isCustom, setIsCustom] = useState(true)
+  const [matchedSource, setMatchedSource] = useState<string | undefined>(undefined)
 
   const sources = useMemo(
     () =>
@@ -44,7 +45,7 @@ const AddMonsterPopup: React.FC = () => {
     const amountValue = parseInt(amount) || 1
     addMonster(
       trimmedName,
-      isCustom ? undefined : `${nameToIndex(trimmedName)}-${source?.toLowerCase()}`,
+      isCustom ? undefined : `${nameToIndex(trimmedName)}-${matchedSource?.toLowerCase()}`,
       hpValue,
       amountValue
     )
@@ -76,8 +77,10 @@ const AddMonsterPopup: React.FC = () => {
       setHPFromindexEntry(matchedEntry.hp)
       setXp(matchedEntry.xp?.toString() || '')
       setName(matchedEntry.name)
+      setMatchedSource(matchedEntry.source)
     } else {
       setIsCustom(true)
+      setMatchedSource(undefined)
     }
   }
 
@@ -94,6 +97,7 @@ const AddMonsterPopup: React.FC = () => {
         setAmount('')
         setHp('')
         setTemplateName('')
+        setMatchedSource(undefined)
         navigate('/')
       }}
       title={t('addMonster')}

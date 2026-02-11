@@ -47,7 +47,8 @@ const AddMonsterPopup: React.FC = () => {
       trimmedName,
       isCustom ? undefined : `${nameToIndex(trimmedName)}-${matchedSource?.toLowerCase()}`,
       hpValue,
-      amountValue
+      parseInt(xp) || 0,
+      amountValue,
     )
     setTemplateName('')
     setHp('')

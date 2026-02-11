@@ -199,7 +199,7 @@ export const useTerm = (): ((key: string, params?: Record<string, string | numbe
 }
 
 export const useSource = (): string | null => useMonsterStore((state) => state.source)
-export const useSetSource = (): ((src: string | null) => void) =>
+export const useSetSource = (): ((src: string) => void) =>
   useMonsterStore((state) => state.setSource)
 
 export const useNotifications = (): NotificationSlice['queue'] =>

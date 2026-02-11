@@ -26,13 +26,17 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   maxEntries = 5,
   onChange,
 }) => {
+  // #region State & Refs
   const [isOpen, setIsOpen] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
   const [inputValue, setInputValue] = useState('')
-  const [highlightedIndex, setHighlightedIndex] = useState(0) // Absolute index in allFilteredOptions
+  const [isMouseOver, setIsMouseOver] = useState(false)
+  const [currArrayIndex, setHighlightedIndex] = useState(0) // Absolute index in allFilteredOptions
   const [scrollOffset, setScrollOffset] = useState(0) // Start index of visible window
   const [portalStyle, setPortalStyle] = useState<React.CSSProperties | null>(null)
+  const [containerHeight, setContainerHeight] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const t = useTerm()
 
   const updatePortalStyle = () => {
@@ -41,8 +45,11 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   }
 
   useLayoutEffect(() => {
-    if (!isOpen) return
     updatePortalStyle()
+    if (!isOpen) return
+    if (containerRef.current) {
+      setContainerHeight(containerRef.current.offsetHeight)
+    }
   }, [isOpen])
 
   useEffect(() => {
@@ -52,12 +59,11 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
     return () => window.removeEventListener('resize', updatePortalStyle)
   }, [isOpen])
 
-  // Get all filtered and sorted options
-  const allFilteredOptions = fuzzySort(options, inputValue)
+  const allSortedOptions = fuzzySort(options, inputValue)
+  const visibleOptions = allSortedOptions.slice(scrollOffset, scrollOffset + maxEntries)
 
-  // Calculate visible window
-  const visibleOptions = allFilteredOptions.slice(scrollOffset, scrollOffset + maxEntries)
-  const hiddenBelow = Math.max(0, allFilteredOptions.length - scrollOffset - maxEntries)
+  // #endregion State & Refs
+  // #region Handlers
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
@@ -69,20 +75,20 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!isOpen || allFilteredOptions.length === 0) return
+    if (!isOpen || allSortedOptions.length === 0) return
 
-    if (e.key === 'ArrowDown') {
+    if (e.key === 'ArrowDown' && !isMouseOver) {
       e.preventDefault()
-      const nextIndex = Math.min(highlightedIndex + 1, allFilteredOptions.length - 1)
+      const nextIndex = Math.min(currArrayIndex + 1, allSortedOptions.length - 1)
       setHighlightedIndex(nextIndex)
 
       // Scroll down if needed
       if (nextIndex >= scrollOffset + maxEntries) {
-        setScrollOffset(nextIndex - maxEntries + 1)
+        setScrollOffset((o) => o + 1)
       }
-    } else if (e.key === 'ArrowUp') {
+    } else if (e.key === 'ArrowUp' && !isMouseOver) {
       e.preventDefault()
-      const prevIndex = Math.max(highlightedIndex - 1, 0)
+      const prevIndex = Math.max(currArrayIndex - 1, 0)
       setHighlightedIndex(prevIndex)
 
       // Scroll up if needed
@@ -91,15 +97,15 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
       }
     } else if (e.key === 'Enter') {
       e.preventDefault()
-      const selected = allFilteredOptions[highlightedIndex]
+      const selected = allSortedOptions[currArrayIndex]
       if (selected) {
         setInputValue(selected.label)
         setIsOpen(false)
         onChange(selected.label)
       }
     } else if (e.key === 'Escape') {
-      e.preventDefault()
       setIsOpen(false)
+      e.stopPropagation()
     }
   }
 
@@ -114,64 +120,100 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
     onChange('')
   }
 
+  const handleFocus = () => {
+    setIsOpen(true)
+    handleClearValue()
+    setIsFocused(true)
+    setHighlightedIndex(0)
+    setScrollOffset(0)
+  }
+
+  const handleBlur = () => {
+    setIsFocused(false)
+    setIsOpen(false)
+    setHighlightedIndex(0)
+    setScrollOffset(0)
+  }
+
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    e.stopPropagation()
+    const delta = e.deltaY > 0 ? 1 : -1
+    const newScrollOffset = Math.max(
+      0,
+      Math.min(scrollOffset + delta, allSortedOptions.length - maxEntries)
+    )
+    setScrollOffset(newScrollOffset)
+  }
+
+  const handleMouseEnter = () => setIsMouseOver(true)
+  const handleMouseLeave = () => setIsMouseOver(false)
+
+  // #endregion Handlers
+  // #region Component
+
   return (
     <div className="dropdown-input-container" id={id}>
       <input
-        id="dropdown-input"
+        className="dropdown-input"
         type="text"
         value={inputValue}
         required={required}
         onKeyDown={handleKeyDown}
         onChange={handleInputChange}
-        onFocus={() => {
-          setIsOpen(true)
-          handleClearValue()
-          setIsFocused(true)
-          setHighlightedIndex(0)
-          setScrollOffset(0)
-        }}
-        onBlur={() => {
-          setIsFocused(false)
-          setIsOpen(false)
-          setHighlightedIndex(0)
-          setScrollOffset(0)
-        }}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         ref={inputRef}
         autoComplete="off"
         placeholder={isFocused ? t('startTypingToSearch') : placeholder}
-        style={isOpen ? { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 } : {}}
       />
       {isOpen &&
         portalStyle &&
         createPortal(
           <>
-            {allFilteredOptions.length > 0 ? (
-              <div className="dropdown-options-container" style={portalStyle}>
-                {visibleOptions.map((option, relativeIndex) => {
-                  const _absoluteIndex = scrollOffset + relativeIndex
-                  return (
-                    <div
-                      key={option.value}
-                      className={
-                        'dropdown-option' +
-                        (_absoluteIndex === highlightedIndex ? ' highlighted' : '')
-                      }
-                      onMouseDown={() => handleOptionClick(option)}
-                      onMouseEnter={() => setHighlightedIndex(_absoluteIndex)}
-                      title={option.label}
-                    >
-                      {option.label}
-                    </div>
-                  )
-                })}
-                {hiddenBelow > 0 && (
+            {allSortedOptions.length > 0 ? (
+              <div
+                className={`dropdown-options-container ${
+                  allSortedOptions.length > maxEntries ? 'has-progress' : ''
+                }`.trim()}
+                style={portalStyle}
+                onWheel={handleWheel}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                ref={containerRef}
+              >
+                <div className="dropdown-options-inner">
+                  {visibleOptions.map((option, relativeIndex) => {
+                    const _currArrayIndex = scrollOffset + relativeIndex
+                    return (
+                      <div
+                        key={option.value}
+                        className={
+                          'dropdown-option' +
+                          (_currArrayIndex === currArrayIndex ? ' highlighted' : '')
+                        }
+                        onMouseDown={() => handleOptionClick(option)}
+                        onMouseEnter={() => setHighlightedIndex(_currArrayIndex)}
+                        title={option.label}
+                      >
+                        {option.label}
+                      </div>
+                    )
+                  })}
+                </div>
+                {allSortedOptions.length > maxEntries && (
                   <div
-                    key="__bottom_more_results__"
-                    className="dropdown-option no-option"
-                    onMouseEnter={() => setHighlightedIndex(-1)}
-                  >
-                    {t('moreResults', { results: hiddenBelow })}
-                  </div>
+                    className="scroll-progress-div"
+                    style={
+                      {
+                        '--progress': scrollOffset / (allSortedOptions.length - maxEntries),
+                        '--container-height': `${containerHeight}px`,
+                        '--indicator-height': `${Math.max(
+                          8,
+                          (containerHeight * maxEntries) / allSortedOptions.length
+                        )}px`,
+                      } as React.CSSProperties
+                    }
+                  />
                 )}
               </div>
             ) : (
@@ -190,4 +232,5 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
         )}
     </div>
   )
+  // #endregion Component
 }

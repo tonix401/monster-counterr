@@ -9,7 +9,7 @@
   --card: #2a3042;
   --text: #f4f6fb;
   --accent: #7c4dff;
-  --border: rgba(255, 255, 255, 0.08);
+  --border: rgb(69, 69, 69, 0.5);
 
   /* Status Colors */
   --heal: #1db954;

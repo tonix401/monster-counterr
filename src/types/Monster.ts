@@ -10,6 +10,7 @@ export interface Monster {
   conditions: string[]
   number: number
   isHidden: boolean
+  xp: number
 }
 
 export type ClientMonster = {
@@ -18,21 +19,23 @@ export type ClientMonster = {
   status: MonsterStatus
 }
 
-export function createMonster(
-  name: string,
-  hp: number,
-  detailIndex: string | undefined,
+export function createMonster(params: {
+  name: string
+  hp: number
+  detailIndex: string | undefined
   number: number
-): Monster {
+  xp: number
+}): Monster {
   return {
     id: crypto.randomUUID(),
-    name,
-    detailIndex,
-    hp,
-    maxhp: hp,
+    name: params.name,
+    detailIndex: params.detailIndex,
+    hp: params.hp,
+    maxhp: params.hp,
     hasDiedAlready: false,
     conditions: [],
-    number,
+    number: params.number,
     isHidden: true,
+    xp: params.xp,
   }
 }

@@ -15,7 +15,7 @@ export type MonsterIndexEntryHp =
 
 export type MonsterIndexEntry = {
   name: string
-  source: string | "all"
+  source: string | 'all'
   hp: MonsterIndexEntryHp
   xp: number
 }
@@ -23,12 +23,18 @@ export type MonsterIndexEntry = {
 export type MonsterSliceState = {
   monsters: Monster[]
   monsterIndex: Record<string, MonsterIndexEntry>
-  source: string | "all"
+  source: string | 'all'
   highlightedMonsterId: string | null
 }
 
 export type MonsterSliceActions = {
-  addMonster: (name: string, index: string | undefined, hp: number, amount?: number) => Monster[]
+  addMonster: (
+    name: string,
+    index: string | undefined,
+    hp: number,
+    xp: number,
+    amount?: number
+  ) => Monster[]
   removeMonster: (monsterId: string) => void
   removeDead: () => void
   clearMonsters: () => void
@@ -36,7 +42,7 @@ export type MonsterSliceActions = {
   addMonsterCondition: (monsterId: string, condition: string) => void
   removeMonsterCondition: (monsterId: string, condition: string) => void
   getMonsterIndex: () => Promise<void>
-  setSource: (source: string | "all") => void
+  setSource: (source: string | 'all') => void
   highlightMonster: (monsterId: string) => void
   toggleHideMonster: (monsterId: string) => void
 }
@@ -44,29 +50,30 @@ export type MonsterSliceActions = {
 export type MonsterSlice = MonsterSliceState & MonsterSliceActions
 
 export const createMonsterSlice: StateCreator<
-  MonsterSlice & { settings: Settings },
+  MonsterSlice & { settings: Settings; xp: number },
   [],
   [],
   MonsterSlice
 > = (set) => ({
   monsters: [],
   monsterIndex: {},
-  source: "all",
+  source: 'all',
   highlightedMonsterId: null,
 
   addMonster: (
     name: string,
     index: string | undefined,
     hp: number,
+    xp: number,
     amount: number = 1
   ): Monster[] => {
     const newMonsters: Monster[] = []
 
     if (amount === 1) {
-      newMonsters.push(createMonster(name, hp, index, 0))
+      newMonsters.push(createMonster({ name, hp, detailIndex: index, number: 0, xp }))
     } else {
       for (let i = 0; i < amount; i++) {
-        newMonsters.push(createMonster(name, hp, index, i + 1))
+        newMonsters.push(createMonster({ name, hp, detailIndex: index, number: i + 1, xp }))
       }
     }
 
@@ -103,6 +110,8 @@ export const createMonsterSlice: StateCreator<
             // Handle death
             if (newHp === 0 && !monster.hasDiedAlready) {
               updatedMonster.hasDiedAlready = true
+              console.log(`Monster ${monster.name} has died.`, monster.xp)
+              set((state) => ({ ...state, xp: state.xp + (monster.xp ?? 0) }))
 
               // Auto remove if setting is enabled
               if (state.settings?.autoRemoveDead) {
@@ -168,7 +177,7 @@ export const createMonsterSlice: StateCreator<
     }))
   },
 
-  setSource: (source: string | "all"): void => {
+  setSource: (source: string | 'all'): void => {
     set({ source })
   },
 

@@ -1,4 +1,4 @@
-#dropdown-input {
+.dropdown-input {
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -6,36 +6,29 @@
 
 .dropdown-options-container {
   position: fixed;
-  overflow-y: auto;
-  border-bottom-left-radius: var(--radius-md);
-  border-bottom-right-radius: var(--radius-md);
+  overflow-y: hidden;
+  border-radius: var(--radius-md);
   z-index: 200;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   background: var(--card);
+  border: var(--borderwidth) solid var(--border);
+}
+
+.dropdown-options-container.has-progress {
+  padding-right: 6px;
 }
 
 .dropdown-option {
   padding: var(--spacing-sm);
   cursor: pointer;
-  border: var(--borderwidth) solid var(--border);
-  border-top-width: 0;
+  border-bottom: var(--borderwidth) solid var(--border);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.dropdown-option:first-child {
-  border-top-width: var(--borderwidth);
-}
-
-.dropdown-option:first-child.overwidth {
-  border-bottom-left-radius: var(--radius-md);
-  border-bottom-right-radius: 0;
-}
-
 .dropdown-option:last-child {
-  border-bottom-left-radius: var(--radius-md);
-  border-bottom-right-radius: var(--radius-md);
+  border-bottom-width: 0;
 }
 
 .dropdown-option:hover,
@@ -44,6 +37,33 @@
 }
 
 .dropdown-option:hover.no-option {
-  background: transparent;
   cursor: default;
+}
+
+.scroll-progress-div {
+  position: absolute;
+  right: 4px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: var(--radius-sm);
+  border-left: var(--borderwidth) solid var(--border);
+  pointer-events: none;
+}
+
+.scroll-progress-div::before {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: var(--indicator-height, 60px);
+  background: var(--accent);
+  border-radius: calc(var(--indicator-height, 60px) / 2);
+  right: -3px;
+  top: 0;
+  transform: translateY(
+    calc(var(--progress, 0) * (var(--container-height, 200px) - var(--indicator-height, 60px)))
+  );
+  transition: transform 0.1s ease-out;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  will-change: transform;
 }

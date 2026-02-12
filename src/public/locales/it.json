@@ -120,6 +120,8 @@
     "customizeMonster": "Personalizza il tuo mostro",
     "noResults": "Nessun risultato trovato.",
     "moreResults": "{results} altro ...",
-    "startTypingToSearch": "Inizia a digitare..."
+    "startTypingToSearch": "Inizia a digitare...",
+    "monsterHidden": "{name} è ora nascosto ai giocatori",
+    "monsterVisible": "{name} è ora visibile ai giocatori"
   }
 }

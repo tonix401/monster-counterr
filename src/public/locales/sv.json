@@ -120,6 +120,8 @@
     "customizeMonster": "Anpassa ditt monster",
     "noResults": "Inga resultat hittades.",
     "moreResults": "{results} mer ...",
-    "startTypingToSearch": "Börja skriva..."
+    "startTypingToSearch": "Börja skriva...",
+    "monsterHidden": "{name} är nu dold från spelare",
+    "monsterVisible": "{name} är nu synlig för spelare"
   }
 }

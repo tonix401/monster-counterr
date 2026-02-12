@@ -120,6 +120,8 @@
     "customizeMonster": "I-customize ang iyong halimaw",
     "noResults": "Walang nakitang resulta.",
     "moreResults": "{results} higit pa ...",
-    "startTypingToSearch": "Simulan ang pag-type..."
+    "startTypingToSearch": "Simulan ang pag-type...",
+    "monsterHidden": "{name} ay nakatagong sa mga manlalaro",
+    "monsterVisible": "{name} ay makikita na sa mga manlalaro"
   }
 }

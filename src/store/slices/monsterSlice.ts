@@ -44,17 +44,22 @@ export type MonsterSliceActions = {
   getMonsterIndex: () => Promise<void>
   setSource: (source: string | 'all') => void
   highlightMonster: (monsterId: string) => void
-  toggleHideMonster: (monsterId: string) => void
+  toggleHideMonster: (monsterId: string, message?: string) => void
 }
 
 export type MonsterSlice = MonsterSliceState & MonsterSliceActions
 
 export const createMonsterSlice: StateCreator<
-  MonsterSlice & { settings: Settings; xp: number },
+  MonsterSlice & {
+    settings: Settings
+    xp: number
+    notify: ({ type, message }: { type: string; message: string }) => void
+    getTerm: (key: string, params?: Record<string, string | number>) => string
+  },
   [],
   [],
   MonsterSlice
-> = (set) => ({
+> = (set, get) => ({
   monsters: [],
   monsterIndex: {},
   source: 'all',
@@ -169,7 +174,12 @@ export const createMonsterSlice: StateCreator<
     }
   },
 
-  toggleHideMonster: (monsterId: string): void => {
+  toggleHideMonster: (monsterId: string, message?: string): void => {
+    const monster = get().monsters.find((m) => m.id === monsterId)
+    if (!monster) return
+    if (message) {
+      get().notify({ type: 'info', message })
+    }
     set((state) => ({
       monsters: state.monsters.map((monster) =>
         monster.id === monsterId ? { ...monster, isHidden: !monster.isHidden } : monster

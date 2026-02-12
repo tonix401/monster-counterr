@@ -120,6 +120,8 @@
     "customizeMonster": "自定义你的怪物",
     "noResults": "未找到结果。",
     "moreResults": "{results} 更多...",
-    "startTypingToSearch": "开始输入……"
+    "startTypingToSearch": "开始输入……",
+    "monsterHidden": "{name}现在对玩家隐藏",
+    "monsterVisible": "{name}现在对玩家可见"
   }
 }

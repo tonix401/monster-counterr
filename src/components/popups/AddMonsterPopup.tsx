@@ -15,6 +15,7 @@ const AddMonsterPopup: React.FC = () => {
   const navigate = useNavigate()
   const t = useTerm()
 
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false)
   const [templateName, setTemplateName] = useState('')
   const [name, setName] = useState('')
   const [hp, setHp] = useState('')
@@ -40,15 +41,14 @@ const AddMonsterPopup: React.FC = () => {
       .replace(/^-+|-+$/g, '')
 
   const handleAdd = () => {
-    const trimmedName = templateName.trim()
     const hpValue = parseInt(hp) || 1
     const amountValue = parseInt(amount) || 1
     addMonster(
-      trimmedName,
-      isCustom ? undefined : `${nameToIndex(trimmedName)}-${matchedSource?.toLowerCase()}`,
+      name.trim(),
+      isCustom ? undefined : `${nameToIndex(templateName)}-${matchedSource?.toLowerCase()}`,
       hpValue,
       parseInt(xp) || 0,
-      amountValue,
+      amountValue
     )
     setTemplateName('')
     setHp('')
@@ -92,6 +92,10 @@ const AddMonsterPopup: React.FC = () => {
     suggestionInputOnChange(value)
   }
 
+  const expandDetails = () => {
+    setIsDetailsOpen(true)
+  }
+
   return (
     <Popup
       onClose={() => {
@@ -107,7 +111,7 @@ const AddMonsterPopup: React.FC = () => {
       <form
         onSubmit={(e) => {
           e.preventDefault()
-          handleAdd()
+          name.trim() ? handleAdd() : expandDetails()
         }}
         id="add-monster-form"
       >
@@ -143,7 +147,7 @@ const AddMonsterPopup: React.FC = () => {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
-        <details>
+        <details open={isDetailsOpen}>
           <summary>{t('customizeMonster')}</summary>
           <input
             id="add-monster-name-input"

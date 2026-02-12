@@ -120,6 +120,8 @@
     "customizeMonster": "モンスターをカスタマイズ",
     "noResults": "結果が見つかりませんでした。",
     "moreResults": "{results} 件以上...",
-    "startTypingToSearch": "入力を開始してください..."
+    "startTypingToSearch": "入力を開始してください...",
+    "monsterHidden": "{name}はプレイヤーから隠されました",
+    "monsterVisible": "{name}はプレイヤーに表示されています"
   }
 }

@@ -120,6 +120,8 @@
     "customizeMonster": "Настройте своего монстра",
     "noResults": "Результаты не найдены.",
     "moreResults": "{results} подробнее ...",
-    "startTypingToSearch": "Начните печатать..."
+    "startTypingToSearch": "Начните печатать...",
+    "monsterHidden": "{name} теперь скрыт от игроков",
+    "monsterVisible": "{name} теперь виден игрокам"
   }
 }

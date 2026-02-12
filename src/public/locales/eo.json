@@ -120,6 +120,8 @@
     "customizeMonster": "Personigu vian monstron",
     "noResults": "Neniuj rezultoj trovitaj.",
     "moreResults": "{results} pli ...",
-    "startTypingToSearch": "Komencu tajpi..."
+    "startTypingToSearch": "Komencu tajpi...",
+    "monsterHidden": "{name} estas nun kaŝita de ludantoj",
+    "monsterVisible": "{name} estas nun videbla al ludantoj"
   }
 }

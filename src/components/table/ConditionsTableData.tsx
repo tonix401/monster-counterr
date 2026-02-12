@@ -46,8 +46,7 @@ const ConditionsTableData: React.FC<ConditionsTableDataProps> = ({ monster }) =>
               value: condition,
               label: t(condition),
             }))}
-            onChange={(selectedLabel) => {
-              const selectedCondition = remainingConditions.find((c) => t(c) === selectedLabel)
+            onChange={(selectedCondition) => {
               if (selectedCondition) {
                 addMonsterCondition(monster.id, selectedCondition)
               }

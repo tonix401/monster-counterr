@@ -13,6 +13,7 @@ const QuickActionsTableData: React.FC<QuickActionsTableDataProps> = ({ monsterId
   const killMonster = useMonsterStore((state) => state.killMonster)
   const removeMonster = useMonsterStore((state) => state.removeMonster)
   const toggleHideMonster = useMonsterStore((state) => state.toggleHideMonster)
+  const monster = useMonsterStore((state) => state.monsters.find((m) => m.id === monsterId))
   const t = useTerm()
 
   const handleKill = () => {
@@ -24,7 +25,13 @@ const QuickActionsTableData: React.FC<QuickActionsTableDataProps> = ({ monsterId
   }
 
   const handleHide = () => {
-    toggleHideMonster(monsterId)
+    if (!monster) return
+
+    const message = monster.isHidden
+      ? t('monsterVisible', { name: monster.name })
+      : t('monsterHidden', { name: monster.name })
+
+    toggleHideMonster(monsterId, message)
   }
 
   return (

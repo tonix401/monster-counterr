@@ -3,6 +3,7 @@ import type { Monster } from '@/types/Monster'
 import { useMonsterStore } from '@/store/MonsterStore'
 import { useTerm } from '@/store/MonsterStore'
 import { CONDITIONS } from '@/constants'
+import { DropdownInput } from '@/components/ui/DropdownInput'
 import './ConditionsTableData.css'
 
 interface ConditionsTableDataProps {
@@ -18,13 +19,6 @@ const ConditionsTableData: React.FC<ConditionsTableDataProps> = ({ monster }) =>
 
   const handleRemoveCondition = (condition: string) => {
     removeMonsterCondition(monster.id, condition)
-  }
-
-  const handleAddCondition = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (e.target.value) {
-      addMonsterCondition(monster.id, e.target.value)
-      e.target.value = ''
-    }
   }
 
   const remainingConditions = ([...CONDITIONS] as string[])
@@ -46,29 +40,22 @@ const ConditionsTableData: React.FC<ConditionsTableDataProps> = ({ monster }) =>
           </button>
         ))}
         {remainingConditions.length > 0 && (
-          <>
-            <input
-              className="add-condition-tag"
-              list={`conditions-datalist-${monster.id}`}
-              onChange={(e) => {
-                const value = e.target.value
-                if (remainingConditions.includes(value)) {
-                  handleAddCondition({
-                    target: { value },
-                  } as React.ChangeEvent<HTMLSelectElement>)
-                  e.target.value = ''
-                }
-              }}
-              placeholder={t('addCondition')}
-            />
-            <datalist id={`conditions-datalist-${monster.id}`}>
-              {remainingConditions.map((condition: string) => (
-                <option key={condition} value={condition}>
-                  {t(condition)}
-                </option>
-              ))}
-            </datalist>
-          </>
+          <DropdownInput
+            id={`conditions-dropdown-${monster.id}`}
+            options={remainingConditions.map((condition) => ({
+              value: condition,
+              label: t(condition),
+            }))}
+            onChange={(selectedLabel) => {
+              const selectedCondition = remainingConditions.find((c) => t(c) === selectedLabel)
+              if (selectedCondition) {
+                addMonsterCondition(monster.id, selectedCondition)
+              }
+            }}
+            showValueOnSelection={false}
+            maxEntries={Math.min(15, remainingConditions.length)}
+            placeholder={t('addCondition')}
+          />
         )}
       </div>
     </td>

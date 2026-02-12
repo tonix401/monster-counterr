@@ -168,6 +168,10 @@ button:active {
   background: var(--damage);
 }
 
+.purple-button:hover {
+  background: var(--accent);
+}
+
 .transparent-button {
   background: transparent;
   border: var(--borderwidth) solid var(--border);

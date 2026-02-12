@@ -25,3 +25,10 @@ header > div {
   padding: 0 var(--spacing-md);
   align-self: center;
 }
+
+.title-font {
+  font-family: "Uncial Antiqua", system-ui;
+  letter-spacing: .3rem;
+  font-size: 2rem;
+  font-style: normal;
+}

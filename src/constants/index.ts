@@ -45,6 +45,11 @@ export const ASSETS = {
   HIDE_ICON: `${BASE_URL}/hide.svg`,
   SHOW_ICON: `${BASE_URL}/show.svg`,
   ADD_ICON: `${BASE_URL}/add.svg`,
+  UP_ICON: `${BASE_URL}/up.svg`,
+  DOWN_ICON: `${BASE_URL}/down.svg`,
+  SETTINGS_ICON: `${BASE_URL}/settings.svg`,
+  DATA_ICON: `${BASE_URL}/data.svg`,
+  RADIO_ICON: `${BASE_URL}/radio.svg`,
 } as const
 
 export const CONNECTION = {

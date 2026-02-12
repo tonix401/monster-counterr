@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import type { Monster } from '@/types/Monster'
 import { useMonsterStore } from '@/store/MonsterStore'
 import './ChangeHpTableData.css'
+import { ASSETS } from '@/constants'
 
 interface ChangeHpTableDataProps {
   monster: Monster
@@ -44,8 +45,8 @@ const ChangeHpTableData: React.FC<ChangeHpTableDataProps> = ({ monster }) => {
   return (
     <td>
       <div className="damage-cell">
-        <button className="heal-button" onClick={handleHeal}>
-          ⮝
+        <button className="icon-button green-button" onClick={handleHeal}>
+          <img src={ASSETS.UP_ICON} alt="Heal" />
         </button>
         <input
           type="number"
@@ -56,8 +57,8 @@ const ChangeHpTableData: React.FC<ChangeHpTableDataProps> = ({ monster }) => {
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
         />
-        <button className="damage-button" onClick={handleDamage}>
-          ⮟
+        <button className="icon-button red-button" onClick={handleDamage}>
+          <img src={ASSETS.DOWN_ICON} alt="Damage" />
         </button>
       </div>
     </td>

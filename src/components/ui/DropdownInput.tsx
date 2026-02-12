@@ -15,6 +15,7 @@ type DropdownInputProps = {
   required?: boolean
   id?: string
   maxEntries?: number
+  showValueOnSelection?: boolean
   onChange: (value: string) => void
 }
 
@@ -24,6 +25,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   required,
   id,
   maxEntries = 5,
+  showValueOnSelection = true,
   onChange,
 }) => {
   // #region State & Refs
@@ -37,6 +39,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   const [containerHeight, setContainerHeight] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const isScrollingRef = useRef<boolean>(false)
   const t = useTerm()
 
   const updatePortalStyle = () => {
@@ -99,9 +102,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
       e.preventDefault()
       const selected = allSortedOptions[currArrayIndex]
       if (selected) {
-        setInputValue(selected.label)
-        setIsOpen(false)
-        onChange(selected.label)
+        handleOptionSelected(selected.label)
       }
     } else if (e.key === 'Escape') {
       setIsOpen(false)
@@ -109,10 +110,10 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
     }
   }
 
-  const handleOptionClick = (option: DropdownOption) => {
-    setInputValue(option.label)
+  const handleOptionSelected = (label: string) => {
+    showValueOnSelection ? setInputValue(label) : setInputValue('')
     setIsOpen(false)
-    onChange(option.label)
+    onChange(label)
   }
 
   const handleClearValue = () => {
@@ -124,25 +125,30 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
     setIsOpen(true)
     handleClearValue()
     setIsFocused(true)
-    setHighlightedIndex(0)
     setScrollOffset(0)
   }
 
   const handleBlur = () => {
     setIsFocused(false)
     setIsOpen(false)
-    setHighlightedIndex(0)
     setScrollOffset(0)
   }
 
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
     e.stopPropagation()
+    isScrollingRef.current = true
+    setHighlightedIndex(-1)
+
     const delta = e.deltaY > 0 ? 1 : -1
     const newScrollOffset = Math.max(
       0,
       Math.min(scrollOffset + delta, allSortedOptions.length - maxEntries)
     )
     setScrollOffset(newScrollOffset)
+
+    setTimeout(() => {
+      isScrollingRef.current = false
+    }, 150)
   }
 
   const handleMouseEnter = () => setIsMouseOver(true)
@@ -191,8 +197,12 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
                           'dropdown-option' +
                           (_currArrayIndex === currArrayIndex ? ' highlighted' : '')
                         }
-                        onMouseDown={() => handleOptionClick(option)}
-                        onMouseEnter={() => setHighlightedIndex(_currArrayIndex)}
+                        onMouseDown={() => handleOptionSelected(option.label)}
+                        onMouseEnter={() => {
+                          if (!isScrollingRef.current) {
+                            setHighlightedIndex(_currArrayIndex)
+                          }
+                        }}
                         title={option.label}
                       >
                         {option.label}

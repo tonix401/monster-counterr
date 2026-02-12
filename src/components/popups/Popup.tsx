@@ -13,7 +13,7 @@ const Popup: React.FC<PopupProps> = ({ onClose, title, width = 400, children }) 
     <>
       <div className="popup-after" onClick={onClose}></div>
       <div className="popup-window" style={{ width: `${width}px` }}>
-        {title && <h3>{title}</h3>}
+        {title && <h1 className='popup-title'>{title}</h1>}
         {children}
       </div>
     </>

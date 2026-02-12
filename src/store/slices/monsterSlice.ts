@@ -44,7 +44,7 @@ export type MonsterSliceActions = {
   getMonsterIndex: () => Promise<void>
   setSource: (source: string | 'all') => void
   highlightMonster: (monsterId: string) => void
-  toggleHideMonster: (monsterId: string) => void
+  toggleHideMonster: (monsterId: string, message?: string) => void
 }
 
 export type MonsterSlice = MonsterSliceState & MonsterSliceActions
@@ -174,13 +174,12 @@ export const createMonsterSlice: StateCreator<
     }
   },
 
-  toggleHideMonster: (monsterId: string): void => {
+  toggleHideMonster: (monsterId: string, message?: string): void => {
     const monster = get().monsters.find((m) => m.id === monsterId)
     if (!monster) return
-    const message = monster.isHidden
-      ? get().getTerm('monsterVisible', { name: monster.name })
-      : get().getTerm('monsterHidden', { name: monster.name })
-    get().notify({ type: 'info', message })
+    if (message) {
+      get().notify({ type: 'info', message })
+    }
     set((state) => ({
       monsters: state.monsters.map((monster) =>
         monster.id === monsterId ? { ...monster, isHidden: !monster.isHidden } : monster

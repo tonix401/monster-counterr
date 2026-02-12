@@ -3,6 +3,12 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+*:focus {
+  outline-color: #9f7cff;
+  outline-style: solid;
+  outline-width: 3px;
+}
+
 :root {
   /* Core Colors */
   --bg: #1c1f2b;
@@ -60,6 +66,8 @@
   --font-base: 14px;
   --font-lg: 18px;
   --font-xl: 23px;
+  --font-2xl: 28px;
+  --font-3xl: 36px;
 
   /* borders */
   --borderwidth: 2px;

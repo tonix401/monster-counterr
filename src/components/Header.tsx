@@ -64,7 +64,7 @@ const Header: React.FC = () => {
           </button>
         )}
       </div>
-      <h2>{t('monsterCounter')}</h2>
+      <h2 className="title-font">{t('monsterCounterr')}</h2>
       <div>
         <button className="red-button" onClick={clearMonsters} title={t('clearTooltip')}>
           {t('clear')}

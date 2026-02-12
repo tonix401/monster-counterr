@@ -1,6 +1,7 @@
 import { useTerm } from '@/store/MonsterStore'
 import { useAvailableLanguages, useMonsterStore } from '@/store/MonsterStore'
 import React from 'react'
+import { DropdownInput } from './DropdownInput'
 import './LanguageSelectionRow.css'
 
 const LanguageSelectionRow: React.FC = () => {
@@ -10,16 +11,21 @@ const LanguageSelectionRow: React.FC = () => {
   const setLanguage = useMonsterStore((state) => state.setLanguage)
   const t = useTerm()
 
+  const dropdownOptions = availableLanguages.map((lang) => ({
+    value: lang.key,
+    label: lang.name,
+  }))
+
   return (
     <div className="language-selection-row">
       <label htmlFor="language">{t('language')}</label>
-      <select id="language" value={language} onChange={(e) => setLanguage(e.target.value)}>
-        {availableLanguages.map((lang) => (
-          <option key={lang.key} value={lang.key}>
-            {lang.name}
-          </option>
-        ))}
-      </select>
+      <DropdownInput
+        id="language"
+        value={language}
+        options={dropdownOptions}
+        onChange={setLanguage}
+        maxEntries={8}
+      />
     </div>
   )
 }

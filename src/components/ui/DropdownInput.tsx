@@ -14,6 +14,7 @@ type DropdownInputProps = {
   placeholder?: string
   required?: boolean
   id?: string
+  value?: string
   maxEntries?: number
   showValueOnSelection?: boolean
   onChange: (value: string) => void
@@ -24,6 +25,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   placeholder,
   required,
   id,
+  value,
   maxEntries = 5,
   showValueOnSelection = true,
   onChange,
@@ -41,6 +43,16 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   const containerRef = useRef<HTMLDivElement>(null)
   const isScrollingRef = useRef<boolean>(false)
   const t = useTerm()
+
+  // Sync value prop to input display
+  useEffect(() => {
+    if (value !== undefined) {
+      const selectedOption = options.find((opt) => opt.value === value)
+      if (selectedOption) {
+        setInputValue(showValueOnSelection ? selectedOption.label : '')
+      }
+    }
+  }, [value, options, showValueOnSelection])
 
   const updatePortalStyle = () => {
     const rect = inputRef.current?.getBoundingClientRect()
@@ -102,7 +114,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
       e.preventDefault()
       const selected = allSortedOptions[currArrayIndex]
       if (selected) {
-        handleOptionSelected(selected.label)
+        handleOptionSelected(selected)
       }
     } else if (e.key === 'Escape') {
       setIsOpen(false)
@@ -110,10 +122,10 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
     }
   }
 
-  const handleOptionSelected = (label: string) => {
-    showValueOnSelection ? setInputValue(label) : setInputValue('')
+  const handleOptionSelected = (option: DropdownOption) => {
+    showValueOnSelection ? setInputValue(option.label) : setInputValue('')
     setIsOpen(false)
-    onChange(label)
+    onChange(option.value)
   }
 
   const handleClearValue = () => {
@@ -197,7 +209,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
                           'dropdown-option' +
                           (_currArrayIndex === currArrayIndex ? ' highlighted' : '')
                         }
-                        onMouseDown={() => handleOptionSelected(option.label)}
+                        onMouseDown={() => handleOptionSelected(option)}
                         onMouseEnter={() => {
                           if (!isScrollingRef.current) {
                             setHighlightedIndex(_currArrayIndex)

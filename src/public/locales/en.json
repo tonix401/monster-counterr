@@ -120,6 +120,8 @@
     "customizeMonster": "Customize your monster",
     "startTypingToSearch": "Start typing...",
     "noResults": "No results found.",
-    "moreResults": "{results} more ..."
+    "moreResults": "{results} more ...",
+    "monsterHidden": "{name} is now hidden from players",
+    "monsterVisible": "{name} is now visible to players"
   }
 }

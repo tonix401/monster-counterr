@@ -519,7 +519,7 @@ describe('Host ConnectionSlice', () => {
       const peer = store.getState().peer as any
 
       // Add monsters FIRST
-      store.getState().addMonster('Goblin', undefined, 10, 2)
+      store.getState().addMonster('Goblin', undefined, 10, 1, 2)
 
       // Verify monsters were added and unhide them
       const monsters = store.getState().monsters

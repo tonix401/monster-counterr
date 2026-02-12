@@ -1,5 +1,5 @@
 import React from 'react'
-import { useMonsterStore, useNotify } from '@/store/MonsterStore'
+import { useMonsterStore } from '@/store/MonsterStore'
 import { useTerm } from '@/store/MonsterStore'
 import { ASSETS } from '@/constants'
 import './QuickActionsTableData.css'
@@ -13,7 +13,7 @@ const QuickActionsTableData: React.FC<QuickActionsTableDataProps> = ({ monsterId
   const killMonster = useMonsterStore((state) => state.killMonster)
   const removeMonster = useMonsterStore((state) => state.removeMonster)
   const toggleHideMonster = useMonsterStore((state) => state.toggleHideMonster)
-  const notify = useNotify()
+  const monster = useMonsterStore((state) => state.monsters.find((m) => m.id === monsterId))
   const t = useTerm()
 
   const handleKill = () => {
@@ -25,11 +25,13 @@ const QuickActionsTableData: React.FC<QuickActionsTableDataProps> = ({ monsterId
   }
 
   const handleHide = () => {
-    toggleHideMonster(monsterId)
-    notify({
-      type: 'success',
-      message: isHidden ? t('monsterWillBeShown') : t('monsterWillBeHidden'),
-    })
+    if (!monster) return
+
+    const message = monster.isHidden
+      ? t('monsterVisible', { name: monster.name })
+      : t('monsterHidden', { name: monster.name })
+
+    toggleHideMonster(monsterId, message)
   }
 
   return (

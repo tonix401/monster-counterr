@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { fuzzySort } from './DropdownInputHelper'
 import './DropdownInput.css'
-import { useTerm } from '@/store/MonsterStore'
+import { useTerm } from '@/store/useMonsterStore'
 
 type DropdownOption = {
   value: string

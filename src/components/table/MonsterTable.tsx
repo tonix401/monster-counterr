@@ -1,5 +1,5 @@
 import React from 'react'
-import { useMonsters } from '@/store/MonsterStore'
+import { useMonsters } from '@/store/useMonsterStore'
 import MonsterTableRow from '@/components/table/MonsterTableRow'
 import TableHeaderRow from '@/components/table/TableHeaderRow'
 import TableColgroup from '@/components/table/TableColgroup'
@@ -8,7 +8,7 @@ import { AddMonsterRow } from './AddMonsterRow'
 
 const MonsterTable: React.FC = () => {
   const monsters = useMonsters()
-  
+
   return (
     <table>
       <TableColgroup />

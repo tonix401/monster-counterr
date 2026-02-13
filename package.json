@@ -12,9 +12,7 @@
     "update_terms": "node scripts/update_terms.js",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:run": "vitest run"
+    "test": "vitest run"
   },
   "dependencies": {
     "peerjs": "1.5.5",

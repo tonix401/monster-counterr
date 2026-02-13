@@ -1,5 +1,5 @@
-import { useMonsterStore } from '@/store/MonsterStore'
-import { useTerm } from '@/store/MonsterStore'
+import { useMonsterStore } from '@/store/useMonsterStore'
+import { useTerm } from '@/store/useMonsterStore'
 
 const ExportFileButton: React.FC = () => {
   const exportData = useMonsterStore((state) => state.exportData)

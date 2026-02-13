@@ -1,5 +1,5 @@
-import { useTerm } from '@/store/MonsterStore'
-import { useAvailableLanguages, useMonsterStore } from '@/store/MonsterStore'
+import { useTerm } from '@/store/useMonsterStore'
+import { useAvailableLanguages, useMonsterStore } from '@/store/useMonsterStore'
 import React from 'react'
 import { DropdownInput } from './DropdownInput'
 import './LanguageSelectionRow.css'

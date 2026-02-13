@@ -1,12 +1,12 @@
 import React from 'react'
 import Popup from './Popup'
 import { useNavigate } from 'react-router'
-import { useTerm } from '@/store/MonsterStore'
+import { useTerm } from '@/store/useMonsterStore'
 
 import ExportFileButton from '../ui/ExportFileButton'
 import ImportFileButton from '../ui/ImportFileButton'
 import BinarySettingsRow from '@/components/ui/BinarySettingsRow'
-import { useMonsterStore } from '@/store/MonsterStore'
+import { useMonsterStore } from '@/store/useMonsterStore'
 import { SAVE_FILE } from '@/constants'
 
 const ManageDataPopup: React.FC = () => {

@@ -1,5 +1,5 @@
 import React from 'react'
-import { useSettings, useTerm } from '@/store/MonsterStore'
+import { useSettings, useTerm } from '@/store/useMonsterStore'
 
 const TableHeaderRow: React.FC = () => {
   const t = useTerm()

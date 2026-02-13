@@ -6,7 +6,7 @@ import HpTableData from '@/components/table/HpTableData'
 import ChangeHpTableData from '@/components/table/ChangeHpTableData'
 import ConditionsTableData from '@/components/table/ConditionsTableData'
 import QuickActionsTableData from '@/components/table/QuickActionsTableData'
-import { useMonsterStore, useSettings } from '@/store/MonsterStore'
+import { useMonsterStore, useSettings } from '@/store/useMonsterStore'
 
 interface MonsterTableRowProps {
   monster: Monster

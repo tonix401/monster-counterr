@@ -1,6 +1,6 @@
 import React from 'react'
 import type { Monster, MonsterStatus } from '@/types/Monster'
-import { useTerm } from '@/store/MonsterStore'
+import { useTerm } from '@/store/useMonsterStore'
 
 interface StatusTableDataProps {
   monster: Monster

@@ -1,5 +1,5 @@
 import React from 'react'
-import { useSettings } from '@/store/MonsterStore'
+import { useSettings } from '@/store/useMonsterStore'
 
 const TableColgroup: React.FC = () => {
   const settings = useSettings()

@@ -3,7 +3,7 @@ import { Outlet } from 'react-router'
 import './App.css'
 import MonsterTable from '@/components/table/MonsterTable'
 import Header from '@/components/Header'
-import { useMonsterStore, useIsLoading } from '@/store/MonsterStore'
+import { useMonsterStore, useIsLoading } from '@/store/useMonsterStore'
 import { NotificationContainer } from './components/ui/NotificationsContainer'
 
 function App() {

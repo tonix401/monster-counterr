@@ -1,6 +1,6 @@
 import React from 'react'
-import { useMonsterStore } from '@/store/MonsterStore'
-import { useTerm } from '@/store/MonsterStore'
+import { useMonsterStore } from '@/store/useMonsterStore'
+import { useTerm } from '@/store/useMonsterStore'
 import { ASSETS } from '@/constants'
 import './QuickActionsTableData.css'
 

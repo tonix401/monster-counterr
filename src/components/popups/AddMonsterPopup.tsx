@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react'
 import Popup from '@/components/popups/Popup'
-import { useMonsterStore } from '@/store/MonsterStore'
-import { useTerm } from '@/store/MonsterStore'
+import { useMonsterStore } from '@/store/useMonsterStore'
+import { useTerm } from '@/store/useMonsterStore'
 import { useNavigate } from 'react-router'
 import './AddMonsterPopup.css'
-import type { MonsterIndexEntryHp } from '@/store/slices/monsterSlice'
+import type { MonsterIndexEntryHp } from '@/store/types'
 import { DropdownInput } from '../ui/DropdownInput'
 
 const AddMonsterPopup: React.FC = () => {

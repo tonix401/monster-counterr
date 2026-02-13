@@ -80,17 +80,19 @@ src/
 ├── routes/              # Route components (used as popup overlays)
 │   # Popup routes are now handled directly by rendering popup components in the router. No wrapper route files.
 ├── store/               # Zustand state management
-│   ├── index.ts         # Main store combining all slices
+│   ├── useMonsterStore.ts       # Consolidated store (all state & actions)
+│   ├── types.ts                 # Comprehensive MonsterCounterStore types
 │   ├── middleware/
-│   │   └── temporal.ts  # Undo/redo functionality
-│   └── slices/          # State slices by feature
-│       ├── monsterSlice.ts      # Monster CRUD operations
-│       ├── settingsSlice.ts     # App settings
-│       ├── infoSlice.ts         # Monster details/API data
-│       ├── xpSlice.ts           # XP tracking
-│       ├── conditionsSlice.ts   # Condition management
-│       ├── termSlice.ts         # Localization terms
-│       └── dataManagementSlice.ts  # Import/export
+│   │   └── temporal.ts          # Undo/redo functionality
+│   └── helpers/                 # Feature-based pure utility functions
+│       ├── monsters/
+│       │   └── monsterHelpers.ts       # Monster operations (create, health, conditions)
+│       ├── connections/
+│       │   └── connectionHelpers.ts    # P2P networking validation & broadcasting
+│       ├── data/
+│       │   └── dataHelpers.ts          # Import/export & serialization
+│       └── localization/
+│           └── localizationHelpers.ts  # Language loading & term resolution
 ├── types/               # TypeScript type definitions
 │   ├── Monster.ts       # Monster entity
 │   ├── MonsterDetails.ts # Monster stat blocks
@@ -112,10 +114,13 @@ src/
 
 **Key Architecture Patterns:**
 
-- **State Management**: Zustand store with persist middleware for localStorage, temporal middleware for undo/redo
-  - All slices use proper TypeScript types with `StateCreator`
-  - No `any` types - fully type-safe
-  - Consistent custom hooks for all selectors
+- **State Management**: Consolidated Zustand store with tight, consistent typing
+  - `MonsterCounterStore` interface covers all state (monsters, settings, xp, conditions, terms, notifications, connections)
+  - `MonsterCounterActions` interface covers all 40+ actions
+  - Persist middleware for localStorage, temporal middleware for undo/redo
+  - No `any` types - fully type-safe with comprehensive types in `store/types.ts`
+  - Consistent custom hooks for optimized subscriptions (useMonsters, useSettings, useTerm, etc.)
+  - Pure utility functions in `store/helpers/*` for testability & composition
 - **Routing**: React Router with nested routes (popups overlay main view)
 - **Data Persistence**: All data stored in browser localStorage via Zustand persist
 - **Localization**: Dynamic language loading from JSON files

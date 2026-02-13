@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import { QRCodeSVG } from 'qrcode.react'
 import Popup from './Popup'
-import { useMonsterStore, useTerm } from '@/store/MonsterStore'
+import { useMonsterStore, useTerm } from '@/store/useMonsterStore'
 import { BASE_URL } from '@/constants'
 import './ConnectionsPopup.css'
 

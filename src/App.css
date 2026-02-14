@@ -100,6 +100,7 @@
   gap: var(--spacing-sm);
   text-decoration: none;
   padding: var(--spacing-sm);
+  border-radius: 999px;
 }
 
 .coffee-link:after {

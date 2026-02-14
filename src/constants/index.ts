@@ -50,6 +50,7 @@ export const ASSETS = {
   SETTINGS_ICON: `${BASE_URL}/settings.svg`,
   DATA_ICON: `${BASE_URL}/data.svg`,
   RADIO_ICON: `${BASE_URL}/radio.svg`,
+  COFFEE: `${BASE_URL}/coffee.svg`,
 } as const
 
 export const CONNECTION = {

@@ -3,9 +3,10 @@ import { Outlet } from 'react-router'
 import './App.css'
 import MonsterTable from '@/components/table/MonsterTable'
 import Header from '@/components/Header'
-import { useMonsterStore, useIsLoading } from '@/store/useMonsterStore'
+import { useMonsterStore, useIsLoading, useTerm } from '@/store/useMonsterStore'
 import { NotificationContainer } from './components/ui/NotificationsContainer'
 import ErrorBoundary from './components/ErrorBoundary'
+import { ASSETS } from './constants'
 
 function App() {
   const initialize = useMonsterStore((state) => state.initialize)
@@ -13,6 +14,8 @@ function App() {
   useEffect(() => {
     initialize()
   }, [initialize])
+
+  const t = useTerm()
 
   const isLoading = useIsLoading()
 
@@ -56,6 +59,9 @@ function App() {
       </div>
       <Outlet />
       <NotificationContainer />
+      <a href="https://buymeacoffee.com/tonix401" className="coffee-link" target="_blank">
+        <img src={ASSETS.COFFEE} alt="Buy me a coffee"/>{t('buyCoffee')}
+      </a>
     </div>
   )
 }

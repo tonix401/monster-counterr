@@ -123,6 +123,7 @@
     "moreResults": "{results} more ...",
     "monsterHidden": "{name} is now hidden from players",
     "monsterVisible": "{name} is now visible to players",
-    "minimizeJson": "Minimize JSON"
+    "minimizeJson": "Minimize JSON",
+    "buyCoffee": "Buy me a coffee"
   }
 }

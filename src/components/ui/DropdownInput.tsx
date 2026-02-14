@@ -17,7 +17,8 @@ type DropdownInputProps = {
   value?: string
   maxEntries?: number
   showValueOnSelection?: boolean
-  onChange: (value: string) => void
+  onChange?: (value: string) => void
+  onSelect?: (value: string) => void
 }
 
 export const DropdownInput: React.FC<DropdownInputProps> = ({
@@ -29,6 +30,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   maxEntries = 5,
   showValueOnSelection = true,
   onChange,
+  onSelect,
 }) => {
   // #region State & Refs
   const [isOpen, setIsOpen] = useState(false)
@@ -86,7 +88,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
     setIsOpen(value.length > 0)
     setHighlightedIndex(0)
     setScrollOffset(0)
-    onChange(value)
+    onChange && onChange(value)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -125,12 +127,13 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   const handleOptionSelected = (option: DropdownOption) => {
     showValueOnSelection ? setInputValue(option.label) : setInputValue('')
     setIsOpen(false)
-    onChange(option.value)
+    onChange && onChange(option.value)
+    onSelect && onSelect(option.value)
   }
 
   const handleClearValue = () => {
     setInputValue('')
-    onChange('')
+    onChange && onChange('')
   }
 
   const handleFocus = () => {

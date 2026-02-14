@@ -9,6 +9,7 @@ export const AddMonsterRow = () => {
   const { showQuickActions, showConditions, showStatus, showHealth, showChangeHp } =
     useMonsterStore((state) => state.settings)
   const cols = [
+    true,
     showQuickActions,
     true,
     showConditions,

@@ -84,7 +84,7 @@
 #monsterList {
   margin: 0;
   list-style: none;
-  overflow: scroll;
-  max-height: 87.5vh;
+  overflow-y: scroll;
+  max-height: 93vh;
   scrollbar-width: none;
 }

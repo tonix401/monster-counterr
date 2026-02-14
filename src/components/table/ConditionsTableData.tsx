@@ -46,11 +46,7 @@ const ConditionsTableData: React.FC<ConditionsTableDataProps> = ({ monster }) =>
               value: condition,
               label: t(condition),
             }))}
-            onChange={(selectedCondition) => {
-              if (selectedCondition) {
-                addMonsterCondition(monster.id, selectedCondition)
-              }
-            }}
+            onSelect={(value) => addMonsterCondition(monster.id, value)}
             showValueOnSelection={false}
             maxEntries={Math.min(15, remainingConditions.length)}
             placeholder={t('addCondition')}

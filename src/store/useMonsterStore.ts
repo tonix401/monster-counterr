@@ -5,7 +5,7 @@ import type { Monster } from '@/types/Monster'
 import type { Settings } from '@/types/Settings'
 import { SETTING_SCHEMA } from '@/types/Settings'
 import { CONDITIONS } from '@/constants'
-import type { Notification, ClientConnection } from '@/store/types'
+import { type Notification, type ClientConnection, NotificationType } from '@/store/types'
 import type { MonsterCounterStore } from '@/store/types'
 import { temporal, type TemporalState, type TemporalActions } from '@/store/middleware/temporal'
 import { STORAGE_KEYS, ANIMATION_DURATION, BASE_URL, CONNECTION } from '@/constants'
@@ -23,10 +23,12 @@ type StoreWithTemporal = MonsterCounterStore & TemporalState<MonsterCounterStore
 export const useMonsterStore = create<StoreWithTemporal>()(
   persist(
     temporal(
-      (set, get, api) => {
+      (set, get, _api) => {
         // ==================== CONNECTION HANDLERS ====================
 
-        const validateIncomingMessage = (data: unknown): data is connectionHelpers.IncomingMessage => {
+        const validateIncomingMessage = (
+          data: unknown
+        ): data is connectionHelpers.IncomingMessage => {
           return connectionHelpers.validateIncomingMessage(data)
         }
 
@@ -38,7 +40,10 @@ export const useMonsterStore = create<StoreWithTemporal>()(
           return connectionHelpers.checkRateLimit(connection)
         }
 
-        const sendToConnection = (conn: DataConnection, message: connectionHelpers.OutgoingMessage): boolean => {
+        const sendToConnection = (
+          conn: DataConnection,
+          message: connectionHelpers.OutgoingMessage
+        ): boolean => {
           return connectionHelpers.sendToConnection(conn, message)
         }
 
@@ -112,7 +117,7 @@ export const useMonsterStore = create<StoreWithTemporal>()(
               const existingConn = get().connections.find((c) => c.conn.peer === conn.peer)
               if (!existingConn) {
                 get().notify({
-                  type: 'info',
+                  type: NotificationType.INFO,
                   message: data.name || 'Unknown Client',
                 })
                 set((state) => ({
@@ -298,6 +303,15 @@ export const useMonsterStore = create<StoreWithTemporal>()(
             })
           },
 
+          reorderMonsters: (fromIndex: number, toIndex: number) => {
+            set((state) => {
+              const monsters = [...state.monsters]
+              const [removed] = monsters.splice(fromIndex, 1)
+              monsters.splice(toIndex, 0, removed)
+              return { monsters }
+            })
+          },
+
           // ========== MONSTER CONDITIONS ==========
 
           addMonsterCondition: (monsterId: string, condition: string) => {
@@ -331,13 +345,11 @@ export const useMonsterStore = create<StoreWithTemporal>()(
             const monster = get().monsters.find((m) => m.id === monsterId)
             if (!monster) return
             if (message) {
-              get().notify({ type: 'info', message })
+              get().notify({ type: NotificationType.INFO, message })
             }
             set((state) => ({
               monsters: state.monsters.map((monster) =>
-                monster.id === monsterId
-                  ? monsterHelpers.toggleMonsterHidden(monster)
-                  : monster
+                monster.id === monsterId ? monsterHelpers.toggleMonsterHidden(monster) : monster
               ),
             }))
           },
@@ -463,7 +475,7 @@ export const useMonsterStore = create<StoreWithTemporal>()(
               console.error('Failed to load save file:', error)
               get().notify({
                 message: error instanceof Error ? error.message : 'Unknown error',
-                type: 'error',
+                type: NotificationType.ERROR,
               })
               return false
             }
@@ -603,8 +615,7 @@ useMonsterStore.subscribe((state, prevState) => {
 // ==================== OPTIMIZED SELECTORS ====================
 
 export const useMonsters = (): Monster[] => useMonsterStore((state) => state.monsters)
-export const useSettings = (): Settings =>
-  useMonsterStore((state) => state.settings)
+export const useSettings = (): Settings => useMonsterStore((state) => state.settings)
 export const useXp = (): number => useMonsterStore((state) => state.xp)
 export const useIsLoading = (): boolean => useMonsterStore((state) => state.isLoading)
 export const useCanUndo = (): boolean => useMonsterStore((state) => state.canUndo())
@@ -624,8 +635,7 @@ export const useTerm = (): ((key: string, params?: Record<string, string | numbe
 export const useSource = (): string | 'all' => useMonsterStore((state) => state.source)
 export const useSetSource = (): ((src: string) => void) =>
   useMonsterStore((state) => state.setSource)
-export const useNotifications = (): Notification[] =>
-  useMonsterStore((state) => state.queue)
+export const useNotifications = (): Notification[] => useMonsterStore((state) => state.queue)
 export const useNotify = () => useMonsterStore((state) => state.notify)
 export const useRemoveNotification = () => useMonsterStore((state) => state.removeNotification)
 export const usePeerId = (): string | null => useMonsterStore((state) => state.peerId)

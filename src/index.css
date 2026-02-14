@@ -1,6 +1,7 @@
 * {
   box-sizing: border-box;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  letter-spacing: 0.05rem;
 }
 
 *:focus {
@@ -75,7 +76,11 @@
 
 body {
   margin: 0;
-  background: radial-gradient(circle at top, #2c3450, #151826 60%);
+  background-image:
+    url('/monster-counterr/brick.svg'),
+    radial-gradient(circle at top, #2c3450, #151826 60%);
+  background-size: 160px 120px, cover;
+  background-attachment: fixed;
   color: var(--text);
   display: flex;
   justify-content: center;

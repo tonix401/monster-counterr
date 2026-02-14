@@ -122,6 +122,7 @@
     "moreResults": "{results} подробнее ...",
     "startTypingToSearch": "Начните печатать...",
     "monsterHidden": "{name} теперь скрыт от игроков",
-    "monsterVisible": "{name} теперь виден игрокам"
+    "monsterVisible": "{name} теперь виден игрокам",
+    "minimizeJson": "Свернуть JSON"
   }
 }

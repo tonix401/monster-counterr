@@ -5,7 +5,7 @@ const TableHeaderRow: React.FC = () => {
   const t = useTerm()
   const settings = useSettings()
 
-  const headers: { key: string; label: string }[] = []
+  const headers: { key: string; label: string }[] = [{ key: 'drag-handle', label: '' }]
 
   if (settings.showQuickActions) headers.push({ key: 'actions', label: t('actions') })
   headers.push({ key: 'name', label: t('name') })
@@ -14,8 +14,13 @@ const TableHeaderRow: React.FC = () => {
   if (settings.showHealth) headers.push({ key: 'hp', label: t('hp') })
   if (settings.showChangeHp) headers.push({ key: 'change-hp', label: t('changeHp') })
 
+  const handleDragOver = (e: React.DragEvent<HTMLTableRowElement>) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+  }
+
   return (
-    <tr>
+    <tr onDragOver={handleDragOver}>
       {headers.map((header) => (
         <th key={header.key} id={`header-row-${header.key}`}>
           <span>{header.label}</span>

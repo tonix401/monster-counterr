@@ -1,0 +1,34 @@
+div[draggable='true'] {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+div[draggable='true']:active {
+  cursor: grabbing;
+}
+
+.drag-handle {
+  cursor: grab;
+  color: var(--text-muted, rgba(255, 255, 255, 0.5));
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drag-handle:hover {
+  color: var(--color-primary);
+}
+
+.drag-handle.dragging {
+  cursor: grabbing;
+  opacity: 0.6;
+}
+
+.drag-handle svg {
+  width: 20px;
+  height: 20px;
+}

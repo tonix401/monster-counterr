@@ -6,6 +6,7 @@ const TableColgroup: React.FC = () => {
 
   const cols: string[] = []
 
+  cols.push('drag-handle')
   if (settings.showQuickActions) cols.push('actions')
   cols.push('name')
   if (settings.showConditions) cols.push('conditions')

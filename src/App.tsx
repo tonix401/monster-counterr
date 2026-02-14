@@ -5,6 +5,7 @@ import MonsterTable from '@/components/table/MonsterTable'
 import Header from '@/components/Header'
 import { useMonsterStore, useIsLoading } from '@/store/useMonsterStore'
 import { NotificationContainer } from './components/ui/NotificationsContainer'
+import ErrorBoundary from './components/ErrorBoundary'
 
 function App() {
   const initialize = useMonsterStore((state) => state.initialize)
@@ -49,7 +50,9 @@ function App() {
     <div className="app">
       <Header />
       <div id="monsterList">
-        <MonsterTable />
+        <ErrorBoundary>
+          <MonsterTable />
+        </ErrorBoundary>
       </div>
       <Outlet />
       <NotificationContainer />

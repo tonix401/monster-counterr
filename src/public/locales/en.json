@@ -122,6 +122,7 @@
     "noResults": "No results found.",
     "moreResults": "{results} more ...",
     "monsterHidden": "{name} is now hidden from players",
-    "monsterVisible": "{name} is now visible to players"
+    "monsterVisible": "{name} is now visible to players",
+    "minimizeJson": "Minimize JSON"
   }
 }

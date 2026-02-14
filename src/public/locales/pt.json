@@ -122,6 +122,7 @@
     "moreResults": "{results} mais ...",
     "startTypingToSearch": "Comece a digitar...",
     "monsterHidden": "{name} agora está oculto dos jogadores",
-    "monsterVisible": "{name} agora está visível aos jogadores"
+    "monsterVisible": "{name} agora está visível aos jogadores",
+    "minimizeJson": "Minimizar JSON"
   }
 }

@@ -123,6 +123,7 @@
     "startTypingToSearch": "开始输入……",
     "monsterHidden": "{name}现在对玩家隐藏",
     "monsterVisible": "{name}现在对玩家可见",
-    "minimizeJson": "最小化 JSON"
+    "minimizeJson": "最小化 JSON",
+    "buyCoffee": "请我喝杯咖啡"
   }
 }

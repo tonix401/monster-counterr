@@ -123,6 +123,7 @@
     "startTypingToSearch": "입력을 시작하세요...",
     "monsterHidden": "{name}은(는) 이제 플레이어로부터 숨겨졌습니다",
     "monsterVisible": "{name}은(는) 이제 플레이어에게 표시됩니다",
-    "minimizeJson": "JSON 최소화"
+    "minimizeJson": "JSON 최소화",
+    "buyCoffee": "커피 한 잔 사주세요"
   }
 }

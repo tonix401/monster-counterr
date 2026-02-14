@@ -88,3 +88,31 @@
   max-height: 93vh;
   scrollbar-width: none;
 }
+
+.coffee-link {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  left: var(--spacing-lg);
+  z-index: 1000;
+  opacity: 0.5;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  text-decoration: none;
+  padding: var(--spacing-sm);
+}
+
+.coffee-link:after {
+  content: '';
+  background-color: var(--card);
+  z-index: -1;
+  left: -4px;
+  width: calc(100% + 8px);
+  height: 100%;
+  border-radius: 999px;
+  position: absolute;
+}
+
+.coffee-link:hover {
+  opacity: 1;
+}

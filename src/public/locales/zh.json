@@ -122,6 +122,7 @@
     "moreResults": "{results} 更多...",
     "startTypingToSearch": "开始输入……",
     "monsterHidden": "{name}现在对玩家隐藏",
-    "monsterVisible": "{name}现在对玩家可见"
+    "monsterVisible": "{name}现在对玩家可见",
+    "minimizeJson": "最小化 JSON"
   }
 }

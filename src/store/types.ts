@@ -23,13 +23,20 @@ export type MonsterIndexEntry = {
   xp: number
 }
 
+export enum NotificationType {
+  INFO = 'info',
+  SUCCESS = 'success',
+  ERROR = 'error',
+  WARNING = 'warning',
+}
+
 /**
  * Notification system types
  */
 export type Notification = {
   id?: string
   message: string
-  type: 'info' | 'success' | 'error' | 'warning'
+  type: NotificationType
   duration?: number
 }
 
@@ -128,6 +135,7 @@ export interface MonsterCounterActions {
   removeDead: () => void
   clearMonsters: () => void
   updateMonsterHealth: (monsterId: string, amount: number) => void
+  reorderMonsters: (fromIndex: number, toIndex: number) => void
 
   // Monster conditions (on individual monsters)
   addMonsterCondition: (monsterId: string, condition: string) => void

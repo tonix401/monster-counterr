@@ -1,3 +1,4 @@
+import { NotificationType } from '@/store/types'
 import { useMonsterStore, useNotify } from '@/store/useMonsterStore'
 import { useTerm } from '@/store/useMonsterStore'
 
@@ -18,7 +19,7 @@ const ImportFileButton = () => {
         console.error('Failed to load save file:', error)
         const notify = useNotify()
         notify({
-          type: 'error',
+          type: NotificationType.ERROR,
           message: t('failedToLoadSaveFile'),
         })
       }

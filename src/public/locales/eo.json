@@ -122,6 +122,7 @@
     "moreResults": "{results} pli ...",
     "startTypingToSearch": "Komencu tajpi...",
     "monsterHidden": "{name} estas nun kaŝita de ludantoj",
-    "monsterVisible": "{name} estas nun videbla al ludantoj"
+    "monsterVisible": "{name} estas nun videbla al ludantoj",
+    "minimizeJson": "Minimumigi JSON-on"
   }
 }

@@ -123,6 +123,7 @@
     "startTypingToSearch": "Начните печатать...",
     "monsterHidden": "{name} теперь скрыт от игроков",
     "monsterVisible": "{name} теперь виден игрокам",
-    "minimizeJson": "Свернуть JSON"
+    "minimizeJson": "Свернуть JSON",
+    "buyCoffee": "Купи мне кофе"
   }
 }

@@ -123,6 +123,7 @@
     "startTypingToSearch": "Commencez à taper...",
     "monsterHidden": "{name} est maintenant caché aux joueurs",
     "monsterVisible": "{name} est maintenant visible aux joueurs",
-    "minimizeJson": "Minimiser le JSON"
+    "minimizeJson": "Minimiser le JSON",
+    "buyCoffee": "Offrez-moi un café"
   }
 }

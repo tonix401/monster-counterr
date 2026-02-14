@@ -123,6 +123,7 @@
     "startTypingToSearch": "入力を開始してください...",
     "monsterHidden": "{name}はプレイヤーから隠されました",
     "monsterVisible": "{name}はプレイヤーに表示されています",
-    "minimizeJson": "JSONを最小化する"
+    "minimizeJson": "JSONを最小化する",
+    "buyCoffee": "コーヒーを買ってください"
   }
 }

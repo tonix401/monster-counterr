@@ -123,6 +123,7 @@
     "startTypingToSearch": "Börja skriva...",
     "monsterHidden": "{name} är nu dold från spelare",
     "monsterVisible": "{name} är nu synlig för spelare",
-    "minimizeJson": "Minimera JSON"
+    "minimizeJson": "Minimera JSON",
+    "buyCoffee": "Bjud mig på en kaffe"
   }
 }

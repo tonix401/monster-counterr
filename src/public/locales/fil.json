@@ -123,6 +123,7 @@
     "startTypingToSearch": "Simulan ang pag-type...",
     "monsterHidden": "{name} ay nakatagong sa mga manlalaro",
     "monsterVisible": "{name} ay makikita na sa mga manlalaro",
-    "minimizeJson": "Bawasan ang JSON"
+    "minimizeJson": "Bawasan ang JSON",
+    "buyCoffee": "Bilhan mo ako ng kape"
   }
 }

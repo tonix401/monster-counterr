@@ -8,6 +8,7 @@ import {
   toggleMonsterHidden,
   getMonsterStatus,
   fetchMonsterIndex,
+  getDetailIndex,
 } from './monsterHelpers'
 import type { Settings } from '@/types/Settings'
 import { createMonster } from '@/types/Monster'
@@ -144,6 +145,48 @@ describe('monsterHelpers', () => {
       const result = filterOutDead([monster])
 
       expect(result).toHaveLength(1)
+    })
+  })
+
+  describe('getDetailIndex', () => {
+    describe('5e.tools URL verification', () => {
+      it("should verify 5e.tools URL exists for Al'chaia", async () => {
+        const detailIndex = getDetailIndex("Al'chaia", 'wdmm')
+        const url = `https://5e.tools/bestiary/${detailIndex}.html`
+        const response = await fetch(url)
+        expect(response.status).not.toBe(404)
+      })
+
+      it('should verify 5e.tools URL exists for Arch-hag', async () => {
+        const detailIndex = getDetailIndex('Arch-hag', 'xmm')
+        const url = `https://5e.tools/bestiary/${detailIndex}.html`
+        const response = await fetch(url)
+        expect(response.status).not.toBe(404)
+      })
+
+      it('should verify 5e.tools URL exists for Tryreus, Illusionist', async () => {
+        const detailIndex = getDetailIndex('Tryreus, Illusionist', 'AitFR-FCD')
+        const url = `https://5e.tools/bestiary/${detailIndex}.html`
+        const response = await fetch(url)
+        expect(response.status).not.toBe(404)
+      })
+
+      it('should verify 5e.tools URL exists for Arlo Kettletoe (Levels 9-11)', async () => {
+        const detailIndex = getDetailIndex('Arlo Kettletoe (Levels 9-11)', 'kftgv')
+        const url = `https://5e.tools/bestiary/${detailIndex}.html`
+        const response = await fetch(url)
+        expect(response.status).not.toBe(404)
+      })
+
+      it('should fail for non-existent monsters on 5e.tools', async () => {
+        // This test expects the URL to return a 403
+        const fakeMonster = { name: 'FakeMonsterXXXYYYZZZ', source: 'invalidSource' }
+
+        const detailIndex = getDetailIndex(fakeMonster.name, fakeMonster.source)
+        const url = `https://5e.tools/bestiary/${detailIndex}.html`
+        const response = await fetch(url)
+        expect(response.status).toBe(403)
+      })
     })
   })
 

@@ -14,7 +14,6 @@ interface MonsterTableRowProps {
   isDragging: boolean
   onDragStart: () => void
   onDragOver: (e: React.DragEvent<HTMLTableRowElement>) => void
-  onDragLeave: () => void
   onDrop: (e: React.DragEvent<HTMLTableRowElement>) => void
   onDragEnd: () => void
 }
@@ -24,7 +23,6 @@ const MonsterTableRow: React.FC<MonsterTableRowProps> = ({
   isDragging,
   onDragStart,
   onDragOver,
-  onDragLeave,
   onDrop,
   onDragEnd,
 }) => {
@@ -45,7 +43,6 @@ const MonsterTableRow: React.FC<MonsterTableRowProps> = ({
         e.preventDefault()
         onDragOver(e)
       }}
-      onDragLeave={onDragLeave}
       onDrop={(e) => {
         e.preventDefault()
         onDrop(e)

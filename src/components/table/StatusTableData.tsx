@@ -26,7 +26,9 @@ const StatusTableData: React.FC<StatusTableDataProps> = ({ monster }) => {
     color = 'var(--heal)'
   }
 
-  return <td style={{ color }}>{t(status)}</td>
+  return (
+    <td style={{ color }}>{t(status)}</td>
+  )
 }
 
 export default StatusTableData

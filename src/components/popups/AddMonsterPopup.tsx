@@ -45,7 +45,7 @@ const AddMonsterPopup: React.FC = () => {
     const amountValue = parseInt(amount) || 1
     addMonster(
       name.trim(),
-      isCustom ? undefined : `${nameToIndex(templateName)}-${matchedSource?.toLowerCase()}`,
+      isCustom ? undefined : `${nameToIndex(templateName)}-${matchedSource?.toLowerCase().replace(/[^a-z0-9]+/g, '')}`,
       hpValue,
       parseInt(xp) || 0,
       amountValue

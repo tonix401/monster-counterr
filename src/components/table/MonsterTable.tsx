@@ -51,7 +51,7 @@ const MonsterTable: React.FC = () => {
 
     // Only allow targeting drop zones that would actually change the order
     if (draggedFromIndex !== finalTargetIndex) {
-      setDropZoneIndex(dropZone)
+      dropZone !== dropZoneIndex && setDropZoneIndex(dropZone)
     } else {
       setDropZoneIndex(null)
     }
@@ -64,7 +64,6 @@ const MonsterTable: React.FC = () => {
 
     // Don't allow targeting drop zones directly above or below the dragged row
     if (dropIndex === draggedFromIndex || dropIndex === draggedFromIndex + 1) {
-      setDropZoneIndex(null)
       return
     }
 
@@ -115,7 +114,6 @@ const MonsterTable: React.FC = () => {
       key="drop-zone-0"
       className={dropZoneIndex === 0 ? 'drop-zone active-drop-zone' : 'drop-zone'}
       onDragOver={(e) => handleDragOverDropZone(e, 0)}
-      onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
       <td colSpan={colCount}></td>
@@ -131,7 +129,6 @@ const MonsterTable: React.FC = () => {
         isDragging={draggedMonsterId === monster.id}
         onDragStart={() => handleDragStart(index)}
         onDragOver={(e) => handleDragOverMonster(e, index + 1)}
-        onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onDragEnd={handleDragEnd}
       />
@@ -152,7 +149,7 @@ const MonsterTable: React.FC = () => {
   })
 
   return (
-    <table className={isAnimationDisabled ? 'animation-disabled' : ''}>
+    <table className={isAnimationDisabled ? 'animation-disabled' : ''} onDragLeave={handleDragLeave}>
       <TableColgroup />
       <thead>
         <TableHeaderRow />

@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router'
 import './AddMonsterPopup.css'
 import type { MonsterIndexEntryHp } from '@/store/types'
 import { DropdownInput } from '../ui/DropdownInput'
+import { getDetailIndex } from '@/store/helpers/monsters/monsterHelpers'
 
 const AddMonsterPopup: React.FC = () => {
   const monsterIndex = useMonsterStore((state) => state.monsterIndex)
@@ -31,21 +32,6 @@ const AddMonsterPopup: React.FC = () => {
         .sort(),
     [monsterIndex, source]
   )
-
-  /**
-   * Get the detail index for the monster info page from 5e.tools
-   */
-  const getDetailIndex = (name: string, source: string | undefined) => {
-    const nm = name
-      .toLowerCase()
-      .replace(/-+/g, '')
-      .replaceAll("'", '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-+|-+$/g, '')
-    const src = source?.toLowerCase().replace(/[^a-z0-9]+/g, '')
-    return `${nm}-${src}`
-  }
 
   const handleAdd = () => {
     const hpValue = parseInt(hp) || 1

@@ -8,6 +8,22 @@ import type { MonsterIndexEntry } from '@/store/types'
  */
 
 /**
+ * Generate a detail index for 5e.tools monster info pages
+ * Transforms monster name and source into the URL-friendly format used by 5e.tools
+ */
+export function getDetailIndex(name: string, source: string | undefined): string {
+  const nm = name
+    .toLowerCase()
+    .replace(/-+/g, '')
+    .replaceAll("'", '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
+  const src = source?.toLowerCase().replace(/[^a-z0-9]+/g, '')
+  return `${nm}-${src}`
+}
+
+/**
  * Create multiple monsters with sequential numbering
  */
 export function createMonsters(

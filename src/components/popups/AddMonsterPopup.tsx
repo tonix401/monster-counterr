@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router'
 import './AddMonsterPopup.css'
 import type { MonsterIndexEntryHp } from '@/store/types'
 import { DropdownInput } from '../ui/DropdownInput'
+import { getDetailIndex } from '@/store/helpers/monsters/monsterHelpers'
 
 const AddMonsterPopup: React.FC = () => {
   const monsterIndex = useMonsterStore((state) => state.monsterIndex)
@@ -21,7 +22,6 @@ const AddMonsterPopup: React.FC = () => {
   const [hp, setHp] = useState('')
   const [amount, setAmount] = useState('')
   const [xp, setXp] = useState('')
-  const [isCustom, setIsCustom] = useState(true)
   const [matchedSource, setMatchedSource] = useState<string | undefined>(undefined)
 
   const sources = useMemo(
@@ -33,19 +33,12 @@ const AddMonsterPopup: React.FC = () => {
     [monsterIndex, source]
   )
 
-  const nameToIndex = (name: string) =>
-    name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-+|-+$/g, '')
-
   const handleAdd = () => {
     const hpValue = parseInt(hp) || 1
     const amountValue = parseInt(amount) || 1
     addMonster(
       name.trim(),
-      isCustom ? undefined : `${nameToIndex(templateName)}-${matchedSource?.toLowerCase()}`,
+      getDetailIndex(templateName.trim(), matchedSource),
       hpValue,
       parseInt(xp) || 0,
       amountValue
@@ -74,13 +67,11 @@ const AddMonsterPopup: React.FC = () => {
       (entry) => entry.name.toLowerCase() === value.toLowerCase().trim()
     )
     if (matchedEntry) {
-      setIsCustom(false)
       setHPFromindexEntry(matchedEntry.hp)
       setXp(matchedEntry.xp?.toString() || '')
       setName(matchedEntry.name)
       setMatchedSource(matchedEntry.source)
     } else {
-      setIsCustom(true)
       setMatchedSource(undefined)
     }
   }

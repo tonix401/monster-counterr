@@ -46,6 +46,7 @@ const AddMonsterPopup: React.FC = () => {
     setTemplateName('')
     setHp('')
     setAmount('')
+    setSource('all')
     navigate('/')
   }
 
@@ -87,18 +88,17 @@ const AddMonsterPopup: React.FC = () => {
     setIsDetailsOpen(true)
   }
 
+  const onClose = () => {
+    setAmount('')
+    setHp('')
+    setTemplateName('')
+    setSource('all')
+    setMatchedSource(undefined)
+    navigate('/')
+  }
+
   return (
-    <Popup
-      onClose={() => {
-        setAmount('')
-        setHp('')
-        setTemplateName('')
-        setMatchedSource(undefined)
-        navigate('/')
-      }}
-      title={t('addMonster')}
-      width={500}
-    >
+    <Popup onClose={onClose} title={t('addMonster')} width={500}>
       <form
         onSubmit={(e) => {
           e.preventDefault()

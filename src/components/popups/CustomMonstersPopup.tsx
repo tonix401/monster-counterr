@@ -1,10 +1,10 @@
 import React from 'react'
 import Popup from './Popup'
-import { useNavigate } from 'react-router'
+import { useGo } from '@/hooks/useGo'
 import { useTerm } from '@/store/useMonsterStore'
 
 const CustomMonstersPopup: React.FC = () => {
-  const navigate = useNavigate()
+  const navigate = useGo()
   const t = useTerm()
 
   return (

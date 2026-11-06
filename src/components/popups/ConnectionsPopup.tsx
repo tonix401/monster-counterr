@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { useNavigate } from 'react-router'
+import { useGo } from '@/hooks/useGo'
 import { QRCodeSVG } from 'qrcode.react'
 import Popup from './Popup'
 import { useMonsterStore, useTerm } from '@/store/useMonsterStore'
@@ -7,7 +7,7 @@ import { BASE_URL } from '@/constants'
 import './ConnectionsPopup.css'
 
 const ConnectionsPopup: React.FC = () => {
-  const navigate = useNavigate()
+  const navigate = useGo()
   const t = useTerm()
   const peerId = useMonsterStore((state) => state.peerId)
   const connections = useMonsterStore((state) => state.connections)

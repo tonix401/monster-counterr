@@ -573,10 +573,10 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     }
     const cur = draft.current
     if (cur) {
-      draft.current = {
-        ...cur,
-        box: boxFor(cur.mode, cur.sx, cur.sy, x, y, e.shiftKey, s.graph, tol()),
-      }
+      const box = boxFor(cur.mode, cur.sx, cur.sy, x, y, e.shiftKey, s.graph, tol())
+      draft.current = { ...cur, box }
+      // the ring shows what the end of the line lands on
+      if (cur.mode === 'wall') snapHint.current = snapPoint(s.graph, box.x2, box.y2, 0.75)
       draw()
       return
     }
@@ -737,16 +737,15 @@ function boxFor(
     return { x1, y1, x2, y2 }
   }
   if (!shift) {
-    const ang = Math.abs((Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI)
-    const lock = ang < 12 || ang > 168 ? 'h' : Math.abs(ang - 90) < 12 ? 'v' : null
-    if (lock === 'h') y2 = y1
-    if (lock === 'v') x2 = x1
-    const e = snapPoint(g, x2, y2, r)
-    if (e.kind !== 'free') {
-      ;[x2, y2] = [e.x, e.y]
-      if (lock === 'h') y2 = y1
-      if (lock === 'v') x2 = x1
+    // a node or wall in reach wins, and the end lands exactly on it (a wall gets split there)
+    let e = snapPoint(g, x2, y2, r)
+    if (e.kind === 'free') {
+      const ang = Math.abs((Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI)
+      if (ang < 12 || ang > 168) y2 = y1
+      else if (Math.abs(ang - 90) < 12) x2 = x1
+      e = snapPoint(g, x2, y2, r)
     }
+    if (e.kind !== 'free') [x2, y2] = [e.x, e.y]
   }
   return { x1, y1, x2, y2 }
 }

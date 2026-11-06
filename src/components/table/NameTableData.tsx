@@ -1,5 +1,5 @@
 import React from 'react'
-import { useNavigate } from 'react-router'
+import { useGo } from '@/hooks/useGo'
 import type { Monster } from '@/types/Monster'
 
 interface NameTableDataProps {
@@ -7,7 +7,7 @@ interface NameTableDataProps {
 }
 
 const NameTableData: React.FC<NameTableDataProps> = ({ monster }) => {
-  const navigate = useNavigate()
+  const navigate = useGo()
 
   return (
     <td className="name-cell">

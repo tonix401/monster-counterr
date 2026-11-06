@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react'
 import Popup from '@/components/popups/Popup'
 import { useMonsterStore } from '@/store/useMonsterStore'
 import { useTerm } from '@/store/useMonsterStore'
-import { useNavigate } from 'react-router'
+import { useGo } from '@/hooks/useGo'
 import './AddMonsterPopup.css'
 import type { MonsterIndexEntryHp } from '@/store/types'
 import { DropdownInput } from '../ui/DropdownInput'
@@ -13,7 +13,7 @@ const AddMonsterPopup: React.FC = () => {
   const source = useMonsterStore((state) => state.source)
   const setSource = useMonsterStore((state) => state.setSource)
   const addMonster = useMonsterStore((state) => state.addMonster)
-  const navigate = useNavigate()
+  const navigate = useGo()
   const t = useTerm()
 
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)

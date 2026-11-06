@@ -18,7 +18,7 @@ function App() {
   }, [initialize])
 
   const t = useTerm()
-  const onMapTab = useMatch('/map') !== null
+  const onMapTab = useMatch('/map/*') !== null
 
   const isLoading = useIsLoading()
 

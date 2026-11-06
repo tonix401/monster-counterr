@@ -15,20 +15,26 @@ import { startMapSync } from '@/map/mapSync'
 
 startMapSync()
 
+const popupRoutes = [
+  <Route key="add" path="add" element={<AddMonsterPopup />} />,
+  <Route key="settings" path="settings" element={<SettingsPopup />} />,
+  <Route key="monsters" path="monsters/:monsterId" element={<MonsterInfoPopup />} />,
+  <Route key="menu" path="menu" element={<MenuPopup />} />,
+  <Route key="connections" path="connections" element={<ConnectionsPopup />} />,
+  <Route key="custom-monsters" path="custom-monsters" element={<CustomMonstersPopup />} />,
+  <Route key="manage-data" path="manage-data" element={<ManageDataPopup />} />,
+]
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <HashRouter>
       <Routes>
         <Route path="/" element={<App />}>
-          <Route path="add" element={<AddMonsterPopup />} />
-          <Route path="settings" element={<SettingsPopup />} />
-          <Route path="monsters/:monsterId" element={<MonsterInfoPopup />} />
-          <Route path="menu" element={<MenuPopup />} />
-          <Route path="connections" element={<ConnectionsPopup />} />
-          <Route path="custom-monsters" element={<CustomMonstersPopup />} />
-          <Route path="manage-data" element={<ManageDataPopup />} />
-          {/* The map tab is drawn by App itself; this route only makes the path valid */}
-          <Route path="map" element={null} />
+          {popupRoutes}
+          {/* The map tab is drawn by App itself; its popups sit under /map so it stays behind them */}
+          <Route path="map" element={null}>
+            {popupRoutes}
+          </Route>
         </Route>
         <Route path="client" element={<ClientView />}>
           <Route path="map" element={null} />

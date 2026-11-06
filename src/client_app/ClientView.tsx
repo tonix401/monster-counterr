@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useLocation, useMatch, useSearchParams } from 'react-router'
 import TabBar from '@/components/ui/TabBar'
 import './ClientView.css'
+import ZoomableImage from './ZoomableImage'
 import { ASSETS } from '../constants'
 import type { MonsterStatus } from '../types/Monster'
 import {
@@ -132,7 +133,7 @@ const ClientView: React.FC = () => {
   }
 
   return (
-    <div className="client-view-container">
+    <div className={`client-view-container ${onMapTab ? 'client-view-wide' : ''}`}>
       <div className="client-view-header">
         <h2>{t('enemies')}</h2>
         <select
@@ -161,7 +162,7 @@ const ClientView: React.FC = () => {
       />
       {onMapTab ? (
         map ? (
-          <img className="client-map" src={map.url} alt={map.name} />
+          <ZoomableImage src={map.url} alt={map.name} />
         ) : (
           <p>{t('mapNotShared')}</p>
         )

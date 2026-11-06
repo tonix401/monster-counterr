@@ -11,6 +11,7 @@
 }
 
 :root {
+  scrollbar-gutter: stable;
   /* Core Colors */
   --bg: #1c1f2b;
   --card: #2a3042;

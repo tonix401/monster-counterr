@@ -31,6 +31,7 @@ export function serializeFogMap(f: Omit<FogMapFile, 'format' | 'version' | 'app'
               y1: r1(op.y1),
               x2: r1(op.x2),
               y2: r1(op.y2),
+              ...(op.rot ? { rot: Math.round(op.rot * 1000) / 1000 } : {}),
             }
           : op.type === 'erase'
             ? { type: 'erase', w: r1(op.w), pts: op.pts.map((p) => [r1(p[0]), r1(p[1])]) }
@@ -74,6 +75,7 @@ export function parseFogMap(text: string): FogMapFile | null {
         y1: op.y1 as number,
         x2: op.x2 as number,
         y2: op.y2 as number,
+        ...(typeof op.rot === 'number' && isFinite(op.rot) && op.rot ? { rot: op.rot } : {}),
       })
     } else if ([op.x1, op.y1, op.x2, op.y2].every((v) => typeof v === 'number' && isFinite(v))) {
       walls.push({

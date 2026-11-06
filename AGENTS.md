@@ -116,7 +116,7 @@ src/
 │   │                    # slivers beside walls; bridges small jogs in the outline
 │   ├── analyze.ts       # Wall rasterizing + room labelling; `Analyzer` keeps the last detection
 │   ├── analysis.worker.ts / analyzerClient.ts # Runs the analysis in a Web Worker (inline fallback in tests)
-│   ├── shapes.ts        # Rectangle/triangle/ellipse outlines, hit-testing, move and resize handles
+│   ├── shapes.ts        # Rectangle/triangle/ellipse outlines (turnable about their centre), hit-testing, move, resize and rotate handles
 │   ├── mapStore.ts      # Zustand store for the current map, edits and fog (separate from the monster store)
 │   ├── mapStorage.ts    # IndexedDB persistence of the current map (too big for localStorage)
 │   ├── fogMapFile.ts    # `.fog_map` file format (compatible with the standalone Map Fog tool)

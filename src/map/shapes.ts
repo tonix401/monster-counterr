@@ -34,10 +34,20 @@ export function opSegments(op: DrawnOp): WallSegment[] {
               (y1 + y2) / 2 + (Math.sin(a) * (y2 - y1)) / 2,
             ] as [number, number]
           })
-  return poly.map((p, i) => {
-    const q = poly[(i + 1) % poly.length]
+  const pts = op.rot
+    ? poly.map((p) => turn(p[0], p[1], (x1 + x2) / 2, (y1 + y2) / 2, op.rot!))
+    : poly
+  return pts.map((p, i) => {
+    const q = pts[(i + 1) % pts.length]
     return { x1: p[0], y1: p[1], x2: q[0], y2: q[1] }
   })
+}
+
+/** The point turned by `a` radians about (cx, cy) */
+function turn(x: number, y: number, cx: number, cy: number, a: number): [number, number] {
+  const c = Math.cos(a)
+  const s = Math.sin(a)
+  return [cx + (x - cx) * c - (y - cy) * s, cy + (x - cx) * s + (y - cy) * c]
 }
 
 export function distToSegment(x: number, y: number, s: WallSegment): number {
@@ -96,26 +106,53 @@ export function handles(op: DrawnOp): [number, number][] {
   const x2 = Math.max(op.x1, op.x2)
   const y1 = Math.min(op.y1, op.y2)
   const y2 = Math.max(op.y1, op.y2)
-  return [
+  const corners: [number, number][] = [
     [x1, y1],
     [x2, y1],
     [x2, y2],
     [x1, y2],
   ]
+  return op.rot
+    ? corners.map((c) => turn(c[0], c[1], (x1 + x2) / 2, (y1 + y2) / 2, op.rot!))
+    : corners
+}
+
+/** Where the rotate handle of a shape sits: `off` beyond the middle of its top side */
+export function rotateHandle(op: ShapeOp, off: number): [number, number] {
+  const cx = (op.x1 + op.x2) / 2
+  const cy = (op.y1 + op.y2) / 2
+  const top = Math.min(op.y1, op.y2)
+  return turn(cx, top - off, cx, cy, op.rot ?? 0)
+}
+
+/** Turns a shape so its rotate handle points at (x, y); `step` (radians) snaps the angle. */
+export function rotateTo<T extends ShapeOp>(op: T, x: number, y: number, step = 0): T {
+  const cx = (op.x1 + op.x2) / 2
+  const cy = (op.y1 + op.y2) / 2
+  let a = Math.atan2(y - cy, x - cx) + Math.PI / 2
+  if (step) a = Math.round(a / step) * step
+  return { ...op, rot: a }
 }
 
 /** Drags one handle to a new position; the opposite corner of a shape stays put. */
 export function moveHandle<T extends DrawnOp>(op: T, index: number, x: number, y: number): T {
   if (op.type === 'wall') return index === 0 ? { ...op, x1: x, y1: y } : { ...op, x2: x, y2: y }
-  const h = handles(op)
-  const [ox, oy] = h[(index + 2) % 4]
-  return {
-    ...op,
-    x1: Math.min(x, ox),
-    y1: Math.min(y, oy),
-    x2: Math.max(x, ox),
-    y2: Math.max(y, oy),
-  }
+  const [ox, oy] = handles(op)[(index + 2) % 4]
+  if (!op.rot)
+    return {
+      ...op,
+      x1: Math.min(x, ox),
+      y1: Math.min(y, oy),
+      x2: Math.max(x, ox),
+      y2: Math.max(y, oy),
+    }
+  // the opposite corner stays put: the new centre is halfway, and the box is measured turned back
+  const cx = (x + ox) / 2
+  const cy = (y + oy) / 2
+  const [tx, ty] = turn(x, y, cx, cy, -op.rot)
+  const hw = Math.abs(tx - cx)
+  const hh = Math.abs(ty - cy)
+  return { ...op, x1: cx - hw, y1: cy - hh, x2: cx + hw, y2: cy + hh }
 }
 
 export const SHAPE_KINDS: ShapeKind[] = ['rect', 'tri', 'circle']

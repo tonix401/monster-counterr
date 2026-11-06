@@ -7,11 +7,13 @@ import {
   isDrawn,
   moveHandle,
   opSegments,
+  rotateHandle,
+  rotateTo,
   squareTo,
   translateOp,
   type DrawnOp,
 } from '@/map/shapes'
-import type { ShapeKind, WallSegment } from '@/map/types'
+import type { ShapeKind, ShapeOp, WallSegment } from '@/map/types'
 
 interface Layers {
   fog: HTMLCanvasElement
@@ -32,8 +34,15 @@ type Draft = { op: DrawnOp; sx: number; sy: number }
 type Drag =
   | { kind: 'move'; id: number; sx: number; sy: number; orig: DrawnOp }
   | { kind: 'handle'; id: number; index: number; orig: DrawnOp }
+  | { kind: 'rotate'; id: number; orig: ShapeOp }
   | { kind: 'erase' }
   | { kind: 'pan'; cx: number; cy: number; view: View }
+
+/** How far the rotate handle sits beyond a shape's top side, in screen pixels */
+const ROTATE_OFFSET = 24
+
+/** `handleAt` index of the rotate handle (the corners are 0 to 3) */
+const ROTATE = 4
 
 const SHAPES: ShapeKind[] = ['rect', 'tri', 'circle']
 
@@ -113,6 +122,18 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       for (const [x, y] of handles(sel)) {
         ctx.beginPath()
         ctx.rect(x - hs, y - hs, hs * 2, hs * 2)
+        ctx.fill()
+        ctx.stroke()
+      }
+      if (sel.type === 'shape') {
+        const [rx, ry] = rotateHandle(sel, ROTATE_OFFSET * k)
+        const [tx, ty] = rotateHandle(sel, 0)
+        ctx.beginPath()
+        ctx.moveTo(tx, ty)
+        ctx.lineTo(rx, ry)
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.arc(rx, ry, hs, 0, Math.PI * 2)
         ctx.fill()
         ctx.stroke()
       }
@@ -335,6 +356,10 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     const sel = s.ops.find((o) => o.id === s.selected)
     if (!sel || !isDrawn(sel)) return null
     const r = 9 * unit()
+    if (sel.type === 'shape') {
+      const [rx, ry] = rotateHandle(sel, ROTATE_OFFSET * unit())
+      if (Math.hypot(rx - x, ry - y) <= r) return { id: sel.id as number, index: ROTATE, orig: sel }
+    }
     const i = handles(sel).findIndex(([hx, hy]) => Math.hypot(hx - x, hy - y) <= r)
     return i < 0 ? null : { id: sel.id as number, index: i, orig: sel }
   }
@@ -378,7 +403,10 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       const hd = handleAt(x, y)
       if (hd) {
         s.beginGesture()
-        drag.current = { kind: 'handle', ...hd }
+        drag.current =
+          hd.index === ROTATE && hd.orig.type === 'shape'
+            ? { kind: 'rotate', id: hd.id, orig: hd.orig }
+            : { kind: 'handle', ...hd }
         return
       }
       const h = pick(x, y)
@@ -439,6 +467,8 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       return
     }
     if (dg?.kind === 'move') s.updateOp(dg.id, translateOp(dg.orig, x - dg.sx, y - dg.sy))
+    else if (dg?.kind === 'rotate')
+      s.updateOp(dg.id, rotateTo(dg.orig, x, y, e.shiftKey ? Math.PI / 12 : 0))
     else if (dg?.kind === 'handle') s.updateOp(dg.id, moveHandle(dg.orig, dg.index, x, y))
     else if (dg?.kind === 'erase') {
       eraseAt(x, y)
@@ -529,7 +559,7 @@ function nearestOnWalls(x: number, y: number, r: number): [number, number] | nul
 
 /**
  * The item being dragged out. Lines snap straight and to nearby walls; Shift turns that off for lines
- * and makes shapes square.
+ * and makes rectangles and triangles square. A circle is centred on the first point.
  */
 function shapeFor(
   mode: string,
@@ -541,6 +571,11 @@ function shapeFor(
   w: number,
   h: number
 ): DrawnOp {
+  if (mode === 'circle') {
+    // a circle grows out from where the drag began
+    const r = Math.hypot(x2 - x1, y2 - y1)
+    return { type: 'shape', kind: 'circle', x1: x1 - r, y1: y1 - r, x2: x1 + r, y2: y1 + r }
+  }
   if ((SHAPES as string[]).includes(mode)) {
     if (shift) [x2, y2] = squareTo(x1, y1, x2, y2)
     return { type: 'shape', kind: mode as ShapeKind, x1, y1, x2, y2 }

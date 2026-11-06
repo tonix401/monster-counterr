@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import { Analyzer, rasterizeWalls } from './analyze'
-import { bakeErasures, handles, hitTest, moveHandle, opSegments, translateOp } from './shapes'
+import {
+  bakeErasures,
+  handles,
+  hitTest,
+  moveHandle,
+  opSegments,
+  rotateHandle,
+  rotateTo,
+  translateOp,
+} from './shapes'
 import type { ShapeOp, WallOp } from './types'
 
 const rect: ShapeOp = { type: 'shape', kind: 'rect', id: 1, x1: 10, y1: 10, x2: 50, y2: 30 }
@@ -29,6 +38,36 @@ describe('shapes', () => {
     expect(moveHandle({ type: 'wall', x1: 0, y1: 0, x2: 5, y2: 5 }, 1, 9, 9)).toMatchObject({
       x2: 9,
     })
+  })
+
+  it('rotates a shape about its centre', () => {
+    const turned = { ...rect, rot: Math.PI / 2 } // 40 x 20 box centred on (30, 20)
+    const xs = opSegments(turned).flatMap((s) => [s.x1, s.x2])
+    const ys = opSegments(turned).flatMap((s) => [s.y1, s.y2])
+    expect(Math.min(...xs)).toBeCloseTo(20)
+    expect(Math.max(...xs)).toBeCloseTo(40)
+    expect(Math.min(...ys)).toBeCloseTo(0)
+    expect(Math.max(...ys)).toBeCloseTo(40)
+    // the rotate handle follows the top side round to the right
+    const [rx, ry] = rotateHandle(turned, 10)
+    expect(rx).toBeCloseTo(50)
+    expect(ry).toBeCloseTo(20)
+    // dragging it straight above gives no rotation, and a small turn snaps to 15 degrees
+    expect(rotateTo(rect, 30, -50).rot).toBeCloseTo(0)
+    expect(
+      rotateTo(rect, 30 + 10 * Math.sin(0.2), 20 - 10 * Math.cos(0.2), Math.PI / 12).rot
+    ).toBeCloseTo(Math.PI / 12)
+  })
+
+  it('resizes a turned shape from one corner while the opposite corner stays put', () => {
+    const turned = { ...rect, rot: Math.PI / 6 }
+    const h = handles(turned)
+    const moved = moveHandle(turned, 2, h[2][0] + 8, h[2][1] + 3)
+    const nh = handles(moved)
+    expect(nh[0][0]).toBeCloseTo(h[0][0])
+    expect(nh[0][1]).toBeCloseTo(h[0][1])
+    expect(nh[2][0]).toBeCloseTo(h[2][0] + 8)
+    expect(nh[2][1]).toBeCloseTo(h[2][1] + 3)
   })
 
   it('rasterizes shapes as walls and hides cut detected walls', () => {

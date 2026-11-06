@@ -456,7 +456,7 @@ export function splitAtJunctions(segs: WallSegment[], M: number): WallSegment[] 
     }
     const ux = dx / len
     const uy = dy / len
-    const cuts: { t: number; through: boolean }[] = []
+    const cuts: number[] = []
     for (const b of segs) {
       if (b === a) continue
       const ex = b.x2 - b.x1
@@ -473,18 +473,23 @@ export function splitAtJunctions(segs: WallSegment[], M: number): WallSegment[] 
       const t = (rx * vy - ry * vx) / det
       const sb = (rx * uy - ry * ux) / det
       if (sb < -tol || sb > blen + tol) continue
-      if (t > minPiece && t < len - minPiece) cuts.push({ t, through: sb > tol && sb < blen - tol })
+      if (t > 0 && t < len) cuts.push(t)
     }
-    cuts.sort((p, q) => p.t - q.t)
-    const at: number[] = [0]
-    for (const c of cuts) if (c.t - at[at.length - 1] >= minPiece) at.push(c.t)
-    if (len - at[at.length - 1] < minPiece && at.length > 1) at.pop()
-    at.push(len)
-    // a stub poking out past a wall that runs on through is an overhang, not a wall
-    const through = (t: number): boolean => cuts.some((c) => c.through && Math.abs(c.t - t) < 1e-6)
-    if (at.length > 2 && at[1] < overhang && through(at[1])) at.shift()
-    const last = at.length - 2
-    if (last > 0 && len - at[last] < overhang && through(at[last])) at.pop()
+    // a stub poking out past a crossing wall (or a corner that overshoots) is an overhang, not a wall
+    let from = 0
+    let to = len
+    for (const t of cuts) {
+      if (t < overhang && t > from) from = t
+      if (len - t < overhang && t < to) to = t
+    }
+    if (to - from < minPiece) {
+      out.push(a)
+      continue
+    }
+    cuts.sort((p, q) => p - q)
+    const at: number[] = [from]
+    for (const t of cuts) if (t - at[at.length - 1] >= minPiece && to - t >= minPiece) at.push(t)
+    at.push(to)
     for (let i = 0; i + 1 < at.length; i++)
       out.push({
         x1: a.x1 + ux * at[i],

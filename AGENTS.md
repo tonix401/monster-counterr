@@ -109,7 +109,10 @@ src/
 │       └── localization/
 │           └── localizationHelpers.ts  # Language loading & term resolution
 ├── map/                 # Map & fog of war (browser-only, no backend)
-│   ├── detectWalls.ts   # Straight-wall detection on a grayscale image
+│   ├── detectWalls.ts   # Straight-wall detection on a grayscale image (bright ridge bands, H/V only)
+│   ├── wallFilters.ts   # Cleanup of detected lines: merge thick-wall edge pairs into one centerline,
+│   │                    # reject staircase/roof stacks, stringers, dim furniture lines, loose stubs,
+│   │                    # slivers beside walls; bridges small jogs in the outline
 │   ├── analyze.ts       # Wall rasterizing + room labelling; `Analyzer` keeps the last detection
 │   ├── analysis.worker.ts / analyzerClient.ts # Runs the analysis in a Web Worker (inline fallback in tests)
 │   ├── mapStore.ts      # Zustand store for the current map, edits and fog (separate from the monster store)

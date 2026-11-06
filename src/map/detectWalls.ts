@@ -1,6 +1,13 @@
+import {
+  cleanLines,
+  dropDim,
+  dropLoose,
+  bridgeJogs,
+  typicalBrightness,
+  type Line,
+} from './wallFilters'
 import type { DetectParams, WallSegment } from './types'
 
-type Line = [number, number, number] // [position across, start along, end along]
 type Raw = [number, number, number]
 interface Cluster {
   a: number
@@ -127,7 +134,9 @@ export function detectWalls(g: Float32Array, W: number, H: number, p: DetectPara
         active.push(c)
       }
     }
-    const ls: Line[] = cl.map((c) => [c.sum / c.n, c.a, c.b] as Line).sort((p, q) => p[1] - q[1])
+    const ls: Line[] = cl
+      .map((c) => [c.sum / c.n, c.a, c.b, 0, 1, 0] as Line)
+      .sort((p, q) => p[1] - q[1])
     let merged = ls
     let prev = -1
     while (merged.length !== prev) {
@@ -147,14 +156,43 @@ export function detectWalls(g: Float32Array, W: number, H: number, p: DetectPara
           hit[0] = (hit[0] * (hit[2] - hit[1]) + c * (b - a)) / (hit[2] - hit[1] + (b - a) || 1)
           hit[1] = Math.min(hit[1], a)
           hit[2] = Math.max(hit[2], b)
-        } else merged.push([c, a, b])
+        } else merged.push([c, a, b, 0, 1, 0])
       }
     }
-    return merged.filter((mm) => mm[2] - mm[1] >= L)
+    const out = merged.filter((mm) => mm[2] - mm[1] >= L)
+    for (const l of out) {
+      // share of the line that really carries a ridge response (gaps are bridged by the merge above)
+      let hit = 0
+      let bright = 0
+      const c = Math.round(l[0])
+      for (let i = Math.round(l[1]); i <= l[2]; i++) {
+        let best = -1e9
+        let bb = 0
+        for (let d = -2; d <= 2; d++) {
+          const cc = c + d
+          if (cc < 0 || cc >= m) continue
+          const v = horizWall ? R[cc * W + i] : R[i * W + cc]
+          const gv = horizWall ? g[cc * W + i] : g[i * W + cc]
+          if (gv > bb) bb = gv
+          if (v > best) best = v
+        }
+        if (best > T) hit++
+        bright += bb
+      }
+      l[3] = hit / (l[2] - l[1] + 1)
+      l[5] = bright / (l[2] - l[1] + 1)
+    }
+    return out
   }
 
-  const hs = lines(barResp(true), true)
-  const vs = lines(barResp(false), false)
+  const maxThick = Math.round(M * (p.thickness ?? 0.016))
+  const stairGap = Math.round(M * 0.035)
+  const Rh = barResp(true)
+  const Rv = barResp(false)
+  const hs = cleanLines(lines(Rh, true), maxThick, stairGap, Math.round(M * 0.35))
+  const vs = cleanLines(lines(Rv, false), maxThick, stairGap, Math.round(M * 0.35))
+
+  dropDim([hs, vs], 0.75)
 
   function snap(A: Line[], B: Line[]): void {
     for (const s of A) {
@@ -174,6 +212,52 @@ export function detectWalls(g: Float32Array, W: number, H: number, p: DetectPara
     snap(hs, vs)
     snap(vs, hs)
   }
+
+  const dimBelow = typicalBrightness([hs, vs]) * 0.85
+  const shortLen = Math.round(M * 0.09)
+  const mediumLen = Math.round(M * 0.17)
+  const tol = Math.round(M * 0.012)
+  /** Staircase edges: a long line with a run of short parallel ridges (the steps) beside it */
+  function stepsBeside(l: Line, horizWall: boolean, cross: Float32Array): number {
+    const reach = Math.round(M * 0.03)
+    const inner = Math.max(3, Math.round(M * 0.004))
+    let best = 0
+    for (const side of [-1, 1]) {
+      let runs = 0
+      let prev = false
+      let gapLen = 99
+      for (let i = Math.round(l[1]); i <= l[2]; i++) {
+        let hit = 0
+        for (let d = inner; d < inner + reach; d++) {
+          const c = Math.round(l[0]) + side * d
+          if (c < 0 || c >= (horizWall ? H : W)) continue
+          if ((horizWall ? cross[c * W + i] : cross[i * W + c]) > T) hit++
+        }
+        const on = hit >= reach * 0.6
+        if (on && !prev && gapLen >= 3) runs++
+        gapLen = on ? 0 : gapLen + 1
+        prev = on
+      }
+      best = Math.max(best, runs)
+    }
+    return best
+  }
+  const steps = Math.max(8, Math.round(M * 0.0065))
+  const typical = typicalBrightness([hs, vs])
+  // a stringer is dimmer than a real wall; a wall that merely borders a staircase stays
+  const stringer = (l: Line, horiz: boolean): boolean =>
+    l[5] < typical * 0.9 && stepsBeside(l, horiz, horiz ? Rv : Rh) >= steps
+  for (let i = hs.length - 1; i >= 0; i--) if (stringer(hs[i], true)) hs.splice(i, 1)
+  for (let i = vs.length - 1; i >= 0; i--) if (stringer(vs[i], false)) vs.splice(i, 1)
+  dropLoose(hs, vs, shortLen, mediumLen, tol, dimBelow)
+  dropLoose(vs, hs, shortLen, mediumLen, tol, dimBelow)
+
+  const step = Math.round(M * 0.08)
+  const shift = Math.round(M * 0.02)
+  const jogV = bridgeJogs(hs, vs, step, shift, tol)
+  const jogH = bridgeJogs(vs, hs, step, shift, tol)
+  vs.push(...jogV)
+  hs.push(...jogH)
 
   const out: WallSegment[] = []
   for (const [y, a, b] of hs) out.push({ x1: a, y1: y, x2: b, y2: y })

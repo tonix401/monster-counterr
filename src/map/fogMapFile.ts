@@ -1,4 +1,4 @@
-import { triangleToPoly } from './shapes'
+import { polygonWalls, triangleWalls } from './shapes'
 import type { MapOp, MapView } from './types'
 
 /** The `.fog_map` file written by the standalone Map Fog tool; kept compatible with it. */
@@ -34,11 +34,9 @@ export function serializeFogMap(f: Omit<FogMapFile, 'format' | 'version' | 'app'
               y2: r1(op.y2),
               ...(op.rot ? { rot: Math.round(op.rot * 1000) / 1000 } : {}),
             }
-          : op.type === 'poly'
-            ? { type: 'poly', pts: op.pts.map((p) => [r1(p[0]), r1(p[1])]) }
-            : op.type === 'erase'
-              ? { type: 'erase', w: r1(op.w), pts: op.pts.map((p) => [r1(p[0]), r1(p[1])]) }
-              : op
+          : op.type === 'erase'
+            ? { type: 'erase', w: r1(op.w), pts: op.pts.map((p) => [r1(p[0]), r1(p[1])]) }
+            : op
     )
   return JSON.stringify({ format: 'fog_map', version: 1, app: 'Map Fog', ...f, walls })
 }
@@ -74,19 +72,19 @@ export function parseFogMap(text: string): FogMapFile | null {
         (p) => Array.isArray(p) && p.length >= 2 && p.slice(0, 2).every((v) => Number.isFinite(v))
       )
     ) {
-      walls.push({
-        type: 'poly',
-        pts: (op.pts as number[][]).map((p) => [p[0], p[1]] as [number, number]),
-      })
+      // polygons are drawn as independent lines now; earlier files kept them whole
+      walls.push(
+        ...polygonWalls((op.pts as number[][]).map((p) => [p[0], p[1]] as [number, number]))
+      )
     } else if (
       op.type === 'shape' &&
       op.kind === 'tri' &&
       [op.x1, op.y1, op.x2, op.y2].every((v) => typeof v === 'number' && isFinite(v))
     ) {
-      // the triangle tool is gone; a saved triangle becomes the equivalent polygon
+      // the triangle tool is gone; a saved triangle becomes its three lines
       const rot = typeof op.rot === 'number' && isFinite(op.rot) ? op.rot : 0
       walls.push(
-        triangleToPoly(
+        ...triangleWalls(
           { x1: op.x1 as number, y1: op.y1 as number, x2: op.x2 as number, y2: op.y2 as number },
           rot
         )

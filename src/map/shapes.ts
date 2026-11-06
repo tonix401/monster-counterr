@@ -1,20 +1,14 @@
-import type { EraseOp, MapOp, PolyOp, ShapeOp, WallOp, WallSegment } from './types'
+import type { EraseOp, MapOp, ShapeOp, WallOp, WallSegment } from './types'
 
-export type DrawnOp = WallOp | ShapeOp | PolyOp
+export type DrawnOp = WallOp | ShapeOp
 
-export const isDrawn = (op: MapOp): op is DrawnOp =>
-  op.type === 'wall' || op.type === 'shape' || op.type === 'poly'
+export const isDrawn = (op: MapOp): op is DrawnOp => op.type === 'wall' || op.type === 'shape'
 
 const ELLIPSE_STEPS = 48
 
 /** The outline of a drawn item as straight segments. */
 export function opSegments(op: DrawnOp): WallSegment[] {
   if (op.type === 'wall') return [op]
-  if (op.type === 'poly')
-    return op.pts.map((p, i) => {
-      const q = op.pts[(i + 1) % op.pts.length]
-      return { x1: p[0], y1: p[1], x2: q[0], y2: q[1] }
-    })
   const x1 = Math.min(op.x1, op.x2)
   const x2 = Math.max(op.x1, op.x2)
   const y1 = Math.min(op.y1, op.y2)
@@ -92,14 +86,11 @@ export function hitTest(
 }
 
 export function translateOp<T extends DrawnOp>(op: T, dx: number, dy: number): T {
-  if (op.type === 'poly')
-    return { ...op, pts: op.pts.map(([x, y]) => [x + dx, y + dy] as [number, number]) }
   return { ...op, x1: op.x1 + dx, y1: op.y1 + dy, x2: op.x2 + dx, y2: op.y2 + dy }
 }
 
-/** Handle positions: the two ends of a line, the corners of a polygon, or the four corners of a shape's box. */
+/** Handle positions: the two ends of a line, or the four corners of a shape's box. */
 export function handles(op: DrawnOp): [number, number][] {
-  if (op.type === 'poly') return op.pts
   if (op.type === 'wall')
     return [
       [op.x1, op.y1],
@@ -139,8 +130,6 @@ export function rotateTo<T extends ShapeOp>(op: T, x: number, y: number, step = 
 
 /** Drags one handle to a new position; the opposite corner of a shape stays put. */
 export function moveHandle<T extends DrawnOp>(op: T, index: number, x: number, y: number): T {
-  if (op.type === 'poly')
-    return { ...op, pts: op.pts.map((p, i) => (i === index ? [x, y] : p) as [number, number]) }
   if (op.type === 'wall') return index === 0 ? { ...op, x1: x, y1: y } : { ...op, x2: x, y2: y }
   const [ox, oy] = handles(op)[(index + 2) % 4]
   if (!op.rot)
@@ -253,13 +242,19 @@ export function bakeErasures(ops: MapOp[]): Exclude<MapOp, EraseOp>[] {
 
 /** The item with its coordinates scaled, for a map loaded at another resolution than it was saved at. */
 export function scaleOp<T extends Exclude<MapOp, EraseOp>>(op: T, fx: number, fy: number): T {
-  if (op.type === 'poly')
-    return { ...op, pts: op.pts.map(([x, y]) => [x * fx, y * fy] as [number, number]) }
   return { ...op, x1: op.x1 * fx, y1: op.y1 * fy, x2: op.x2 * fx, y2: op.y2 * fy }
 }
 
-/** Older files hold triangles as a box; this is the same triangle as a polygon. */
-export function triangleToPoly(box: WallSegment, rot = 0): PolyOp {
+/** A closed polygon as one independent line per side, so each can be moved or erased on its own. */
+export function polygonWalls(pts: [number, number][]): WallOp[] {
+  return pts.map((p, i) => {
+    const q = pts[(i + 1) % pts.length]
+    return { type: 'wall', x1: p[0], y1: p[1], x2: q[0], y2: q[1] }
+  })
+}
+
+/** Older files hold triangles as a box; this is the same triangle as three lines. */
+export function triangleWalls(box: WallSegment, rot = 0): WallOp[] {
   const x1 = Math.min(box.x1, box.x2)
   const x2 = Math.max(box.x1, box.x2)
   const y1 = Math.min(box.y1, box.y2)
@@ -269,8 +264,7 @@ export function triangleToPoly(box: WallSegment, rot = 0): PolyOp {
     [x2, y2],
     [x1, y2],
   ]
-  return {
-    type: 'poly',
-    pts: rot ? pts.map((p) => turn(p[0], p[1], (x1 + x2) / 2, (y1 + y2) / 2, rot)) : pts,
-  }
+  return polygonWalls(
+    rot ? pts.map((p) => turn(p[0], p[1], (x1 + x2) / 2, (y1 + y2) / 2, rot)) : pts
+  )
 }

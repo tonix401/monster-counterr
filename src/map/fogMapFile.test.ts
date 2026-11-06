@@ -29,61 +29,50 @@ describe('fog_map files', () => {
     expect(back.image).toBe(doc.image)
   })
 
-  it('round-trips polygons and drops ones with too few corners', () => {
-    const poly = {
-      type: 'poly' as const,
-      pts: [
-        [1.04, 2],
-        [30, 2],
-        [30, 20],
-      ] as [number, number][],
-    }
-    const back = parseFogMap(serializeFogMap({ ...doc, walls: [poly] }))!
-    expect(back.walls).toEqual([
-      {
-        type: 'poly',
-        pts: [
-          [1, 2],
-          [30, 2],
-          [30, 20],
-        ],
-      },
+  it('loads a polygon from an earlier file as one line per side, and drops ones with too few corners', () => {
+    const load = (walls: unknown[]) =>
+      parseFogMap(JSON.stringify({ format: 'fog_map', image: 'x', walls }))!.walls
+    expect(
+      load([
+        {
+          type: 'poly',
+          pts: [
+            [1, 2],
+            [30, 2],
+            [30, 20],
+          ],
+        },
+      ])
+    ).toEqual([
+      { type: 'wall', x1: 1, y1: 2, x2: 30, y2: 2 },
+      { type: 'wall', x1: 30, y1: 2, x2: 30, y2: 20 },
+      { type: 'wall', x1: 30, y1: 20, x2: 1, y2: 2 },
     ])
-    const bad = parseFogMap(
-      JSON.stringify({
-        format: 'fog_map',
-        image: 'x',
-        walls: [
-          {
-            type: 'poly',
-            pts: [
-              [1, 2],
-              [3, 4],
-            ],
-          },
-        ],
-      })
-    )!
-    expect(bad.walls).toEqual([])
+    expect(
+      load([
+        {
+          type: 'poly',
+          pts: [
+            [1, 2],
+            [3, 4],
+          ],
+        },
+      ])
+    ).toEqual([])
   })
 
-  it('loads a triangle from an older file as a polygon', () => {
-    const back = parseFogMap(
+  it('loads a triangle from an older file as three lines', () => {
+    const walls = parseFogMap(
       JSON.stringify({
         format: 'fog_map',
         image: 'x',
         walls: [{ type: 'shape', kind: 'tri', x1: 10, y1: 10, x2: 50, y2: 30 }],
       })
-    )!
-    expect(back.walls).toEqual([
-      {
-        type: 'poly',
-        pts: [
-          [30, 10],
-          [50, 30],
-          [10, 30],
-        ],
-      },
+    )!.walls
+    expect(walls).toEqual([
+      { type: 'wall', x1: 30, y1: 10, x2: 50, y2: 30 },
+      { type: 'wall', x1: 50, y1: 30, x2: 10, y2: 30 },
+      { type: 'wall', x1: 10, y1: 30, x2: 30, y2: 10 },
     ])
   })
 

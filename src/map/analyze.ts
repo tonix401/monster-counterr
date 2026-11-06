@@ -64,8 +64,7 @@ export function rasterizeWalls(
   for (const s of auto) stampLine(wall, W, H, s, lw)
   for (const op of ops) {
     if (op.type === 'wall') stampLine(wall, W, H, op, lw)
-    else if (op.type === 'shape' || op.type === 'poly')
-      for (const s of opSegments(op)) stampLine(wall, W, H, s, lw)
+    else if (op.type === 'shape') for (const s of opSegments(op)) stampLine(wall, W, H, s, lw)
     else if (op.type === 'erase') stampErase(wall, W, H, op.pts, op.w)
   }
   return wall

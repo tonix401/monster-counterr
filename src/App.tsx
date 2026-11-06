@@ -57,8 +57,8 @@ function App() {
       <Header />
       <TabBar
         tabs={[
-          { to: '/', label: t('encounter'), end: true },
-          { to: '/map', label: t('map') },
+          { to: '/', label: t('encounter'), icon: 'encounter', end: true },
+          { to: '/map', label: t('map'), icon: 'map' },
         ]}
       />
       {onMapTab ? (

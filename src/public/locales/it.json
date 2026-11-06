@@ -160,6 +160,12 @@
     "mapFogged": "nebbia",
     "mapNotShared": "Il master non ha ancora condiviso una mappa.",
     "mapInvalidFile": "Scegli un'immagine della mappa (PNG, JPG, WebP) o un file .fog_map.",
-    "mapLoadFailed": "Impossibile leggere la mappa."
+    "mapLoadFailed": "Impossibile leggere la mappa.",
+    "mapRedetect": "Ripeti il rilevamento",
+    "mapGroupFile": "File",
+    "mapGroupView": "Vista",
+    "mapGroupTools": "Strumenti",
+    "mapGroupFog": "Azioni nebbia",
+    "mapPanelClose": "Chiudi il pannello"
   }
 }

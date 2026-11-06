@@ -160,6 +160,12 @@
     "mapFogged": "已覆盖迷雾",
     "mapNotShared": "游戏主持人尚未共享地图。",
     "mapInvalidFile": "请选择地图图片（PNG、JPG、WebP）或 .fog_map 文件。",
-    "mapLoadFailed": "无法读取该地图。"
+    "mapLoadFailed": "无法读取该地图。",
+    "mapRedetect": "重新检测",
+    "mapGroupFile": "文件",
+    "mapGroupView": "视图",
+    "mapGroupTools": "工具",
+    "mapGroupFog": "迷雾操作",
+    "mapPanelClose": "关闭面板"
   }
 }

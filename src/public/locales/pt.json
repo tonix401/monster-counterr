@@ -160,6 +160,12 @@
     "mapFogged": "com névoa",
     "mapNotShared": "O mestre ainda não compartilhou um mapa.",
     "mapInvalidFile": "Escolha uma imagem de mapa (PNG, JPG, WebP) ou um arquivo .fog_map.",
-    "mapLoadFailed": "Não foi possível ler o mapa."
+    "mapLoadFailed": "Não foi possível ler o mapa.",
+    "mapRedetect": "Repetir detecção",
+    "mapGroupFile": "Arquivo",
+    "mapGroupView": "Vista",
+    "mapGroupTools": "Ferramentas",
+    "mapGroupFog": "Ações de névoa",
+    "mapPanelClose": "Fechar painel"
   }
 }

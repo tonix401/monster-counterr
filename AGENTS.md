@@ -76,7 +76,8 @@ src/
 │   │   ├── ConditionsTableData.tsx
 │   │   └── QuickActionsTableData.tsx
 │   ├── map/             # Map tab (DM side)
-│   │   ├── MapTab.tsx   # Toolbar, drop zone, player view
+│   │   ├── MapTab.tsx   # Floating icon overlays over the map (file, view, tools, fog actions, detection popover), drop zone, player view
+│   │   ├── MapIcons.tsx # Inline SVG icons and the IconButton (tooltip + aria-label) used by the map overlays
 │   │   └── MapCanvas.tsx # Canvas layers, fog painting, wall drawing/erasing
 │   └── ui/              # Generic UI components
 │       ├── TabBar.tsx   # Route-based tabs (used by the DM app and the client view)

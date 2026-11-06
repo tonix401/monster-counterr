@@ -160,6 +160,12 @@
     "mapFogged": "fogged",
     "mapNotShared": "The game master hasn't shared a map yet.",
     "mapInvalidFile": "Choose a map image (PNG, JPG, WebP) or a .fog_map file.",
-    "mapLoadFailed": "The map couldn't be read."
+    "mapLoadFailed": "The map couldn't be read.",
+    "mapRedetect": "Re-run detection",
+    "mapGroupFile": "File",
+    "mapGroupView": "View",
+    "mapGroupTools": "Tools",
+    "mapGroupFog": "Fog actions",
+    "mapPanelClose": "Close panel"
   }
 }

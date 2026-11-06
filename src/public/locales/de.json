@@ -160,6 +160,12 @@
     "mapFogged": "vernebelt",
     "mapNotShared": "Der Spielleiter hat noch keine Karte geteilt.",
     "mapInvalidFile": "Wähle ein Kartenbild (PNG, JPG, WebP) oder eine .fog_map-Datei.",
-    "mapLoadFailed": "Die Karte konnte nicht gelesen werden."
+    "mapLoadFailed": "Die Karte konnte nicht gelesen werden.",
+    "mapRedetect": "Erkennung neu starten",
+    "mapGroupFile": "Datei",
+    "mapGroupView": "Ansicht",
+    "mapGroupTools": "Werkzeuge",
+    "mapGroupFog": "Nebel-Aktionen",
+    "mapPanelClose": "Panel schließen"
   }
 }

@@ -160,6 +160,12 @@
     "mapFogged": "nebuligitaj",
     "mapNotShared": "La ludmastro ankoraŭ ne dividis mapon.",
     "mapInvalidFile": "Elektu mapan bildon (PNG, JPG, WebP) aŭ dosieron .fog_map.",
-    "mapLoadFailed": "La mapo ne povis esti legita."
+    "mapLoadFailed": "La mapo ne povis esti legita.",
+    "mapRedetect": "Rekurigi detekton",
+    "mapGroupFile": "Dosiero",
+    "mapGroupView": "Vido",
+    "mapGroupTools": "Iloj",
+    "mapGroupFog": "Nebulaj agoj",
+    "mapPanelClose": "Fermi panelon"
   }
 }

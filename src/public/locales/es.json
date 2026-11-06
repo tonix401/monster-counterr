@@ -160,6 +160,12 @@
     "mapFogged": "con niebla",
     "mapNotShared": "El director de juego aún no ha compartido un mapa.",
     "mapInvalidFile": "Elige una imagen de mapa (PNG, JPG, WebP) o un archivo .fog_map.",
-    "mapLoadFailed": "No se pudo leer el mapa."
+    "mapLoadFailed": "No se pudo leer el mapa.",
+    "mapRedetect": "Repetir detección",
+    "mapGroupFile": "Archivo",
+    "mapGroupView": "Vista",
+    "mapGroupTools": "Herramientas",
+    "mapGroupFog": "Acciones de niebla",
+    "mapPanelClose": "Cerrar panel"
   }
 }

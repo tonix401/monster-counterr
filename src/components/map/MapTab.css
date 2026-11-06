@@ -92,10 +92,13 @@
   top: var(--map-gap);
   left: var(--map-gap);
   right: var(--map-gap);
+  /* spans the map's height so the tool column can be limited to it */
+  bottom: var(--map-gap);
   z-index: 2;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
+  align-content: flex-start;
   gap: var(--map-gap);
   pointer-events: none;
 }
@@ -115,6 +118,10 @@
   top: 52px;
   left: 0;
   flex-direction: column;
+  /* a short window gets a second column instead of losing the lower tools */
+  flex-wrap: wrap;
+  align-content: flex-start;
+  max-height: calc(100% - 52px);
 }
 
 .map-divider {
@@ -442,6 +449,7 @@
   .map-tools {
     position: static;
     flex-direction: row;
+    max-height: none;
   }
 
   .map-group-end {

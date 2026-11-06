@@ -8,9 +8,10 @@ import {
   opSegments,
   rotateHandle,
   rotateTo,
+  scaleOp,
   translateOp,
 } from './shapes'
-import type { ShapeOp, WallOp } from './types'
+import type { PolyOp, ShapeOp, WallOp } from './types'
 
 const rect: ShapeOp = { type: 'shape', kind: 'rect', id: 1, x1: 10, y1: 10, x2: 50, y2: 30 }
 
@@ -68,6 +69,30 @@ describe('shapes', () => {
     expect(nh[0][1]).toBeCloseTo(h[0][1])
     expect(nh[2][0]).toBeCloseTo(h[2][0] + 8)
     expect(nh[2][1]).toBeCloseTo(h[2][1] + 3)
+  })
+
+  it('treats a polygon as a closed outline of its corners', () => {
+    const poly: PolyOp = {
+      type: 'poly',
+      id: 3,
+      pts: [
+        [0, 0],
+        [40, 0],
+        [40, 30],
+        [10, 50],
+      ],
+    }
+    expect(opSegments(poly)).toHaveLength(4)
+    expect(opSegments(poly)[3]).toMatchObject({ x1: 10, y1: 50, x2: 0, y2: 0 })
+    expect(hitTest(20, 1, 3, [poly], [])).toMatchObject({ src: 'op', op: { id: 3 } })
+    expect(translateOp(poly, 5, 5).pts[0]).toEqual([5, 5])
+    expect(handles(poly)).toHaveLength(4)
+    expect(moveHandle(poly, 2, 60, 60).pts[2]).toEqual([60, 60])
+    expect(moveHandle(poly, 2, 60, 60).pts[1]).toEqual([40, 0])
+    expect(scaleOp(poly, 2, 0.5).pts[1]).toEqual([80, 0])
+    const w = rasterizeWalls(100, 100, [], [poly])
+    expect(w[0 * 100 + 20]).toBe(1)
+    expect(w[10 * 100 + 20]).toBe(0)
   })
 
   it('rasterizes shapes as walls and hides cut detected walls', () => {

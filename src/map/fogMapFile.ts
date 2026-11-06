@@ -33,9 +33,11 @@ export function serializeFogMap(f: Omit<FogMapFile, 'format' | 'version' | 'app'
               y2: r1(op.y2),
               ...(op.rot ? { rot: Math.round(op.rot * 1000) / 1000 } : {}),
             }
-          : op.type === 'erase'
-            ? { type: 'erase', w: r1(op.w), pts: op.pts.map((p) => [r1(p[0]), r1(p[1])]) }
-            : op
+          : op.type === 'poly'
+            ? { type: 'poly', pts: op.pts.map((p) => [r1(p[0]), r1(p[1])]) }
+            : op.type === 'erase'
+              ? { type: 'erase', w: r1(op.w), pts: op.pts.map((p) => [r1(p[0]), r1(p[1])]) }
+              : op
     )
   return JSON.stringify({ format: 'fog_map', version: 1, app: 'Map Fog', ...f, walls })
 }
@@ -62,6 +64,18 @@ export function parseFogMap(text: string): FogMapFile | null {
           Number((p as number[])[0]),
           Number((p as number[])[1]),
         ]),
+      })
+    } else if (
+      op.type === 'poly' &&
+      Array.isArray(op.pts) &&
+      op.pts.length >= 3 &&
+      op.pts.every(
+        (p) => Array.isArray(p) && p.length >= 2 && p.slice(0, 2).every((v) => Number.isFinite(v))
+      )
+    ) {
+      walls.push({
+        type: 'poly',
+        pts: (op.pts as number[][]).map((p) => [p[0], p[1]] as [number, number]),
       })
     } else if (
       op.type === 'shape' &&

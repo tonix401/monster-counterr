@@ -170,6 +170,8 @@
     "mapModeRect": "矩形",
     "mapModeTriangle": "三角形",
     "mapModeCircle": "圆形",
+    "mapModePoly": "多边形",
+    "mapHintPoly": "点击放置顶点。点击第一个顶点、双击或按 Enter 完成；Backspace 撤销上一个顶点，Esc 取消。",
     "mapModePan": "平移",
     "mapHintSelect": "点击线条或图形即可选中，拖动移动，拖动控制点调整大小，按 Delete 删除。检测到的墙壁也可选中。用上方的圆形控制点可旋转图形（按住 Shift 以 15° 为步长）。",
     "mapHintShape": "拖动绘制；圆从圆心向外扩展。按住 Shift 可画正方形。",

@@ -170,6 +170,8 @@
     "mapModeRect": "Retângulo",
     "mapModeTriangle": "Triângulo",
     "mapModeCircle": "Círculo",
+    "mapModePoly": "Polígono",
+    "mapHintPoly": "Clique para colocar os cantos. Clique no primeiro canto, faça duplo clique ou prima Enter para terminar; Backspace desfaz o último canto, Esc cancela.",
     "mapModePan": "Mover vista",
     "mapHintSelect": "Clique numa linha ou forma para selecioná-la, arraste para mover, use as alças para redimensionar e Delete para remover. As paredes detetadas também podem ser selecionadas. Rode uma forma com a alça redonda acima dela (Shift prende a 15°).",
     "mapHintShape": "Arraste para desenhar; um círculo cresce a partir do centro. Segure Shift para um quadrado.",

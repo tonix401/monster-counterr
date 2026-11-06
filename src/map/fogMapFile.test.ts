@@ -29,6 +29,44 @@ describe('fog_map files', () => {
     expect(back.image).toBe(doc.image)
   })
 
+  it('round-trips polygons and drops ones with too few corners', () => {
+    const poly = {
+      type: 'poly' as const,
+      pts: [
+        [1.04, 2],
+        [30, 2],
+        [30, 20],
+      ] as [number, number][],
+    }
+    const back = parseFogMap(serializeFogMap({ ...doc, walls: [poly] }))!
+    expect(back.walls).toEqual([
+      {
+        type: 'poly',
+        pts: [
+          [1, 2],
+          [30, 2],
+          [30, 20],
+        ],
+      },
+    ])
+    const bad = parseFogMap(
+      JSON.stringify({
+        format: 'fog_map',
+        image: 'x',
+        walls: [
+          {
+            type: 'poly',
+            pts: [
+              [1, 2],
+              [3, 4],
+            ],
+          },
+        ],
+      })
+    )!
+    expect(bad.walls).toEqual([])
+  })
+
   it('rejects anything that is not a fog_map', () => {
     expect(parseFogMap('not json')).toBeNull()
     expect(parseFogMap('{"format":"other","image":"x"}')).toBeNull()

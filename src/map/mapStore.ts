@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { createAnalyzerClient, type AnalyzerClient } from './analyzerClient'
 import { parseFogMap, serializeFogMap, type FogMapFile } from './fogMapFile'
 import { loadMapText, saveMapText } from './mapStorage'
-import { bakeErasures } from './shapes'
+import { bakeErasures, scaleOp } from './shapes'
 import { makeCanvas } from './render'
 import {
   MAP_MAX_DIM,
@@ -182,7 +182,7 @@ export const useMapStore = create<MapState>()((set, get) => {
         const fx = saved?.width ? W / saved.width : 1
         const fy = saved?.height ? H / saved.height : 1
         const ops: MapOp[] = bakeErasures(saved?.walls ?? []).map((op) =>
-          withId({ ...op, x1: op.x1 * fx, y1: op.y1 * fy, x2: op.x2 * fx, y2: op.y2 * fy })
+          withId(scaleOp(op, fx, fy))
         )
         pendingFog = (saved?.fog ?? [])
           .map(([x, y]) => Math.round(y * fy) * W + Math.round(x * fx))

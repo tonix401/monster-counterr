@@ -14,14 +14,16 @@ export type WallOp = { type: 'wall'; id?: number } & WallSegment
  * which is then turned by `rot` radians about its centre
  */
 export type ShapeOp = { type: 'shape'; kind: ShapeKind; id?: number; rot?: number } & WallSegment
+/** A closed polygon of any number of corners (at least three) */
+export type PolyOp = { type: 'poly'; pts: [number, number][]; id?: number }
 /** Hides one automatically detected wall, so erasing and moving such walls survives re-rendering */
 export type CutOp = { type: 'cut'; id?: number } & WallSegment
 /** Pixel brush from older files; no longer created */
 export type EraseOp = { type: 'erase'; id?: number; w: number; pts: [number, number][] }
-export type MapOp = WallOp | ShapeOp | CutOp | EraseOp
+export type MapOp = WallOp | ShapeOp | PolyOp | CutOp | EraseOp
 
 export type MapView = 'map' | 'lines' | 'blueprint'
-export type MapMode = 'fog' | 'select' | 'wall' | ShapeKind | 'erase' | 'pan'
+export type MapMode = 'fog' | 'select' | 'wall' | ShapeKind | 'poly' | 'erase' | 'pan'
 
 export interface DetectParams {
   sensitivity: number

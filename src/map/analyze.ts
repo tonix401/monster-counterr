@@ -1,6 +1,5 @@
 import { detectWalls } from './detectWalls'
-import { opSegments, sameSegment } from './shapes'
-import type { Analysis, DetectParams, MapOp, Room, WallSegment } from './types'
+import type { Analysis, DetectParams, Room, WallSegment } from './types'
 
 export function lineWidth(M: number): number {
   return Math.max(3, Math.round(M / 450))
@@ -23,50 +22,11 @@ function stampLine(wall: Uint8Array, W: number, H: number, s: WallSegment, lw: n
   }
 }
 
-/** Round brush that clears walls along a polyline. */
-function stampErase(
-  wall: Uint8Array,
-  W: number,
-  H: number,
-  pts: [number, number][],
-  width: number
-): void {
-  const r = width / 2
-  const r2 = r * r
-  const stamp = (cx: number, cy: number): void => {
-    const y0 = Math.max(0, Math.floor(cy - r))
-    const y1 = Math.min(H - 1, Math.ceil(cy + r))
-    const x0 = Math.max(0, Math.floor(cx - r))
-    const x1 = Math.min(W - 1, Math.ceil(cx + r))
-    for (let y = y0; y <= y1; y++)
-      for (let x = x0; x <= x1; x++) if ((x - cx) ** 2 + (y - cy) ** 2 <= r2) wall[y * W + x] = 0
-  }
-  if (!pts.length) return
-  stamp(pts[0][0], pts[0][1])
-  const stride = Math.max(1, r / 2)
-  for (let i = 1; i < pts.length; i++) {
-    const [ax, ay] = pts[i - 1]
-    const [bx, by] = pts[i]
-    const n = Math.max(1, Math.ceil(Math.hypot(bx - ax, by - ay) / stride))
-    for (let k = 1; k <= n; k++) stamp(ax + ((bx - ax) * k) / n, ay + ((by - ay) * k) / n)
-  }
-}
-
-/** Walls first, then the user's wall and erase operations in order. */
-export function rasterizeWalls(
-  W: number,
-  H: number,
-  auto: WallSegment[],
-  ops: MapOp[]
-): Uint8Array {
+/** The pixels the walls cover */
+export function rasterizeWalls(W: number, H: number, segments: WallSegment[]): Uint8Array {
   const wall = new Uint8Array(W * H)
   const lw = lineWidth(Math.max(W, H))
-  for (const s of auto) stampLine(wall, W, H, s, lw)
-  for (const op of ops) {
-    if (op.type === 'wall') stampLine(wall, W, H, op, lw)
-    else if (op.type === 'shape') for (const s of opSegments(op)) stampLine(wall, W, H, s, lw)
-    else if (op.type === 'erase') stampErase(wall, W, H, op.pts, op.w)
-  }
+  for (const s of segments) stampLine(wall, W, H, s, lw)
   return wall
 }
 
@@ -263,36 +223,33 @@ export function buildRooms(
 }
 
 export interface AnalyzeRequest {
-  /** New detection parameters, `null` to switch automatic walls off, `undefined` to keep the last result */
-  detect: DetectParams | null | undefined
-  ops: MapOp[]
+  /** The walls drawn on the map */
+  segments: WallSegment[]
   minRoom: number
 }
 
-/** Holds one map's grayscale pixels and the last automatic detection so edits only redo the room step. */
+/** Holds one map's grayscale pixels, so finding walls and rooms does not need the picture again. */
 export class Analyzer {
   private gray: Float32Array = new Float32Array(0)
   private W = 0
   private H = 0
-  private auto: WallSegment[] = []
 
   load(gray: Float32Array, W: number, H: number): void {
     this.gray = gray
     this.W = W
     this.H = H
-    this.auto = []
   }
 
+  /** Walls found in the picture */
+  detect(params: DetectParams): WallSegment[] {
+    return detectWalls(this.gray, this.W, this.H, params)
+  }
+
+  /** Rooms between the given walls */
   run(req: AnalyzeRequest): Analysis {
     const { W, H } = this
-    if (req.detect === null) this.auto = []
-    else if (req.detect) this.auto = detectWalls(this.gray, W, H, req.detect)
-    const cuts = req.ops.filter((o) => o.type === 'cut')
-    const auto = cuts.length
-      ? this.auto.filter((s) => !cuts.some((c) => sameSegment(c, s)))
-      : this.auto
-    const wall = rasterizeWalls(W, H, auto, req.ops)
+    const wall = rasterizeWalls(W, H, req.segments)
     const { own, rooms } = buildRooms(wall, W, H, req.minRoom)
-    return { W, H, wall, own, rooms, auto }
+    return { W, H, wall, own, rooms }
   }
 }

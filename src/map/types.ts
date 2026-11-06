@@ -5,25 +5,34 @@ export interface WallSegment {
   y2: number
 }
 
-export type ShapeKind = 'rect' | 'circle'
+/** A corner or end of walls; every line that meets here shares this one point */
+export interface MapNode {
+  id: number
+  x: number
+  y: number
+}
 
-/** A drawn line; `id` is assigned by the store so the item can be selected, moved and erased */
-export type WallOp = { type: 'wall'; id?: number } & WallSegment
-/**
- * A rectangle or ellipse; x1,y1 and x2,y2 are opposite corners of its bounding box,
- * which is then turned by `rot` radians about its centre
- */
-export type ShapeOp = { type: 'shape'; kind: ShapeKind; id?: number; rot?: number } & WallSegment
-/** Hides one automatically detected wall, so erasing and moving such walls survives re-rendering */
-export type CutOp = { type: 'cut'; id?: number } & WallSegment
-/** Pixel brush from older files; no longer created */
-export type EraseOp = { type: 'erase'; id?: number; w: number; pts: [number, number][] }
-export type MapOp = WallOp | ShapeOp | CutOp | EraseOp
+/** A wall between two nodes (by id); never zero-length, and each pair is joined at most once */
+export interface MapEdge {
+  id: number
+  a: number
+  b: number
+}
+
+/** The walls drawn on the map; always replaced, never changed in place, so history can keep old ones */
+export interface Graph {
+  nodes: MapNode[]
+  edges: MapEdge[]
+  /** The next free id for a node or an edge */
+  next: number
+}
+
+export type Selection = { kind: 'node' | 'edge'; id: number }
 
 /** How a fogged room looks to players: grey fog, or no light at all */
 export type FogStyle = 'fog' | 'dark'
 export type MapView = 'map' | 'lines' | 'blueprint'
-export type MapMode = 'fog' | 'select' | 'wall' | ShapeKind | 'poly' | 'erase' | 'pan'
+export type MapMode = 'fog' | 'select' | 'wall' | 'rect' | 'circle' | 'poly' | 'erase' | 'pan'
 
 export interface DetectParams {
   sensitivity: number
@@ -60,7 +69,6 @@ export interface Analysis {
   /** Room id per pixel, 0 for none */
   own: Int32Array
   rooms: (Room | null)[]
-  auto: WallSegment[]
 }
 
 export const MAP_MAX_DIM = 1600

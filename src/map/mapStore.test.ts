@@ -1,82 +1,82 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { addPolyline, emptyGraph } from './graph'
 import { DEFAULT_PARAMS, useMapStore } from './mapStore'
 
-const wall = { type: 'wall' as const, x1: 0, y1: 0, x2: 10, y2: 0 }
+const wall = (): ReturnType<typeof emptyGraph> =>
+  addPolyline(emptyGraph(), [
+    [0, 0],
+    [10, 0],
+  ])
 
-describe('undo of automatic wall detection', () => {
+describe('undo of wall edits', () => {
   beforeEach(() => {
     // analysis runs are scheduled but never fired: only the undo bookkeeping is under test
     vi.useFakeTimers()
-    const base = {
-      ops: [],
+    useMapStore.setState({
+      graph: emptyGraph(),
       history: [],
-      auto: true,
+      baseline: emptyGraph(),
+      selected: null,
       params: DEFAULT_PARAMS,
       loaded: true,
-    }
-    useMapStore.setState({
-      ...base,
-      baseline: { ops: [], auto: true, sens: 70, minLen: 6, gap: 6.5 },
     })
   })
   afterEach(() => vi.useRealTimers())
 
-  it('undoes switching detection off and on', () => {
+  it('makes each edit one step and undoes them in order', () => {
     const s = useMapStore.getState()
-    s.setAuto(false)
-    expect(useMapStore.getState().history).toHaveLength(1)
-    s.setAuto(false) // same setting again is no step
-    s.setAuto(true)
+    s.setGraph(wall())
+    s.setGraph(
+      addPolyline(useMapStore.getState().graph, [
+        [0, 50],
+        [10, 50],
+      ])
+    )
     expect(useMapStore.getState().history).toHaveLength(2)
     useMapStore.getState().undoEdit()
-    expect(useMapStore.getState().auto).toBe(false)
+    expect(useMapStore.getState().graph.edges).toHaveLength(1)
     useMapStore.getState().undoEdit()
-    expect(useMapStore.getState().auto).toBe(true)
-    expect(useMapStore.getState().history).toHaveLength(0)
+    expect(useMapStore.getState().graph.edges).toHaveLength(0)
   })
 
-  it('makes one step out of a slider drag, and one per slider', () => {
+  it('makes one step out of a drag', () => {
     const s = useMapStore.getState()
-    s.setParam('sens', 60)
-    s.setParam('sens', 50)
-    s.setParam('sens', 40)
-    expect(useMapStore.getState().history).toHaveLength(1)
-    s.setParam('minLen', 9)
+    s.setGraph(wall())
+    s.beginGesture()
+    for (let x = 1; x <= 5; x++) {
+      const g = useMapStore.getState().graph
+      s.setGraph({ ...g, nodes: g.nodes.map((n, i) => (i ? { ...n, x: 10 + x } : n)) }, true)
+    }
+    s.endGesture()
     expect(useMapStore.getState().history).toHaveLength(2)
     useMapStore.getState().undoEdit()
-    expect(useMapStore.getState().params.minLen).toBe(6)
-    expect(useMapStore.getState().params.sens).toBe(40)
-    useMapStore.getState().undoEdit()
-    expect(useMapStore.getState().params.sens).toBe(70)
+    expect(useMapStore.getState().graph.nodes[1].x).toBe(10)
   })
 
-  it('does not count the smallest-room slider, and keeps it when undoing', () => {
+  it('deletes the selected node or line, and forgets a selection that is gone', () => {
     const s = useMapStore.getState()
-    s.setParam('minRoom', 1)
-    expect(useMapStore.getState().history).toHaveLength(0)
-    s.setParam('gap', 3)
-    s.setParam('minRoom', 0.5)
+    s.setGraph(wall())
+    const g = useMapStore.getState().graph
+    s.select({ kind: 'edge', id: g.edges[0].id })
+    useMapStore.getState().deleteSelected()
+    expect(useMapStore.getState().graph.nodes).toHaveLength(0)
+    expect(useMapStore.getState().selected).toBeNull()
     useMapStore.getState().undoEdit()
-    expect(useMapStore.getState().params).toMatchObject({ gap: 6.5, minRoom: 0.5 })
+    expect(useMapStore.getState().graph.edges).toHaveLength(1)
   })
 
-  it('undoes drawn items and detection changes in the order they happened', () => {
-    useMapStore.getState().addOp(wall)
-    useMapStore.getState().setAuto(false)
-    useMapStore.getState().undoEdit()
-    expect(useMapStore.getState().auto).toBe(true)
-    expect(useMapStore.getState().ops).toHaveLength(1)
-    useMapStore.getState().undoEdit()
-    expect(useMapStore.getState().ops).toHaveLength(0)
-  })
-
-  it('clearing edits returns the detection settings of the opened map too', () => {
-    useMapStore.getState().setAuto(false)
-    useMapStore.getState().setParam('sens', 20)
-    useMapStore.getState().addOp(wall)
+  it('clearing edits returns the walls the map was opened with', () => {
+    useMapStore.setState({ baseline: wall() })
+    useMapStore.getState().setGraph(emptyGraph())
     useMapStore.getState().clearEdits()
-    const s = useMapStore.getState()
-    expect(s).toMatchObject({ auto: true, history: [], ops: [] })
-    expect(s.params.sens).toBe(70)
+    expect(useMapStore.getState()).toMatchObject({ history: [] })
+    expect(useMapStore.getState().graph.edges).toHaveLength(1)
+  })
+
+  it('keeps the smallest-room setting out of the history', () => {
+    useMapStore.getState().setParam('minRoom', 1)
+    useMapStore.getState().setParam('sens', 20)
+    expect(useMapStore.getState().history).toHaveLength(0)
+    expect(useMapStore.getState().params).toMatchObject({ minRoom: 1, sens: 20 })
   })
 })

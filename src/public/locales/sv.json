@@ -170,7 +170,7 @@
     "mapModeRect": "Rektangel",
     "mapModeCircle": "Cirkel",
     "mapModePoly": "Polygon",
-    "mapHintPoly": "Klicka för att sätta ut hörn. Klicka på första hörnet, dubbelklicka eller tryck Enter för att avsluta; Backspace tar bort sista hörnet, Esc avbryter.",
+    "mapHintPoly": "Klicka för att sätta ut hörn. Klicka på första hörnet för att sluta formen; dubbelklick eller Enter avslutar öppet. Backspace tar bort sista hörnet, Esc avbryter.",
     "mapModePan": "Panorera",
     "mapHintSelect": "Klicka på en linje eller form för att markera den, dra för att flytta, dra i handtagen för att ändra storlek, Delete tar bort. Upptäckta väggar går också att markera. Vrid en form med det runda handtaget ovanför (Skift snäpper till 15°).",
     "mapHintShape": "Dra för att rita; en cirkel växer från mitten. Håll Skift för kvadrat.",

@@ -170,7 +170,7 @@
     "mapModeRect": "Rettangolo",
     "mapModeCircle": "Cerchio",
     "mapModePoly": "Poligono",
-    "mapHintPoly": "Clicca per mettere gli angoli. Clicca sul primo angolo, doppio clic o Invio per finire; Backspace toglie l'ultimo angolo, Esc annulla.",
+    "mapHintPoly": "Clicca per mettere gli angoli. Clicca sul primo angolo per chiudere la forma; doppio clic o Invio la termina aperta. Backspace toglie l'ultimo angolo, Esc annulla.",
     "mapModePan": "Sposta vista",
     "mapHintSelect": "Clicca su una linea o forma per selezionarla, trascinala per spostarla, usa le maniglie per ridimensionarla, Canc la elimina. Si possono selezionare anche i muri rilevati. Ruota una forma con la maniglia rotonda sopra (Maiusc blocca a passi di 15°).",
     "mapHintShape": "Trascina per disegnare; un cerchio cresce dal centro. Tieni Maiusc per un quadrato.",

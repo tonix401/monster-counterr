@@ -82,6 +82,17 @@ describe('shapes', () => {
     expect(nh[2][1]).toBeCloseTo(h[2][1] + 3)
   })
 
+  it('leaves a polyline open unless it is closed', () => {
+    const pts: [number, number][] = [
+      [0, 0],
+      [40, 0],
+      [40, 30],
+    ]
+    expect(polygonWalls(pts, false)).toHaveLength(2)
+    expect(polygonWalls(pts)).toHaveLength(3)
+    expect(polygonWalls([[0, 0]], false)).toEqual([])
+  })
+
   it('splits a polygon into one independent line per side', () => {
     const walls = polygonWalls([
       [0, 0],

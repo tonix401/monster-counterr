@@ -170,7 +170,7 @@
     "mapModeRect": "Parihaba",
     "mapModeCircle": "Bilog",
     "mapModePoly": "Polygon",
-    "mapHintPoly": "I-click para maglagay ng mga sulok. I-click ang unang sulok, mag-double-click o pindutin ang Enter para tapusin; Backspace para alisin ang huling sulok, Esc para kanselahin.",
+    "mapHintPoly": "I-click para maglagay ng mga sulok. I-click ang unang sulok para isara ang hugis; ang double-click o Enter ay tatapos nang hindi isinasara. Backspace para alisin ang huling sulok, Esc para kanselahin.",
     "mapModePan": "I-pan",
     "mapHintSelect": "I-click ang linya o hugis para piliin, i-drag para ilipat, i-drag ang mga handle para baguhin ang laki, Delete para alisin. Mapipili rin ang mga natukoy na pader. Paikutin ang hugis gamit ang bilog na handle sa itaas (Shift para sa 15° na hakbang).",
     "mapHintShape": "I-drag para gumuhit; ang bilog ay lumalaki mula sa gitna. Pindutin ang Shift para sa parisukat.",

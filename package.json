@@ -7,11 +7,13 @@
     "build": "vite build",
     "preview": "vite preview",
     "dev": "vite",
-    "precommit": "npm i && npm run format && npm run test:run",
+    "precommit": "npm i && npm run format && npm run test",
     "": "",
     "update_terms": "node scripts/update_terms.js",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
+    "lint": "eslint .",
+    "typecheck": "tsc -b",
     "test": "vitest run"
   },
   "dependencies": {

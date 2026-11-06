@@ -22,6 +22,18 @@ export interface MapParams {
   minRoom: number
 }
 
+/** What one undo step brings back: the drawn items and the automatic wall detection settings */
+export interface Snapshot {
+  ops: MapOp[]
+  auto: boolean
+  sens: number
+  minLen: number
+  gap: number
+}
+
+/** The parameters that decide which walls detection finds; the smallest room only filters rooms */
+const DETECT_KEYS: (keyof MapParams)[] = ['sens', 'minLen', 'gap']
+
 export type MapError = 'mapInvalidFile' | 'mapLoadFailed' | null
 
 interface MapState {
@@ -37,10 +49,10 @@ interface MapState {
   fog: Set<number>
   /** Everything drawn on top of the detected walls, loaded walls included */
   ops: MapOp[]
-  /** `ops` as it was before each edit, newest last */
-  history: MapOp[][]
+  /** The state before each edit, newest last: drawn items and wall detection settings alike */
+  history: Snapshot[]
   /** The state a map was opened with; "clear edits" returns to it */
-  baseline: MapOp[]
+  baseline: Snapshot
   selected: number | null
   auto: boolean
   params: MapParams
@@ -79,6 +91,11 @@ interface MapState {
 }
 
 export const DEFAULT_PARAMS: MapParams = { sens: 70, minLen: 6, gap: 6.5, minRoom: 0.2 }
+const detectOf = (p: MapParams): Pick<Snapshot, 'sens' | 'minLen' | 'gap'> => ({
+  sens: p.sens,
+  minLen: p.minLen,
+  gap: p.gap,
+})
 
 let client: AnalyzerClient | null = null
 let seq = 0
@@ -93,9 +110,38 @@ let gestureFresh = false
 let pending = false
 let inflight = false
 let dirty = false
+/** A slider drag fires many changes; they share one undo step while they follow each other closely */
+const SLIDER_STEP_MS = 800
+let lastSlider: { key: keyof MapParams; at: number } | null = null
 const withId = (op: MapOp): MapOp => (op.type === 'erase' ? op : { ...op, id: nextId++ })
 
 export const useMapStore = create<MapState>()((set, get) => {
+  const snapshot = (s: MapState = get(), ops: MapOp[] = s.ops): Snapshot => ({
+    ops,
+    auto: s.auto,
+    sens: s.params.sens,
+    minLen: s.params.minLen,
+    gap: s.params.gap,
+  })
+
+  /** Puts a snapshot's items and detection settings back; returns whether detection must rerun */
+  function restoreSnapshot(snap: Snapshot): boolean {
+    const s = get()
+    const redetect =
+      snap.auto !== s.auto ||
+      snap.sens !== s.params.sens ||
+      snap.minLen !== s.params.minLen ||
+      snap.gap !== s.params.gap
+    lastSlider = null
+    set({
+      ops: snap.ops,
+      auto: snap.auto,
+      params: { ...s.params, sens: snap.sens, minLen: snap.minLen, gap: snap.gap },
+      selected: null,
+    })
+    return redetect
+  }
+
   const analyzer = (): AnalyzerClient => (client ??= createAnalyzerClient())
 
   function scheduleSave(): void {
@@ -202,12 +248,13 @@ export const useMapStore = create<MapState>()((set, get) => {
           fog: new Set(),
           ops,
           history: [],
-          baseline: ops,
           selected: null,
           auto: saved ? false : get().auto,
           view: saved ? saved.view : get().view,
           error: null,
         })
+        set({ baseline: snapshot() })
+        lastSlider = null
         analyze(!saved, 40)
         resolve()
       }
@@ -217,8 +264,9 @@ export const useMapStore = create<MapState>()((set, get) => {
 
   function edit(ops: MapOp[], live = false): void {
     const s = get()
-    const history = gesture && !gestureFresh ? s.history : [...s.history, s.ops]
+    const history = gesture && !gestureFresh ? s.history : [...s.history, snapshot(s)]
     gestureFresh = false
+    lastSlider = null
     set({ ops, history })
     if (live) analyze(false, 30, true)
     else rebuild()
@@ -241,7 +289,7 @@ export const useMapStore = create<MapState>()((set, get) => {
     fog: new Set(),
     ops: [],
     history: [],
-    baseline: [],
+    baseline: { ops: [], auto: true, ...detectOf(DEFAULT_PARAMS) },
     selected: null,
     auto: true,
     params: DEFAULT_PARAMS,
@@ -300,7 +348,7 @@ export const useMapStore = create<MapState>()((set, get) => {
         fog: new Set(),
         ops: [],
         history: [],
-        baseline: [],
+        baseline: snapshot(get(), []),
         selected: null,
         busy: false,
         shared: false,
@@ -329,11 +377,25 @@ export const useMapStore = create<MapState>()((set, get) => {
     },
 
     setParam: (key, value) => {
-      set({ params: { ...get().params, [key]: value } })
+      const s = get()
+      const detects = DETECT_KEYS.includes(key)
+      const now = Date.now()
+      const continues = lastSlider?.key === key && now - lastSlider.at < SLIDER_STEP_MS
+      lastSlider = detects ? { key, at: now } : null
+      set({
+        params: { ...s.params, [key]: value },
+        history:
+          detects && !continues && value !== s.params[key]
+            ? [...s.history, snapshot(s)]
+            : s.history,
+      })
       analyze(key !== 'minRoom', key === 'minRoom' ? 150 : 200)
     },
     setAuto: (on) => {
-      set({ auto: on })
+      const s = get()
+      lastSlider = null
+      // turning it on or off is an undo step; running it again with the same setting is not
+      set({ auto: on, history: on !== s.auto ? [...s.history, snapshot(s)] : s.history })
       analyze(true, 20)
     },
     setView: (view) => {
@@ -371,12 +433,20 @@ export const useMapStore = create<MapState>()((set, get) => {
     undoEdit: () => {
       const { history } = get()
       if (!history.length) return
-      set({ ops: history[history.length - 1], history: history.slice(0, -1), selected: null })
-      rebuild()
+      const redetect = restoreSnapshot(history[history.length - 1])
+      set({ history: history.slice(0, -1) })
+      if (redetect) {
+        analyze(true, 20)
+        scheduleSave()
+      } else rebuild()
     },
     clearEdits: () => {
-      set({ ops: get().baseline, history: [], selected: null })
-      rebuild()
+      const redetect = restoreSnapshot(get().baseline)
+      set({ history: [] })
+      if (redetect) {
+        analyze(true, 20)
+        scheduleSave()
+      } else rebuild()
     },
 
     setFog: (id, on) => {

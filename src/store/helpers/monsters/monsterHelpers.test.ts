@@ -640,7 +640,7 @@ describe('monsterHelpers', () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: vi.fn().mockResolvedValue(mockIndex),
-      } as any)
+      } as unknown as Response)
 
       const result = await fetchMonsterIndex('http://localhost:3000')
 
@@ -654,7 +654,7 @@ describe('monsterHelpers', () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: false,
         status: 404,
-      } as any)
+      } as unknown as Response)
 
       const result = await fetchMonsterIndex('http://localhost:3000')
 
@@ -681,7 +681,7 @@ describe('monsterHelpers', () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: vi.fn().mockResolvedValue({}),
-      } as any)
+      } as unknown as Response)
 
       await fetchMonsterIndex('https://api.example.com')
 

@@ -117,7 +117,7 @@ describe('localizationHelpers', () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: vi.fn().mockResolvedValue(mockLanguagePack),
-      } as any)
+      } as unknown as Response)
 
       const result = await fetchLanguagePack('en')
 
@@ -132,7 +132,7 @@ describe('localizationHelpers', () => {
         ok: false,
         status: 404,
         statusText: 'Not Found',
-      } as any)
+      } as unknown as Response)
 
       const result = await fetchLanguagePack('invalid')
 
@@ -164,7 +164,7 @@ describe('localizationHelpers', () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: vi.fn().mockResolvedValue(mockLanguagePack),
-      } as any)
+      } as unknown as Response)
 
       await fetchLanguagePack('de')
 
@@ -175,7 +175,7 @@ describe('localizationHelpers', () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: vi.fn().mockResolvedValue({}),
-      } as any)
+      } as unknown as Response)
 
       await fetchLanguagePack('es')
 
@@ -189,7 +189,7 @@ describe('localizationHelpers', () => {
         ok: false,
         status: 500,
         statusText: 'Internal Server Error',
-      } as any)
+      } as unknown as Response)
 
       await fetchLanguagePack('en')
 
@@ -214,7 +214,7 @@ describe('localizationHelpers', () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: vi.fn().mockResolvedValue(mockLanguages),
-      } as any)
+      } as unknown as Response)
 
       const result = await fetchAvailableLanguages()
 
@@ -229,7 +229,7 @@ describe('localizationHelpers', () => {
         ok: false,
         status: 404,
         statusText: 'Not Found',
-      } as any)
+      } as unknown as Response)
 
       const result = await fetchAvailableLanguages()
 
@@ -261,7 +261,7 @@ describe('localizationHelpers', () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: vi.fn().mockResolvedValue(mockLanguages),
-      } as any)
+      } as unknown as Response)
 
       const result = await fetchAvailableLanguages()
 
@@ -277,7 +277,7 @@ describe('localizationHelpers', () => {
         ok: false,
         status: 500,
         statusText: 'Internal Server Error',
-      } as any)
+      } as unknown as Response)
 
       const result = await fetchAvailableLanguages()
 

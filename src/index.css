@@ -77,9 +77,10 @@
 body {
   margin: 0;
   background-image:
-    url('/monster-counterr/brick.svg'),
-    radial-gradient(circle at top, #2c3450, #151826 60%);
-  background-size: 160px 120px, cover;
+    url('/monster-counterr/brick.svg'), radial-gradient(circle at top, #2c3450, #151826 60%);
+  background-size:
+    160px 120px,
+    cover;
   background-attachment: fixed;
   color: var(--text);
   display: flex;

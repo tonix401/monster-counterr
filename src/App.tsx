@@ -60,7 +60,8 @@ function App() {
       <Outlet />
       <NotificationContainer />
       <a href="https://buymeacoffee.com/tonix401" className="coffee-link" target="_blank">
-        <img src={ASSETS.COFFEE} alt="Buy me a coffee"/>{t('buyCoffee')}
+        <img src={ASSETS.COFFEE} alt="Buy me a coffee" />
+        {t('buyCoffee')}
       </a>
     </div>
   )

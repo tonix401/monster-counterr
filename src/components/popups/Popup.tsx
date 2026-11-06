@@ -14,7 +14,7 @@ const Popup: React.FC<PopupProps> = ({ onClose, title, width = 400, children, st
     <>
       <div className="popup-after" onClick={onClose}></div>
       <div className="popup-window" style={{ width: `${width}px`, ...style }}>
-        {title && <h1 className='popup-title'>{title}</h1>}
+        {title && <h1 className="popup-title">{title}</h1>}
         {children}
       </div>
     </>

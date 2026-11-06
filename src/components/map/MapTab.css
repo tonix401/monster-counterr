@@ -70,7 +70,6 @@
 /* Floating, translucent panels */
 .map-group,
 .map-panel,
-.map-toast,
 .map-status {
   border: 1px solid var(--border);
   background: var(--map-glass);
@@ -352,17 +351,11 @@
   gap: var(--map-gap);
 }
 
-.map-toast,
 .map-status {
   margin: 0;
   padding: 6px 14px;
   border-radius: var(--radius-xl);
   font-size: var(--font-sm);
-}
-
-.map-toast {
-  max-width: 640px;
-  text-align: center;
 }
 
 .map-hint {
@@ -468,4 +461,19 @@
   .map-icon-btn::after {
     display: none;
   }
+}
+
+/* A tooltip must sit above the neighbouring groups, whose blur gives each its own stacking layer */
+.map-topbar:hover,
+.map-topbar:focus-within,
+.map-bottom:hover,
+.map-bottom:focus-within,
+.map-zoom:hover,
+.map-zoom:focus-within {
+  z-index: 10;
+}
+
+.map-group:hover,
+.map-group:focus-within {
+  z-index: 10;
 }

@@ -9,21 +9,6 @@ export function makeCanvas(w: number, h: number): HTMLCanvasElement {
 
 export const FOG_SOLID = [96, 98, 102] as const
 
-export function paintLines(canvas: HTMLCanvasElement, a: Analysis): void {
-  const { W, H, wall } = a
-  const g = canvas.getContext('2d')!
-  const im = g.createImageData(W, H)
-  const d = im.data
-  for (let i = 0, p = 0; i < wall.length; i++, p += 4)
-    if (wall[i]) {
-      d[p] = 40
-      d[p + 1] = 190
-      d[p + 2] = 255
-      d[p + 3] = 255
-    }
-  g.putImageData(im, 0, 0)
-}
-
 export function paintBlueprint(canvas: HTMLCanvasElement, a: Analysis): void {
   const { W, H, wall, own, rooms } = a
   const M = Math.max(W, H)
@@ -42,25 +27,18 @@ export function paintBlueprint(canvas: HTMLCanvasElement, a: Analysis): void {
     g.lineTo(W, v)
     g.stroke()
   }
-  // faint room fills so the layout reads at a glance
+  // faint room fills so the layout reads at a glance; the walls themselves are vector strokes drawn over the map
   const layer = makeCanvas(W, H)
   const lg = layer.getContext('2d')!
   const im = lg.createImageData(W, H)
   const b = im.data
   for (let i = 0, p = 0; i < wall.length; i++, p += 4) {
-    if (wall[i]) {
-      b[p] = 232
-      b[p + 1] = 244
+    const R = wall[i] ? null : rooms[own[i]]
+    if (R && !R.ext) {
+      b[p] = 150
+      b[p + 1] = 200
       b[p + 2] = 255
-      b[p + 3] = 255
-    } else {
-      const R = rooms[own[i]]
-      if (R && !R.ext) {
-        b[p] = 150
-        b[p + 1] = 200
-        b[p + 2] = 255
-        b[p + 3] = 22
-      }
+      b[p + 3] = 22
     }
   }
   lg.putImageData(im, 0, 0)

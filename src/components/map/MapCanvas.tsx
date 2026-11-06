@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useMapStore } from '@/map/mapStore'
-import { makeCanvas, paintBlueprint, paintFog, paintHover, paintLines } from '@/map/render'
+import { makeCanvas, paintBlueprint, paintFog, paintHover } from '@/map/render'
 import {
   handles,
   hitTest,
@@ -16,7 +16,6 @@ import type { ShapeKind, WallSegment } from '@/map/types'
 interface Layers {
   fog: HTMLCanvasElement
   hover: HTMLCanvasElement
-  lines: HTMLCanvasElement
   blueprint: HTMLCanvasElement
 }
 
@@ -42,6 +41,7 @@ const SHAPES: ShapeKind[] = ['rect', 'tri', 'circle']
 const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
   const ref = useRef<HTMLCanvasElement>(null)
   const box = useRef<HTMLDivElement>(null)
+  const vec = useRef<HTMLCanvasElement>(null)
   const layers = useRef<Layers | null>(null)
   const draft = useRef<Draft | null>(null)
   const drag = useRef<Drag | null>(null)
@@ -77,12 +77,10 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     if (!cv || !s.base) return
     const ctx = cv.getContext('2d')!
     const L = layers.current
-    const editing = s.mode !== 'fog' && s.mode !== 'pan' && !player
     const v = player ? 'map' : s.view
     ctx.clearRect(0, 0, cv.width, cv.height)
     ctx.drawImage(v === 'blueprint' && L ? L.blueprint : s.base, 0, 0)
     if (!L) return
-    if (v === 'lines' || (editing && v === 'map')) ctx.drawImage(L.lines, 0, 0)
     ctx.drawImage(L.fog, 0, 0)
     if (player) return
     ctx.drawImage(L.hover, 0, 0)
@@ -128,6 +126,46 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     ctx.restore()
   }
 
+  /**
+   * Walls are drawn as strokes on a canvas the size of the screen, so they stay sharp and the same
+   * width at any zoom. The map's own canvas only holds the picture, the fog and the room highlight.
+   */
+  const drawVectors = (): void => {
+    const v = vec.current
+    const cv = ref.current
+    const b = box.current
+    if (!v || !cv || !b) return
+    const dpr = window.devicePixelRatio || 1
+    const w = Math.round(b.clientWidth * dpr)
+    const h = Math.round(b.clientHeight * dpr)
+    if (v.width !== w || v.height !== h) {
+      v.width = w
+      v.height = h
+    }
+    const g = v.getContext('2d')!
+    g.setTransform(1, 0, 0, 1, 0, 0)
+    g.clearRect(0, 0, w, h)
+    const s = useMapStore.getState()
+    const show =
+      !player && s.analysis && (s.view !== 'map' || (s.mode !== 'fog' && s.mode !== 'pan'))
+    if (!show) return
+    const br = b.getBoundingClientRect()
+    const cr = cv.getBoundingClientRect()
+    const sc = (cr.width / cv.width) * dpr
+    g.setTransform(sc, 0, 0, sc, (cr.left - br.left) * dpr, (cr.top - br.top) * dpr)
+    g.lineWidth = (s.view === 'blueprint' ? 2 : 3) * (dpr / sc)
+    g.lineCap = 'square'
+    g.strokeStyle = s.view === 'blueprint' ? '#e8f4ff' : '#28beff'
+    g.beginPath()
+    const add = (m: WallSegment): void => {
+      g.moveTo(m.x1, m.y1)
+      g.lineTo(m.x2, m.y2)
+    }
+    for (const a of s.analysis!.auto) add(a)
+    for (const o of s.ops) if (isDrawn(o)) for (const m of opSegments(o)) add(m)
+    g.stroke()
+  }
+
   // the wall layers only change when the walls do
   useEffect(() => {
     if (!analysis) {
@@ -139,10 +177,8 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     const L: Layers = {
       fog: makeCanvas(W, H),
       hover: makeCanvas(W, H),
-      lines: makeCanvas(W, H),
       blueprint: makeCanvas(W, H),
     }
-    paintLines(L.lines, analysis)
     paintBlueprint(L.blueprint, analysis)
     layers.current = L
     hover.current = 0
@@ -157,6 +193,20 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     draw()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fog, player, mapView, mode, width, height, ops, selected, view.scale])
+
+  useEffect(() => {
+    drawVectors()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [analysis, ops, mapView, mode, player, view, width, height])
+
+  useEffect(() => {
+    const b = box.current
+    if (!b) return
+    const ro = new ResizeObserver(() => drawVectors())
+    ro.observe(b)
+    return () => ro.disconnect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // a new map starts unzoomed
   useEffect(() => setView({ scale: 1, x: 0, y: 0 }), [width, height])
@@ -451,6 +501,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
           }
         }}
       />
+      <canvas ref={vec} className="map-vector" aria-hidden="true" />
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import type { MapOp, ShapeKind, ShapeOp, WallOp, WallSegment } from './types'
+import type { EraseOp, MapOp, ShapeKind, ShapeOp, WallOp, WallSegment } from './types'
 
 export type DrawnOp = WallOp | ShapeOp
 
@@ -131,3 +131,82 @@ const near = (a: number, b: number): boolean => Math.abs(a - b) < 1.5
 export const sameSegment = (a: WallSegment, b: WallSegment): boolean =>
   (near(a.x1, b.x1) && near(a.y1, b.y1) && near(a.x2, b.x2) && near(a.y2, b.y2)) ||
   (near(a.x1, b.x2) && near(a.y1, b.y2) && near(a.x2, b.x1) && near(a.y2, b.y1))
+
+function distToPolyline(x: number, y: number, pts: [number, number][]): number {
+  if (pts.length === 1) return Math.hypot(x - pts[0][0], y - pts[0][1])
+  let d = Infinity
+  for (let i = 1; i < pts.length; i++)
+    d = Math.min(
+      d,
+      distToSegment(x, y, { x1: pts[i - 1][0], y1: pts[i - 1][1], x2: pts[i][0], y2: pts[i][1] })
+    )
+  return d
+}
+
+/** The parts of a segment outside a round brush stroke. */
+function clipSegment(s: WallSegment, pts: [number, number][], r: number): WallSegment[] {
+  const len = Math.hypot(s.x2 - s.x1, s.y2 - s.y1)
+  const steps = Math.max(1, Math.ceil(len))
+  const out: WallSegment[] = []
+  let from = -1
+  const at = (i: number): [number, number] => [
+    s.x1 + ((s.x2 - s.x1) * i) / steps,
+    s.y1 + ((s.y2 - s.y1) * i) / steps,
+  ]
+  const close = (to: number): void => {
+    if (from >= 0 && to - from >= 2) {
+      const [x1, y1] = at(from)
+      const [x2, y2] = at(to)
+      out.push({ x1, y1, x2, y2 })
+    }
+    from = -1
+  }
+  for (let i = 0; i <= steps; i++) {
+    const [x, y] = at(i)
+    if (distToPolyline(x, y, pts) > r) {
+      if (from < 0) from = i
+    } else close(i - 1)
+  }
+  close(steps)
+  return out
+}
+
+/**
+ * Older files hold pixel-brush erases. This cuts the brushed parts out of the walls before them,
+ * so everything is a plain vector afterwards.
+ */
+export function bakeErasures(ops: MapOp[]): Exclude<MapOp, EraseOp>[] {
+  let out: Exclude<MapOp, EraseOp>[] = []
+  for (const op of ops) {
+    if (op.type !== 'erase') {
+      out.push(op)
+      continue
+    }
+    const r = op.w / 2
+    const xs = op.pts.map((p) => p[0])
+    const ys = op.pts.map((p) => p[1])
+    const box = [Math.min(...xs) - r, Math.min(...ys) - r, Math.max(...xs) + r, Math.max(...ys) + r]
+    const next: Exclude<MapOp, EraseOp>[] = []
+    for (const o of out) {
+      if (!isDrawn(o)) {
+        next.push(o)
+        continue
+      }
+      const segs = opSegments(o).filter(
+        (g) =>
+          Math.max(g.x1, g.x2) >= box[0] &&
+          Math.min(g.x1, g.x2) <= box[2] &&
+          Math.max(g.y1, g.y2) >= box[1] &&
+          Math.min(g.y1, g.y2) <= box[3]
+      )
+      if (!segs.length) {
+        next.push(o)
+        continue
+      }
+      for (const g of opSegments(o))
+        for (const piece of clipSegment(g, op.pts, r)) next.push({ type: 'wall', ...piece })
+    }
+    out = next
+  }
+  return out
+}

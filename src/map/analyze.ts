@@ -138,7 +138,7 @@ export function buildRooms(
   const rooms = regs as Room[] // index 0 is the only null and is never dereferenced below
   const minA = Math.max(30, (M * M * minRoomPercent) / 100)
 
-  // grow real regions over walls and tiny pockets
+  // real rooms grow over the wall pixels around them; pockets are left alone for now
   const own = new Int32Array(N)
   let qh = 0
   let qt = 0
@@ -155,23 +155,45 @@ export function buildRooms(
     const p = q[qh++]
     const x = p % W
     const o = own[p]
-    if (x > 0 && !own[p - 1]) {
+    if (x > 0 && wall[p - 1] && !own[p - 1]) {
       own[p - 1] = o
       q[qt++] = p - 1
     }
-    if (x < W - 1 && !own[p + 1]) {
+    if (x < W - 1 && wall[p + 1] && !own[p + 1]) {
       own[p + 1] = o
       q[qt++] = p + 1
     }
-    if (p >= W && !own[p - W]) {
+    if (p >= W && wall[p - W] && !own[p - W]) {
       own[p - W] = o
       q[qt++] = p - W
     }
-    if (p < N - W && !own[p + W]) {
+    if (p < N - W && wall[p + W] && !own[p + W]) {
       own[p + W] = o
       q[qt++] = p + W
     }
   }
+
+  // a pocket goes whole to the room it shares the most border with, so no diagonal seams appear
+  const contacts = new Map<number, Map<number, number>>()
+  for (let i = 0; i < N; i++) {
+    const l = lab[i]
+    if (own[i] || l <= 0) continue
+    const x = i % W
+    for (const n of [x > 0 ? i - 1 : -1, x < W - 1 ? i + 1 : -1, i - W, i + W]) {
+      if (n < 0 || n >= N || !own[n]) continue
+      let m = contacts.get(l)
+      if (!m) contacts.set(l, (m = new Map()))
+      m.set(own[n], (m.get(own[n]) ?? 0) + 1)
+    }
+  }
+  const owner = new Int32Array(rooms.length)
+  for (const [l, m] of contacts) {
+    let best = 0
+    let bc = 0
+    for (const [room, c] of m) if (c > bc) [best, bc] = [room, c]
+    owner[l] = best
+  }
+  for (let i = 0; i < N; i++) if (!own[i] && lab[i] > 0) own[i] = owner[lab[i]]
 
   // fold islands (e.g. a table outline) into the room around them
   const nb = new Map<number, Set<number>>()

@@ -158,7 +158,7 @@ describe('splitAtJunctions', () => {
     const out = splitAtJunctions(
       [
         { x1: 0, y1: 100, x2: 400, y2: 100 },
-        { x1: 200, y1: 20, x2: 200, y2: 112 }, // 12px overhang below the wall
+        { x1: 200, y1: 20, x2: 200, y2: 106 }, // 6px overhang, under the minimum piece length
       ],
       800
     )

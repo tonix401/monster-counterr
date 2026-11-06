@@ -34,7 +34,12 @@ export default class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <Popup title="Error" onClose={this.resetError} width={1000} style={{ borderColor: "var(--damage)"}}>
+        <Popup
+          title="Error"
+          onClose={this.resetError}
+          width={1000}
+          style={{ borderColor: 'var(--damage)' }}
+        >
           <p>{this.state.error?.message || 'An unexpected error occurred'}</p>
           <pre
             style={{

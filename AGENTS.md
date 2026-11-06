@@ -78,7 +78,7 @@ src/
 │   ├── map/             # Map tab (DM side)
 │   │   ├── MapTab.tsx   # Floating icon overlays over the map (file, view, tool palette, fog actions, zoom, detection popover), drop zone, live player-view pane beside the map
 │   │   ├── MapIcons.tsx # Inline SVG icons and the IconButton (tooltip + aria-label) used by the map overlays
-│   │   └── MapCanvas.tsx # Canvas layers, fog painting, select/move/resize, line and shape drawing, whole-item eraser, zoom and pan
+│   │   └── MapCanvas.tsx # Canvas layers (picture, fog, room highlight) plus a screen-resolution canvas for vector walls, fog painting, select/move/resize, line and shape drawing, whole-item eraser, zoom and pan
 │   └── ui/              # Generic UI components
 │       ├── TabBar.tsx   # Route-based tabs (used by the DM app and the client view)
 │       ├── BinarySettingsRow.tsx

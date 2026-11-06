@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { Analyzer, rasterizeWalls } from './analyze'
-import { handles, hitTest, moveHandle, opSegments, translateOp } from './shapes'
+import { bakeErasures, handles, hitTest, moveHandle, opSegments, translateOp } from './shapes'
 import type { ShapeOp, WallOp } from './types'
 
 const rect: ShapeOp = { type: 'shape', kind: 'rect', id: 1, x1: 10, y1: 10, x2: 50, y2: 30 }
@@ -43,5 +43,18 @@ describe('shapes', () => {
     expect(
       a.run({ detect: undefined, ops: [{ type: 'cut', id: 3, ...seg }], minRoom: 0.2 }).auto
     ).toHaveLength(0)
+  })
+})
+
+describe('bakeErasures', () => {
+  it('cuts the brushed part out of a wall and keeps shapes the brush misses', () => {
+    const wall: WallOp = { type: 'wall', x1: 0, y1: 10, x2: 100, y2: 10 }
+    const out = bakeErasures([wall, rect, { type: 'erase', w: 20, pts: [[70, 10]] }])
+    const walls = out.filter((o) => o.type === 'wall')
+    expect(walls).toHaveLength(2)
+    expect(walls[0]).toMatchObject({ x1: 0 })
+    expect(walls[0].x2 as number).toBeLessThan(61)
+    expect(walls[1]).toMatchObject({ x2: 100 })
+    expect(out).toContain(rect)
   })
 })

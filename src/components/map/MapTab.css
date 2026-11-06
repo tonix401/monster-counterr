@@ -2,8 +2,9 @@
   --map-glass: color-mix(in srgb, var(--card) 72%, transparent);
   --map-gap: var(--spacing-sm);
   display: flex;
-  height: calc(100dvh - 118px);
-  min-height: 460px;
+  /* fills what the header and tabs leave of the screen (see .app-wide), however tall they are */
+  flex: 1 1 0;
+  min-height: 0;
   margin: var(--spacing-xs) 0 0;
   overflow: hidden;
   background: var(--overlay-medium);
@@ -425,7 +426,6 @@
 
 @media (max-width: 760px) {
   .map-tab {
-    height: calc(100dvh - 100px);
     margin: 0;
   }
 

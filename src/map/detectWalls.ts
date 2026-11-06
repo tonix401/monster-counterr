@@ -1,6 +1,13 @@
+import {
+  cleanLines,
+  dropDim,
+  dropLoose,
+  bridgeJogs,
+  typicalBrightness,
+  type Line,
+} from './wallFilters'
 import type { DetectParams, WallSegment } from './types'
 
-type Line = [number, number, number] // [position across, start along, end along]
 type Raw = [number, number, number]
 interface Cluster {
   a: number
@@ -10,12 +17,21 @@ interface Cluster {
   n: number
 }
 
-/**
- * Straight-wall detection: finds long, bright, thin horizontal/vertical bands (beams/walls)
- * in a grayscale image. Coordinates are in image pixels.
- */
-export function detectWalls(g: Float32Array, W: number, H: number, p: DetectParams): WallSegment[] {
-  const M = Math.max(W, H)
+/** Horizontal and vertical wall lines of one image, [position, start, end, ...] as in `Line` */
+interface AxisWalls {
+  hs: Line[]
+  vs: Line[]
+}
+
+/** `M` is the size the length thresholds scale with (the original map, also for rotated copies) */
+function axisWalls(
+  g: Float32Array,
+  W: number,
+  H: number,
+  p: DetectParams,
+  M: number,
+  oblique = false
+): AxisWalls {
   const N = W * H
   const k = M / 1600
   const T = p.sensitivity
@@ -127,7 +143,9 @@ export function detectWalls(g: Float32Array, W: number, H: number, p: DetectPara
         active.push(c)
       }
     }
-    const ls: Line[] = cl.map((c) => [c.sum / c.n, c.a, c.b] as Line).sort((p, q) => p[1] - q[1])
+    const ls: Line[] = cl
+      .map((c) => [c.sum / c.n, c.a, c.b, 0, 1, 0] as Line)
+      .sort((p, q) => p[1] - q[1])
     let merged = ls
     let prev = -1
     while (merged.length !== prev) {
@@ -147,14 +165,76 @@ export function detectWalls(g: Float32Array, W: number, H: number, p: DetectPara
           hit[0] = (hit[0] * (hit[2] - hit[1]) + c * (b - a)) / (hit[2] - hit[1] + (b - a) || 1)
           hit[1] = Math.min(hit[1], a)
           hit[2] = Math.max(hit[2], b)
-        } else merged.push([c, a, b])
+        } else merged.push([c, a, b, 0, 1, 0])
       }
     }
-    return merged.filter((mm) => mm[2] - mm[1] >= L)
+    const out = merged.filter((mm) => mm[2] - mm[1] >= L)
+    // trim ends much dimmer than the rest of the line (a chain or fence running on past the wall)
+    const win = Math.max(6, Math.round(M * 0.015))
+    for (const l of oblique ? [] : out) {
+      const a0 = Math.round(l[1])
+      const b0 = Math.round(l[2])
+      const c0 = Math.round(l[0])
+      const br = new Float32Array(b0 - a0 + 1)
+      for (let i = a0; i <= b0; i++) {
+        let bb = 0
+        for (let d = -2; d <= 2; d++) {
+          const cc = c0 + d
+          if (cc < 0 || cc >= m || i < 0 || i >= n) continue
+          const gv = horizWall ? g[cc * W + i] : g[i * W + cc]
+          if (gv > bb) bb = gv
+        }
+        br[i - a0] = bb
+      }
+      const sorted = [...br].sort((p, q) => p - q)
+      const ref = sorted[Math.floor(sorted.length * 0.6)]
+      const share = (from: number, dir: number): number => {
+        let s = 0
+        for (let k = 0; k < win; k++) s += br[Math.min(br.length - 1, Math.max(0, from + dir * k))]
+        return s / win
+      }
+      let a = 0
+      while (a < br.length - win && share(a, 1) < 0.72 * ref) a += win >> 1
+      let b = br.length - 1
+      while (b > a + win && share(b, -1) < 0.72 * ref) b -= win >> 1
+      l[1] = a0 + a
+      l[2] = a0 + b
+    }
+    for (let i = out.length - 1; i >= 0; i--) if (out[i][2] - out[i][1] < L) out.splice(i, 1)
+    for (const l of out) {
+      // share of the line that really carries a ridge response (gaps are bridged by the merge above)
+      let hit = 0
+      let bright = 0
+      const c = Math.round(l[0])
+      for (let i = Math.round(l[1]); i <= l[2]; i++) {
+        let best = -1e9
+        let bb = 0
+        for (let d = -2; d <= 2; d++) {
+          const cc = c + d
+          if (cc < 0 || cc >= m) continue
+          const v = horizWall ? R[cc * W + i] : R[i * W + cc]
+          const gv = horizWall ? g[cc * W + i] : g[i * W + cc]
+          if (gv > bb) bb = gv
+          if (v > best) best = v
+        }
+        if (best > T) hit++
+        bright += bb
+      }
+      l[3] = hit / (l[2] - l[1] + 1)
+      l[5] = bright / (l[2] - l[1] + 1)
+    }
+    return out
   }
 
-  const hs = lines(barResp(true), true)
-  const vs = lines(barResp(false), false)
+  const maxThick = Math.round(M * (p.thickness ?? 0.016))
+  const stairGap = Math.round(M * 0.035)
+  const Rh = barResp(true)
+  const Rv = barResp(false)
+  const hs = cleanLines(lines(Rh, true), maxThick, stairGap, Math.round(M * 0.28))
+  const vs = cleanLines(lines(Rv, false), maxThick, stairGap, Math.round(M * 0.28))
+
+  // a slanted pass sees the dark outbuildings too, so brightness is no yardstick there
+  if (!oblique) dropDim([hs, vs], 0.75)
 
   function snap(A: Line[], B: Line[]): void {
     for (const s of A) {
@@ -175,8 +255,191 @@ export function detectWalls(g: Float32Array, W: number, H: number, p: DetectPara
     snap(vs, hs)
   }
 
+  const dimBelow = oblique ? 0 : typicalBrightness([hs, vs]) * 0.85
+  const shortLen = Math.round(M * 0.09)
+  const mediumLen = Math.round(M * 0.17)
+  const tol = Math.round(M * 0.012)
+  /** Staircase edges: a long line with a run of short parallel ridges (the steps) beside it */
+  function stepsBeside(l: Line, horizWall: boolean, cross: Float32Array): number {
+    const reach = Math.round(M * 0.03)
+    const inner = Math.max(3, Math.round(M * 0.004))
+    let best = 0
+    for (const side of [-1, 1]) {
+      let runs = 0
+      let prev = false
+      let gapLen = 99
+      for (let i = Math.round(l[1]); i <= l[2]; i++) {
+        let hit = 0
+        for (let d = inner; d < inner + reach; d++) {
+          const c = Math.round(l[0]) + side * d
+          if (c < 0 || c >= (horizWall ? H : W)) continue
+          if ((horizWall ? cross[c * W + i] : cross[i * W + c]) > T) hit++
+        }
+        const on = hit >= reach * 0.6
+        if (on && !prev && gapLen >= 3) runs++
+        gapLen = on ? 0 : gapLen + 1
+        prev = on
+      }
+      best = Math.max(best, runs)
+    }
+    return best
+  }
+  const steps = Math.max(8, Math.round(M * 0.0065))
+  const typical = typicalBrightness([hs, vs])
+  // a stringer is dimmer than a real wall; a wall that merely borders a staircase stays
+  const stringer = (l: Line, horiz: boolean): boolean =>
+    !oblique && l[5] < typical * 0.9 && stepsBeside(l, horiz, horiz ? Rv : Rh) >= steps
+  for (let i = hs.length - 1; i >= 0; i--) if (stringer(hs[i], true)) hs.splice(i, 1)
+  for (let i = vs.length - 1; i >= 0; i--) if (stringer(vs[i], false)) vs.splice(i, 1)
+  const step = Math.round(M * 0.08)
+  const shift = Math.round(M * 0.02)
+  const jogV = bridgeJogs(hs, vs, step, shift, tol)
+  const jogH = bridgeJogs(vs, hs, step, shift, tol)
+  vs.push(...jogV)
+  hs.push(...jogH)
+
+  dropLoose(hs, vs, shortLen, mediumLen, tol, dimBelow)
+  dropLoose(vs, hs, shortLen, mediumLen, tol, dimBelow)
+
+  return { hs, vs }
+}
+
+function toSegments(w: AxisWalls, back: (x: number, y: number) => [number, number]): WallSegment[] {
   const out: WallSegment[] = []
-  for (const [y, a, b] of hs) out.push({ x1: a, y1: y, x2: b, y2: y })
-  for (const [x, a, b] of vs) out.push({ x1: x, y1: a, x2: x, y2: b })
+  for (const [y, a, b] of w.hs) {
+    const [x1, y1] = back(a, y)
+    const [x2, y2] = back(b, y)
+    out.push({ x1, y1, x2, y2 })
+  }
+  for (const [x, a, b] of w.vs) {
+    const [x1, y1] = back(x, a)
+    const [x2, y2] = back(x, b)
+    out.push({ x1, y1, x2, y2 })
+  }
   return out
+}
+
+/**
+ * Angles (degrees, 9..81) at which many edges line up within a part of the image, apart from
+ * the horizontal/vertical ones. A building drawn at a slant is a strong peak in the gradient
+ * orientation histogram of the tiles it covers, even if it is small next to the rest of the map.
+ */
+export function dominantAngles(g: Float32Array, W: number, H: number): number[] {
+  const tile = Math.max(64, Math.round(Math.max(W, H) / 8))
+  const votes = new Float64Array(90)
+  for (let ty = 0; ty < H; ty += tile)
+    for (let tx = 0; tx < W; tx += tile) {
+      const bins = new Float64Array(90)
+      let mass = 0
+      const y1 = Math.min(H - 1, ty + tile)
+      const x1 = Math.min(W - 1, tx + tile)
+      for (let y = Math.max(1, ty); y < y1; y++)
+        for (let x = Math.max(1, tx); x < x1; x++) {
+          const i = y * W + x
+          const m = Math.hypot(g[i + 1] - g[i - 1], g[i + W] - g[i - W])
+          if (m < 20) continue
+          let a = ((Math.atan2(g[i + W] - g[i - W], g[i + 1] - g[i - 1]) * 180) / Math.PI) % 90
+          if (a < 0) a += 90
+          bins[Math.floor(a) % 90] += m
+          mass += m
+        }
+      if (mass < tile * tile * 0.5) continue
+      const sm = new Float64Array(90)
+      for (let i = 0; i < 90; i++)
+        for (let d = -2; d <= 2; d++) sm[i] += bins[(i + d + 90) % 90] * (3 - Math.abs(d))
+      const median = [...sm].sort((p, q) => p - q)[45]
+      for (let i = 9; i <= 81; i++) {
+        let top = true
+        for (let d = -5; d <= 5; d++) if (sm[(i + d + 90) % 90] > sm[i]) top = false
+        if (top && sm[i] > median * 2.2) votes[i] += sm[i] / median
+      }
+    }
+  // merge nearby votes, strongest first
+  const peaks: number[] = []
+  const order = [...votes.keys()].filter((i) => votes[i] > 0).sort((p, q) => votes[q] - votes[p])
+  for (const i of order)
+    if (peaks.every((q) => Math.min(Math.abs(q - i), 90 - Math.abs(q - i)) > 6)) peaks.push(i)
+  return peaks.slice(0, 3)
+}
+
+/** The image as seen turned by `deg` degrees; returns it with the map from its coordinates back. */
+function rotated(
+  g: Float32Array,
+  W: number,
+  H: number,
+  deg: number
+): { img: Float32Array; w: number; h: number; back: (x: number, y: number) => [number, number] } {
+  const t = (deg * Math.PI) / 180
+  const c = Math.cos(t)
+  const s = Math.sin(t)
+  const w = Math.ceil(Math.abs(W * c) + Math.abs(H * s))
+  const h = Math.ceil(Math.abs(W * s) + Math.abs(H * c))
+  const img = new Float32Array(w * h)
+  const cx = W / 2
+  const cy = H / 2
+  const cu = w / 2
+  const cv = h / 2
+  for (let v = 0; v < h; v++)
+    for (let u = 0; u < w; u++) {
+      const du = u - cu
+      const dv = v - cv
+      let x = cx + du * c - dv * s
+      let y = cy + du * s + dv * c
+      x = x < 0 ? 0 : x > W - 1.001 ? W - 1.001 : x
+      y = y < 0 ? 0 : y > H - 1.001 ? H - 1.001 : y
+      const x0 = Math.floor(x)
+      const y0 = Math.floor(y)
+      const fx = x - x0
+      const fy = y - y0
+      const i = y0 * W + x0
+      img[v * w + u] =
+        g[i] * (1 - fx) * (1 - fy) +
+        g[i + 1] * fx * (1 - fy) +
+        g[i + W] * (1 - fx) * fy +
+        g[i + W + 1] * fx * fy
+    }
+  return {
+    img,
+    w,
+    h,
+    back: (u, v) => {
+      const du = u - cu
+      const dv = v - cv
+      return [cx + du * c - dv * s, cy + du * s + dv * c]
+    },
+  }
+}
+
+/**
+ * Wall detection: finds long, bright, thin straight bands (beams/walls) in a grayscale image.
+ * Horizontal and vertical walls come first; buildings drawn at a slant are found by turning the
+ * image to each dominant angle and running the same detector. Coordinates are image pixels.
+ */
+export function detectWalls(g: Float32Array, W: number, H: number, p: DetectParams): WallSegment[] {
+  const M = Math.max(W, H)
+  const out = toSegments(axisWalls(g, W, H, p, M), (x, y) => [x, y])
+  if (p.oblique === false) return out
+  for (const deg of dominantAngles(g, W, H)) {
+    const r = rotated(g, W, H, deg)
+    const found = toSegments(axisWalls(r.img, r.w, r.h, p, M, true), r.back)
+    // a wrong angle gives ghosts of walls already found; keep only what is new
+    const reach = M * 0.045
+    out.push(
+      ...found.filter(
+        (f) =>
+          !out.some(
+            (o) => distToSegment(f.x1, f.y1, o) < reach && distToSegment(f.x2, f.y2, o) < reach
+          )
+      )
+    )
+  }
+  return out
+}
+
+function distToSegment(x: number, y: number, s: WallSegment): number {
+  const dx = s.x2 - s.x1
+  const dy = s.y2 - s.y1
+  const len2 = dx * dx + dy * dy
+  const u = len2 === 0 ? 0 : Math.max(0, Math.min(1, ((x - s.x1) * dx + (y - s.y1) * dy) / len2))
+  return Math.hypot(x - (s.x1 + u * dx), y - (s.y1 + u * dy))
 }

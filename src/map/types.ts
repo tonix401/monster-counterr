@@ -16,6 +16,8 @@ export interface DetectParams {
   sensitivity: number
   minLen: number
   gap: number
+  /** Widest wall, as a fraction of the longer map side; parallel edges closer than this become one line */
+  thickness?: number
 }
 
 export interface Room {

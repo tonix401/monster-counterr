@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { fuzzySort } from './DropdownInputHelper'
 import './DropdownInput.css'
@@ -7,6 +7,19 @@ import { useTerm } from '@/store/useMonsterStore'
 type DropdownOption = {
   value: string
   label: string
+}
+
+// Text the input should display for the given selected value, or undefined when
+// the value matches no option (the input then keeps whatever it currently shows).
+const getSelectedLabel = (
+  value: string | undefined,
+  options: DropdownOption[],
+  showValueOnSelection: boolean
+): string | undefined => {
+  if (value === undefined) return undefined
+  const selectedOption = options.find((opt) => opt.value === value)
+  if (!selectedOption) return undefined
+  return showValueOnSelection ? selectedOption.label : ''
 }
 
 type DropdownInputProps = {
@@ -35,7 +48,12 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   // #region State & Refs
   const [isOpen, setIsOpen] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
-  const [inputValue, setInputValue] = useState('')
+  const [inputValue, setInputValue] = useState(
+    () => getSelectedLabel(value, options, showValueOnSelection) ?? ''
+  )
+  // Props the input text was last synced from. Compared during render so the
+  // input follows value/options/showValueOnSelection changes without an effect.
+  const [syncedProps, setSyncedProps] = useState({ value, options, showValueOnSelection })
   const [isMouseOver, setIsMouseOver] = useState(false)
   const [currArrayIndex, setHighlightedIndex] = useState(0) // Absolute index in allFilteredOptions
   const [scrollOffset, setScrollOffset] = useState(0) // Start index of visible window
@@ -46,23 +64,26 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   const isScrollingRef = useRef<boolean>(false)
   const t = useTerm()
 
-  // Sync value prop to input display
-  useEffect(() => {
-    if (value !== undefined) {
-      const selectedOption = options.find((opt) => opt.value === value)
-      if (selectedOption) {
-        setInputValue(showValueOnSelection ? selectedOption.label : '')
-      }
+  if (
+    syncedProps.value !== value ||
+    syncedProps.options !== options ||
+    syncedProps.showValueOnSelection !== showValueOnSelection
+  ) {
+    setSyncedProps({ value, options, showValueOnSelection })
+    const selectedLabel = getSelectedLabel(value, options, showValueOnSelection)
+    if (selectedLabel !== undefined) {
+      setInputValue(selectedLabel)
     }
-  }, [value, options, showValueOnSelection])
-
-  const updatePortalStyle = () => {
-    const rect = inputRef.current?.getBoundingClientRect()
-    setPortalStyle(rect ? { top: rect.bottom + 3, left: rect.left, width: rect.width } : null)
   }
 
+  // Measures the input's position. Only called from event handlers and the
+  // resize listener, never from an effect body.
+  const updatePortalStyle = useCallback(() => {
+    const rect = inputRef.current?.getBoundingClientRect()
+    setPortalStyle(rect ? { top: rect.bottom + 3, left: rect.left, width: rect.width } : null)
+  }, [])
+
   useLayoutEffect(() => {
-    updatePortalStyle()
     if (!isOpen) return
     if (containerRef.current) {
       setContainerHeight(containerRef.current.offsetHeight)
@@ -71,10 +92,9 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
 
   useEffect(() => {
     if (!isOpen) return
-    updatePortalStyle()
     window.addEventListener('resize', updatePortalStyle)
     return () => window.removeEventListener('resize', updatePortalStyle)
-  }, [isOpen])
+  }, [isOpen, updatePortalStyle])
 
   const allSortedOptions = fuzzySort(options, inputValue)
   const visibleOptions = allSortedOptions.slice(scrollOffset, scrollOffset + maxEntries)
@@ -85,10 +105,13 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     setInputValue(value)
+    if (value.length > 0 && !isOpen) updatePortalStyle()
     setIsOpen(value.length > 0)
     setHighlightedIndex(0)
     setScrollOffset(0)
-    onChange && onChange(value)
+    if (onChange) {
+      onChange(value)
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -125,18 +148,29 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   }
 
   const handleOptionSelected = (option: DropdownOption) => {
-    showValueOnSelection ? setInputValue(option.label) : setInputValue('')
+    if (showValueOnSelection) {
+      setInputValue(option.label)
+    } else {
+      setInputValue('')
+    }
     setIsOpen(false)
-    onChange && onChange(option.value)
-    onSelect && onSelect(option.value)
+    if (onChange) {
+      onChange(option.value)
+    }
+    if (onSelect) {
+      onSelect(option.value)
+    }
   }
 
   const handleClearValue = () => {
     setInputValue('')
-    onChange && onChange('')
+    if (onChange) {
+      onChange('')
+    }
   }
 
   const handleFocus = () => {
+    updatePortalStyle()
     setIsOpen(true)
     handleClearValue()
     setIsFocused(true)

@@ -6,6 +6,7 @@ import MapCanvas from './MapCanvas'
 import {
   BlueprintIcon,
   CircleIcon,
+  PolygonIcon,
   CloseIcon,
   EraserIcon,
   FitIcon,
@@ -70,6 +71,7 @@ const TOOL_GROUPS: Tool[][] = [
       key: 'c',
       icon: <CircleIcon />,
     },
+    { mode: 'poly', label: 'mapModePoly', hint: 'mapHintPoly', key: 'g', icon: <PolygonIcon /> },
   ],
   [{ mode: 'erase', label: 'mapModeErase', hint: 'mapHintErase', key: 'e', icon: <EraserIcon /> }],
 ]

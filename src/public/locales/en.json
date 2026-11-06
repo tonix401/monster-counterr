@@ -170,6 +170,8 @@
     "mapModeRect": "Rectangle",
     "mapModeTriangle": "Triangle",
     "mapModeCircle": "Circle",
+    "mapModePoly": "Polygon",
+    "mapHintPoly": "Click to place corners. Click the first corner, double-click or press Enter to finish; Backspace undoes the last corner, Esc cancels.",
     "mapModePan": "Pan",
     "mapHintSelect": "Click a line or shape to select it, drag to move it, drag the handles to resize it, press Delete to remove it. Detected walls can be selected too. Turn a shape with the round handle above it (Shift snaps to 15°).",
     "mapHintShape": "Drag to draw; a circle grows out from its centre. Hold Shift for a square.",

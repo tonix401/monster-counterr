@@ -170,6 +170,8 @@
     "mapModeRect": "Rechteck",
     "mapModeTriangle": "Dreieck",
     "mapModeCircle": "Kreis",
+    "mapModePoly": "Vieleck",
+    "mapHintPoly": "Klicken, um Ecken zu setzen. Erste Ecke anklicken, Doppelklick oder Enter schließt ab; Rücktaste nimmt die letzte Ecke zurück, Esc bricht ab.",
     "mapModePan": "Verschieben",
     "mapHintSelect": "Linie oder Form anklicken, um sie auszuwählen; ziehen verschiebt sie, an den Griffen ändert man die Größe, Entf löscht sie. Auch erkannte Wände lassen sich auswählen. Formen dreht man am runden Griff darüber (Umschalt rastet in 15°-Schritten ein).",
     "mapHintShape": "Ziehen zum Zeichnen; ein Kreis wächst von der Mitte aus. Mit Umschalt wird es ein Quadrat.",

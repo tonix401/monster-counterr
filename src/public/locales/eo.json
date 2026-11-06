@@ -170,6 +170,8 @@
     "mapModeRect": "Rektangulo",
     "mapModeTriangle": "Triangulo",
     "mapModeCircle": "Cirklo",
+    "mapModePoly": "Plurangulo",
+    "mapHintPoly": "Alklaku por meti angulojn. Alklaku la unuan angulon, duoble alklaku aŭ premi Enter por fini; Retropaŝo malfaras la lastan angulon, Esc nuligas.",
     "mapModePan": "Ŝovi",
     "mapHintSelect": "Alklaku linion aŭ formon por elekti ĝin, treŝovu por movi, treŝovu la tenilojn por ŝanĝi grandecon, premu Del por forigi. Ankaŭ trovitaj muroj estas elekteblaj. Turnu formon per la ronda tenilo super ĝi (Shift algluas je 15°).",
     "mapHintShape": "Treŝovu por desegni; cirklo kreskas de sia centro. Tenu Shift por kvadrato.",

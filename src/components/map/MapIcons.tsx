@@ -45,6 +45,7 @@ export const EraserIcon = icon(
 export const SelectIcon = icon(<path d="m5 3 14 7-6 2-2 6z" />)
 export const RectIcon = icon(<rect x="4" y="5" width="16" height="14" rx="1" />)
 export const TriangleIcon = icon(<path d="M12 4 21 19H3z" />)
+export const PolygonIcon = icon(<path d="M7 4h10l4 8-5 8H8l-5-7z" />)
 export const CircleIcon = icon(<circle cx="12" cy="12" r="8" />)
 export const PanIcon = icon(
   <>

@@ -53,6 +53,9 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
   const vec = useRef<HTMLCanvasElement>(null)
   const layers = useRef<Layers | null>(null)
   const draft = useRef<Draft | null>(null)
+  /** Corners placed so far of the polygon being drawn, and where the pointer is now */
+  const poly = useRef<[number, number][]>([])
+  const polyAt = useRef<[number, number] | null>(null)
   const drag = useRef<Drag | null>(null)
   const painting = useRef<boolean | null>(null)
   const lastPainted = useRef(0)
@@ -144,6 +147,23 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       ctx.lineWidth = 2.5 * k + 1
       trace(opSegments(cur.op))
     }
+    const pts = poly.current
+    if (pts.length) {
+      ctx.strokeStyle = '#ff9a3c'
+      ctx.lineWidth = 2.5 * k + 1
+      ctx.beginPath()
+      ctx.moveTo(pts[0][0], pts[0][1])
+      for (const [x, y] of pts.slice(1)) ctx.lineTo(x, y)
+      if (polyAt.current) ctx.lineTo(polyAt.current[0], polyAt.current[1])
+      ctx.stroke()
+      ctx.fillStyle = '#ff9a3c'
+      pts.forEach(([x, y], i) => {
+        ctx.beginPath()
+        // the first corner is bigger: clicking it closes the polygon
+        ctx.arc(x, y, (i === 0 ? 5.5 : 3.5) * k, 0, Math.PI * 2)
+        ctx.fill()
+      })
+    }
     ctx.restore()
   }
 
@@ -228,6 +248,27 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     return () => ro.disconnect()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // a half-drawn polygon is dropped when the tool changes; Enter finishes it, Escape drops it,
+  // Backspace takes back the last corner
+  useEffect(() => {
+    cancelPoly()
+    const onKey = (e: KeyboardEvent): void => {
+      if (useMapStore.getState().mode !== 'poly' || !poly.current.length) return
+      if (e.key === 'Enter') finishPoly()
+      else if (e.key === 'Escape') cancelPoly()
+      else if (e.key === 'Backspace') {
+        poly.current = poly.current.slice(0, -1)
+        polyAt.current = null
+        draw()
+      } else return
+      e.preventDefault()
+      e.stopImmediatePropagation()
+    }
+    window.addEventListener('keydown', onKey, true)
+    return () => window.removeEventListener('keydown', onKey, true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode])
 
   // a new map starts unzoomed
   useEffect(() => setView({ scale: 1, x: 0, y: 0 }), [width, height])
@@ -423,6 +464,20 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       s.beginGesture()
       drag.current = { kind: 'erase' }
       eraseAt(x, y)
+    } else if (s.mode === 'poly') {
+      const pts = poly.current
+      const r = 10 * unit()
+      if (pts.length >= 3 && Math.hypot(x - pts[0][0], y - pts[0][1]) <= r) return finishPoly()
+      const near = e.shiftKey
+        ? null
+        : nearestOnWalls(x, y, Math.max(8, Math.max(s.width, s.height) * 0.012))
+      const [px, py] = near ?? [x, y]
+      const last = pts[pts.length - 1]
+      // the second click of a double click lands on the same spot
+      if (last && Math.hypot(px - last[0], py - last[1]) < 3 * unit()) return
+      pts.push([px, py])
+      polyAt.current = [px, py]
+      draw()
     } else {
       draft.current = {
         op: shapeFor(s.mode, x, y, x, y, e.shiftKey, s.width, s.height),
@@ -431,6 +486,20 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       }
       draw()
     }
+  }
+
+  const finishPoly = (): void => {
+    const pts = poly.current
+    poly.current = []
+    polyAt.current = null
+    if (pts.length >= 3) useMapStore.getState().addOp({ type: 'poly', pts })
+    draw()
+  }
+
+  const cancelPoly = (): void => {
+    poly.current = []
+    polyAt.current = null
+    draw()
   }
 
   const onPointerMove = (e: React.PointerEvent): void => {
@@ -457,6 +526,11 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     if (!analysis) return
     const [x, y] = toWork(e)
     const s = useMapStore.getState()
+    if (s.mode === 'poly' && poly.current.length) {
+      polyAt.current = [x, y]
+      draw()
+      return
+    }
     const cur = draft.current
     if (cur) {
       draft.current = {
@@ -492,7 +566,9 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     const c = draft.current
     if (!c) return
     draft.current = null
-    const big = Math.max(Math.abs(c.op.x2 - c.op.x1), Math.abs(c.op.y2 - c.op.y1))
+    // a drag draws a line or a box; polygons are clicked together instead
+    const big =
+      c.op.type === 'poly' ? 0 : Math.max(Math.abs(c.op.x2 - c.op.x1), Math.abs(c.op.y2 - c.op.y1))
     if (big < 6) return draw()
     useMapStore.getState().addOp(c.op)
   }
@@ -520,6 +596,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endPointer}
+        onDoubleClick={() => mode === 'poly' && finishPoly()}
         onPointerCancel={endPointer}
         onContextMenu={(e) => e.preventDefault()}
         onPointerLeave={() => {

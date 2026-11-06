@@ -170,6 +170,8 @@
     "mapModeRect": "四角形",
     "mapModeTriangle": "三角形",
     "mapModeCircle": "円",
+    "mapModePoly": "多角形",
+    "mapHintPoly": "クリックで頂点を置きます。最初の頂点をクリック、ダブルクリック、または Enter で完了、Backspace で直前の頂点を戻し、Esc で中止します。",
     "mapModePan": "パン",
     "mapHintSelect": "線や図形をクリックして選択し、ドラッグで移動、ハンドルで大きさ変更、Delete で削除します。検出された壁も選択できます。図形は上の丸いハンドルで回転できます（Shift で15°刻み）。",
     "mapHintShape": "ドラッグして描画。円は中心から広がります。Shift で正方形になります。",

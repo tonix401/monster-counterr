@@ -36,8 +36,16 @@ export const MAX_ZOOM = 12
 /** A line, rectangle or circle being dragged out, before it becomes part of the map */
 type Draft = { mode: MapMode; sx: number; sy: number; box: WallSegment }
 type Drag =
-  | { kind: 'node'; id: number; g0: Graph }
-  | { kind: 'edge'; id: number; sx: number; sy: number; g0: Graph; ends: WallSegment }
+  | { kind: 'node'; id: number; sx: number; sy: number; moved: boolean; g0: Graph }
+  | {
+      kind: 'edge'
+      id: number
+      sx: number
+      sy: number
+      moved: boolean
+      g0: Graph
+      ends: WallSegment
+    }
   | { kind: 'erase' }
   | { kind: 'pan'; cx: number; cy: number; view: View }
 
@@ -502,11 +510,18 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     const s = useMapStore.getState()
     if (e.button === 2 && ['wall', 'rect', 'circle', 'poly'].includes(s.mode) && !space.current) {
       // while drawing, the right button moves a node
-      const hit = hitTest(s.graph, ...toWork(e), tol())
+      const pos = { sx: toWork(e)[0], sy: toWork(e)[1] }
+      const hit = hitTest(s.graph, pos.sx, pos.sy, tol())
       if (hit?.kind === 'node') {
         e.preventDefault()
         s.beginGesture()
-        drag.current = { kind: 'node', id: hit.node.id, g0: s.graph }
+        drag.current = {
+          kind: 'node',
+          id: hit.node.id,
+          ...pos,
+          moved: false,
+          g0: s.graph,
+        }
         return
       }
     }
@@ -540,11 +555,19 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       s.beginGesture()
       if (hit.kind === 'node') {
         s.select({ kind: 'node', id: hit.node.id })
-        drag.current = { kind: 'node', id: hit.node.id, g0: s.graph }
+        drag.current = { kind: 'node', id: hit.node.id, sx: x, sy: y, moved: false, g0: s.graph }
       } else {
         const ends = edgeEnds(s.graph, hit.edge.id)!
         s.select({ kind: 'edge', id: hit.edge.id })
-        drag.current = { kind: 'edge', id: hit.edge.id, sx: x, sy: y, g0: s.graph, ends }
+        drag.current = {
+          kind: 'edge',
+          id: hit.edge.id,
+          sx: x,
+          sy: y,
+          moved: false,
+          g0: s.graph,
+          ends,
+        }
       }
     } else if (s.mode === 'erase') {
       s.beginGesture()
@@ -633,6 +656,11 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       draw()
       return
     }
+    if ((dg?.kind === 'node' || dg?.kind === 'edge') && !dg.moved) {
+      // a click or a shaky hand is not a move: nothing changes and no undo step is made
+      if (Math.hypot(x - dg.sx, y - dg.sy) < 4 * unit()) return
+      dg.moved = true
+    }
     if (dg?.kind === 'node') {
       // joins a node close by (Shift: stays free); the lines on it follow
       const t = e.shiftKey ? null : nearestOther(dg.g0, dg.id, x, y, tol())
@@ -669,7 +697,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     const dg = drag.current
     drag.current = null
     const s = useMapStore.getState()
-    if (dg && (dg.kind === 'node' || dg.kind === 'edge')) {
+    if (dg && (dg.kind === 'node' || dg.kind === 'edge') && dg.moved) {
       // a moved node that was let go on another one joins it, within the same undo step
       const ids =
         dg.kind === 'node'

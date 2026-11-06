@@ -213,6 +213,7 @@ export const useMapStore = create<MapState>()((set, get) => {
 
   function edit(graph: Graph, live = false): void {
     const s = get()
+    if (graph === s.graph) return // nothing changed, so there is nothing to undo
     const history = gesture && !gestureFresh ? s.history : [...s.history, s.graph]
     gestureFresh = false
     const sel = s.selected

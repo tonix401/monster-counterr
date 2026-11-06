@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { detectWalls } from './detectWalls'
+import { detectWalls, splitAtJunctions } from './detectWalls'
 import { dropSlivers, mergeDoubles, rejectStacks, type Line } from './wallFilters'
 
 const W = 800
@@ -132,5 +132,46 @@ describe('wall filters', () => {
     const out = dropSlivers([line(100, 0, 400), line(130, 50, 250)], 50)
     expect(out).toHaveLength(1)
     expect(out[0][0]).toBe(100)
+  })
+})
+
+describe('splitAtJunctions', () => {
+  it('cuts a wall where another wall crosses or ends on it', () => {
+    const out = splitAtJunctions(
+      [
+        { x1: 0, y1: 100, x2: 400, y2: 100 },
+        { x1: 100, y1: 0, x2: 100, y2: 100 }, // ends on it (T)
+        { x1: 300, y1: 50, x2: 300, y2: 200 }, // crosses it
+      ],
+      800
+    )
+    const horiz = out.filter((s) => s.y1 === s.y2)
+    expect(horiz.map((s) => [s.x1, s.x2])).toEqual([
+      [0, 100],
+      [100, 300],
+      [300, 400],
+    ])
+    expect(out.filter((s) => s.x1 === s.x2)).toHaveLength(3) // the crossing wall is cut too
+  })
+
+  it('trims a short stub poking out past a wall that runs on', () => {
+    const out = splitAtJunctions(
+      [
+        { x1: 0, y1: 100, x2: 400, y2: 100 },
+        { x1: 200, y1: 20, x2: 200, y2: 112 }, // 12px overhang below the wall
+      ],
+      800
+    )
+    const vert = out.filter((s) => s.x1 === s.x2)
+    expect(vert).toHaveLength(1)
+    expect(vert[0].y2).toBeCloseTo(100)
+  })
+
+  it('leaves parallel and free-standing walls whole', () => {
+    const segs = [
+      { x1: 0, y1: 100, x2: 400, y2: 100 },
+      { x1: 0, y1: 160, x2: 400, y2: 160 },
+    ]
+    expect(splitAtJunctions(segs, 800)).toEqual(segs)
   })
 })

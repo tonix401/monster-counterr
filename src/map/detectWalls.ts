@@ -418,7 +418,7 @@ function rotated(
 export function detectWalls(g: Float32Array, W: number, H: number, p: DetectParams): WallSegment[] {
   const M = Math.max(W, H)
   const out = toSegments(axisWalls(g, W, H, p, M), (x, y) => [x, y])
-  if (p.oblique === false) return out
+  if (p.oblique === false) return splitAtJunctions(out, M)
   for (const deg of dominantAngles(g, W, H)) {
     const r = rotated(g, W, H, deg)
     const found = toSegments(axisWalls(r.img, r.w, r.h, p, M, true), r.back)
@@ -432,6 +432,66 @@ export function detectWalls(g: Float32Array, W: number, H: number, p: DetectPara
           )
       )
     )
+  }
+  return splitAtJunctions(out, M)
+}
+
+/**
+ * Cuts every wall where another wall meets or crosses it, so a room's side can be removed
+ * without taking the rest of the building's line with it. Ends that stop just short of a wall
+ * (within `tol`) count as meeting it. Pieces never get shorter than `minPiece`.
+ */
+export function splitAtJunctions(segs: WallSegment[], M: number): WallSegment[] {
+  const tol = M * 0.012
+  const minPiece = M * 0.01
+  const overhang = M * 0.025
+  const out: WallSegment[] = []
+  for (const a of segs) {
+    const dx = a.x2 - a.x1
+    const dy = a.y2 - a.y1
+    const len = Math.hypot(dx, dy)
+    if (len < minPiece * 2) {
+      out.push(a)
+      continue
+    }
+    const ux = dx / len
+    const uy = dy / len
+    const cuts: { t: number; through: boolean }[] = []
+    for (const b of segs) {
+      if (b === a) continue
+      const ex = b.x2 - b.x1
+      const ey = b.y2 - b.y1
+      const blen = Math.hypot(ex, ey)
+      if (blen === 0) continue
+      const vx = ex / blen
+      const vy = ey / blen
+      const det = ux * vy - uy * vx
+      if (Math.abs(det) < 0.2) continue // parallel walls never meet
+      // a.p1 + t*u = b.p1 + s*v
+      const rx = b.x1 - a.x1
+      const ry = b.y1 - a.y1
+      const t = (rx * vy - ry * vx) / det
+      const sb = (rx * uy - ry * ux) / det
+      if (sb < -tol || sb > blen + tol) continue
+      if (t > minPiece && t < len - minPiece) cuts.push({ t, through: sb > tol && sb < blen - tol })
+    }
+    cuts.sort((p, q) => p.t - q.t)
+    const at: number[] = [0]
+    for (const c of cuts) if (c.t - at[at.length - 1] >= minPiece) at.push(c.t)
+    if (len - at[at.length - 1] < minPiece && at.length > 1) at.pop()
+    at.push(len)
+    // a stub poking out past a wall that runs on through is an overhang, not a wall
+    const through = (t: number): boolean => cuts.some((c) => c.through && Math.abs(c.t - t) < 1e-6)
+    if (at.length > 2 && at[1] < overhang && through(at[1])) at.shift()
+    const last = at.length - 2
+    if (last > 0 && len - at[last] < overhang && through(at[last])) at.pop()
+    for (let i = 0; i + 1 < at.length; i++)
+      out.push({
+        x1: a.x1 + ux * at[i],
+        y1: a.y1 + uy * at[i],
+        x2: a.x1 + ux * at[i + 1],
+        y2: a.y1 + uy * at[i + 1],
+      })
   }
   return out
 }

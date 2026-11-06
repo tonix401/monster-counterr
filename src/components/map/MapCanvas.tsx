@@ -7,6 +7,7 @@ import {
   isDrawn,
   moveHandle,
   opSegments,
+  polygonWalls,
   rotateHandle,
   rotateTo,
   squareTo,
@@ -492,7 +493,13 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     const pts = poly.current
     poly.current = []
     polyAt.current = null
-    if (pts.length >= 3) useMapStore.getState().addOp({ type: 'poly', pts })
+    if (pts.length >= 3) {
+      // every side becomes its own line, all within one undo step
+      const s = useMapStore.getState()
+      s.beginGesture()
+      for (const w of polygonWalls(pts)) s.addOp(w)
+      s.endGesture()
+    }
     draw()
   }
 
@@ -566,9 +573,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     const c = draft.current
     if (!c) return
     draft.current = null
-    // a drag draws a line or a box; polygons are clicked together instead
-    const big =
-      c.op.type === 'poly' ? 0 : Math.max(Math.abs(c.op.x2 - c.op.x1), Math.abs(c.op.y2 - c.op.y1))
+    const big = Math.max(Math.abs(c.op.x2 - c.op.x1), Math.abs(c.op.y2 - c.op.y1))
     if (big < 6) return draw()
     useMapStore.getState().addOp(c.op)
   }

@@ -8,11 +8,11 @@ import {
   opSegments,
   rotateHandle,
   rotateTo,
-  scaleOp,
   translateOp,
-  triangleToPoly,
+  polygonWalls,
+  triangleWalls,
 } from './shapes'
-import type { PolyOp, ShapeOp, WallOp } from './types'
+import type { ShapeOp, WallOp } from './types'
 
 const rect: ShapeOp = { type: 'shape', kind: 'rect', id: 1, x1: 10, y1: 10, x2: 50, y2: 30 }
 
@@ -41,15 +41,15 @@ describe('shapes', () => {
     })
   })
 
-  it('converts a saved triangle to the same polygon', () => {
-    expect(triangleToPoly({ x1: 50, y1: 30, x2: 10, y2: 10 }).pts).toEqual([
-      [30, 10],
-      [50, 30],
-      [10, 30],
+  it('converts a saved triangle to its three lines', () => {
+    expect(triangleWalls({ x1: 50, y1: 30, x2: 10, y2: 10 })).toEqual([
+      { type: 'wall', x1: 30, y1: 10, x2: 50, y2: 30 },
+      { type: 'wall', x1: 50, y1: 30, x2: 10, y2: 30 },
+      { type: 'wall', x1: 10, y1: 30, x2: 30, y2: 10 },
     ])
-    const turned = triangleToPoly({ x1: 0, y1: 0, x2: 20, y2: 20 }, Math.PI)
-    expect(turned.pts[0][0]).toBeCloseTo(10)
-    expect(turned.pts[0][1]).toBeCloseTo(20)
+    const turned = triangleWalls({ x1: 0, y1: 0, x2: 20, y2: 20 }, Math.PI)
+    expect(turned[0].x1).toBeCloseTo(10)
+    expect(turned[0].y1).toBeCloseTo(20)
   })
 
   it('rotates a shape about its centre', () => {
@@ -82,28 +82,20 @@ describe('shapes', () => {
     expect(nh[2][1]).toBeCloseTo(h[2][1] + 3)
   })
 
-  it('treats a polygon as a closed outline of its corners', () => {
-    const poly: PolyOp = {
-      type: 'poly',
-      id: 3,
-      pts: [
-        [0, 0],
-        [40, 0],
-        [40, 30],
-        [10, 50],
-      ],
-    }
-    expect(opSegments(poly)).toHaveLength(4)
-    expect(opSegments(poly)[3]).toMatchObject({ x1: 10, y1: 50, x2: 0, y2: 0 })
-    expect(hitTest(20, 1, 3, [poly], [])).toMatchObject({ src: 'op', op: { id: 3 } })
-    expect(translateOp(poly, 5, 5).pts[0]).toEqual([5, 5])
-    expect(handles(poly)).toHaveLength(4)
-    expect(moveHandle(poly, 2, 60, 60).pts[2]).toEqual([60, 60])
-    expect(moveHandle(poly, 2, 60, 60).pts[1]).toEqual([40, 0])
-    expect(scaleOp(poly, 2, 0.5).pts[1]).toEqual([80, 0])
-    const w = rasterizeWalls(100, 100, [], [poly])
-    expect(w[0 * 100 + 20]).toBe(1)
-    expect(w[10 * 100 + 20]).toBe(0)
+  it('splits a polygon into one independent line per side', () => {
+    const walls = polygonWalls([
+      [0, 0],
+      [40, 0],
+      [40, 30],
+      [10, 50],
+    ])
+    expect(walls).toHaveLength(4)
+    expect(walls[3]).toEqual({ type: 'wall', x1: 10, y1: 50, x2: 0, y2: 0 })
+    // each side can be picked, moved and resized without touching the others
+    const sides = walls.map((w, i) => ({ ...w, id: i + 1 }))
+    expect(hitTest(20, 1, 3, sides, [])).toMatchObject({ src: 'op', op: { id: 1 } })
+    expect(moveHandle(sides[1], 1, 60, 60)).toMatchObject({ x2: 60, y2: 60 })
+    expect(sides[2]).toMatchObject({ x1: 40, y1: 30 })
   })
 
   it('rasterizes shapes as walls and hides cut detected walls', () => {

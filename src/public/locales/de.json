@@ -168,7 +168,6 @@
     "mapPanelClose": "Panel schließen",
     "mapModeSelect": "Auswählen und verschieben",
     "mapModeRect": "Rechteck",
-    "mapModeTriangle": "Dreieck",
     "mapModeCircle": "Kreis",
     "mapModePoly": "Vieleck",
     "mapHintPoly": "Klicken, um Ecken zu setzen. Erste Ecke anklicken, Doppelklick oder Enter schließt ab; Rücktaste nimmt die letzte Ecke zurück, Esc bricht ab.",

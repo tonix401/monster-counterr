@@ -1,4 +1,4 @@
-import type { EraseOp, MapOp, PolyOp, ShapeKind, ShapeOp, WallOp, WallSegment } from './types'
+import type { EraseOp, MapOp, PolyOp, ShapeOp, WallOp, WallSegment } from './types'
 
 export type DrawnOp = WallOp | ShapeOp | PolyOp
 
@@ -27,19 +27,13 @@ export function opSegments(op: DrawnOp): WallSegment[] {
           [x2, y2],
           [x1, y2],
         ]
-      : op.kind === 'tri'
-        ? [
-            [(x1 + x2) / 2, y1],
-            [x2, y2],
-            [x1, y2],
-          ]
-        : Array.from({ length: ELLIPSE_STEPS }, (_, i) => {
-            const a = (i / ELLIPSE_STEPS) * Math.PI * 2
-            return [
-              (x1 + x2) / 2 + (Math.cos(a) * (x2 - x1)) / 2,
-              (y1 + y2) / 2 + (Math.sin(a) * (y2 - y1)) / 2,
-            ] as [number, number]
-          })
+      : Array.from({ length: ELLIPSE_STEPS }, (_, i) => {
+          const a = (i / ELLIPSE_STEPS) * Math.PI * 2
+          return [
+            (x1 + x2) / 2 + (Math.cos(a) * (x2 - x1)) / 2,
+            (y1 + y2) / 2 + (Math.sin(a) * (y2 - y1)) / 2,
+          ] as [number, number]
+        })
   const pts = op.rot
     ? poly.map((p) => turn(p[0], p[1], (x1 + x2) / 2, (y1 + y2) / 2, op.rot!))
     : poly
@@ -166,8 +160,6 @@ export function moveHandle<T extends DrawnOp>(op: T, index: number, x: number, y
   return { ...op, x1: cx - hw, y1: cy - hh, x2: cx + hw, y2: cy + hh }
 }
 
-export const SHAPE_KINDS: ShapeKind[] = ['rect', 'tri', 'circle']
-
 /** Forces a drag box to a square (Shift while drawing a shape). */
 export function squareTo(x1: number, y1: number, x2: number, y2: number): [number, number] {
   const d = Math.max(Math.abs(x2 - x1), Math.abs(y2 - y1))
@@ -264,4 +256,21 @@ export function scaleOp<T extends Exclude<MapOp, EraseOp>>(op: T, fx: number, fy
   if (op.type === 'poly')
     return { ...op, pts: op.pts.map(([x, y]) => [x * fx, y * fy] as [number, number]) }
   return { ...op, x1: op.x1 * fx, y1: op.y1 * fy, x2: op.x2 * fx, y2: op.y2 * fy }
+}
+
+/** Older files hold triangles as a box; this is the same triangle as a polygon. */
+export function triangleToPoly(box: WallSegment, rot = 0): PolyOp {
+  const x1 = Math.min(box.x1, box.x2)
+  const x2 = Math.max(box.x1, box.x2)
+  const y1 = Math.min(box.y1, box.y2)
+  const y2 = Math.max(box.y1, box.y2)
+  const pts: [number, number][] = [
+    [(x1 + x2) / 2, y1],
+    [x2, y2],
+    [x1, y2],
+  ]
+  return {
+    type: 'poly',
+    pts: rot ? pts.map((p) => turn(p[0], p[1], (x1 + x2) / 2, (y1 + y2) / 2, rot)) : pts,
+  }
 }

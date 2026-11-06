@@ -44,7 +44,7 @@ const ROTATE_OFFSET = 24
 /** `handleAt` index of the rotate handle (the corners are 0 to 3) */
 const ROTATE = 4
 
-const SHAPES: ShapeKind[] = ['rect', 'tri', 'circle']
+const SHAPES: ShapeKind[] = ['rect', 'circle']
 
 /** The map with its fog. In `player` mode it shows exactly what connected players see. */
 const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
@@ -636,7 +636,7 @@ function nearestOnWalls(x: number, y: number, r: number): [number, number] | nul
 
 /**
  * The item being dragged out. Lines snap straight and to nearby walls; Shift turns that off for lines
- * and makes rectangles and triangles square. A circle is centred on the first point.
+ * and makes rectangles square. A circle is centred on the first point.
  */
 function shapeFor(
   mode: string,

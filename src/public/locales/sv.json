@@ -168,7 +168,6 @@
     "mapPanelClose": "Stäng panelen",
     "mapModeSelect": "Markera och flytta",
     "mapModeRect": "Rektangel",
-    "mapModeTriangle": "Triangel",
     "mapModeCircle": "Cirkel",
     "mapModePoly": "Polygon",
     "mapHintPoly": "Klicka för att sätta ut hörn. Klicka på första hörnet, dubbelklicka eller tryck Enter för att avsluta; Backspace tar bort sista hörnet, Esc avbryter.",

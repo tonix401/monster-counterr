@@ -168,7 +168,6 @@
     "mapPanelClose": "パネルを閉じる",
     "mapModeSelect": "選択と移動",
     "mapModeRect": "四角形",
-    "mapModeTriangle": "三角形",
     "mapModeCircle": "円",
     "mapModePoly": "多角形",
     "mapHintPoly": "クリックで頂点を置きます。最初の頂点をクリック、ダブルクリック、または Enter で完了、Backspace で直前の頂点を戻し、Esc で中止します。",

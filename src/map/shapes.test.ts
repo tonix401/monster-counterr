@@ -10,6 +10,7 @@ import {
   rotateTo,
   scaleOp,
   translateOp,
+  triangleToPoly,
 } from './shapes'
 import type { PolyOp, ShapeOp, WallOp } from './types'
 
@@ -18,7 +19,6 @@ const rect: ShapeOp = { type: 'shape', kind: 'rect', id: 1, x1: 10, y1: 10, x2: 
 describe('shapes', () => {
   it('outlines each kind', () => {
     expect(opSegments(rect)).toHaveLength(4)
-    expect(opSegments({ ...rect, kind: 'tri' })).toHaveLength(3)
     expect(opSegments({ ...rect, kind: 'circle' }).length).toBeGreaterThan(16)
   })
 
@@ -39,6 +39,17 @@ describe('shapes', () => {
     expect(moveHandle({ type: 'wall', x1: 0, y1: 0, x2: 5, y2: 5 }, 1, 9, 9)).toMatchObject({
       x2: 9,
     })
+  })
+
+  it('converts a saved triangle to the same polygon', () => {
+    expect(triangleToPoly({ x1: 50, y1: 30, x2: 10, y2: 10 }).pts).toEqual([
+      [30, 10],
+      [50, 30],
+      [10, 30],
+    ])
+    const turned = triangleToPoly({ x1: 0, y1: 0, x2: 20, y2: 20 }, Math.PI)
+    expect(turned.pts[0][0]).toBeCloseTo(10)
+    expect(turned.pts[0][1]).toBeCloseTo(20)
   })
 
   it('rotates a shape about its centre', () => {

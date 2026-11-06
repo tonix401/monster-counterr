@@ -168,7 +168,6 @@
     "mapPanelClose": "关闭面板",
     "mapModeSelect": "选择并移动",
     "mapModeRect": "矩形",
-    "mapModeTriangle": "三角形",
     "mapModeCircle": "圆形",
     "mapModePoly": "多边形",
     "mapHintPoly": "点击放置顶点。点击第一个顶点、双击或按 Enter 完成；Backspace 撤销上一个顶点，Esc 取消。",

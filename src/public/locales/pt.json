@@ -168,7 +168,6 @@
     "mapPanelClose": "Fechar painel",
     "mapModeSelect": "Selecionar e mover",
     "mapModeRect": "Retângulo",
-    "mapModeTriangle": "Triângulo",
     "mapModeCircle": "Círculo",
     "mapModePoly": "Polígono",
     "mapHintPoly": "Clique para colocar os cantos. Clique no primeiro canto, faça duplo clique ou prima Enter para terminar; Backspace desfaz o último canto, Esc cancela.",

@@ -168,7 +168,6 @@
     "mapPanelClose": "Chiudi il pannello",
     "mapModeSelect": "Seleziona e sposta",
     "mapModeRect": "Rettangolo",
-    "mapModeTriangle": "Triangolo",
     "mapModeCircle": "Cerchio",
     "mapModePoly": "Poligono",
     "mapHintPoly": "Clicca per mettere gli angoli. Clicca sul primo angolo, doppio clic o Invio per finire; Backspace toglie l'ultimo angolo, Esc annulla.",

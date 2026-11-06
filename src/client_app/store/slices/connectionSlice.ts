@@ -3,6 +3,7 @@ import type { ClientStore } from '../ClientStore'
 import { Peer, type DataConnection } from 'peerjs'
 import type { MonsterStatus } from '@/types/Monster'
 import { CONNECTION } from '@/constants'
+import { parseMapMessage } from '@/map/mapMessage'
 
 export interface Enemy {
   id: string
@@ -13,6 +14,12 @@ export interface Enemy {
 
 export interface EncounterData {
   enemies: Enemy[]
+}
+
+export interface SharedMap {
+  name: string
+  /** Object URL of the picture; revoked when replaced */
+  url: string
 }
 
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error' | 'name-entry'
@@ -45,6 +52,7 @@ export type ConnectionSlice = {
   connectionStatus: ConnectionStatus
   error: string | null
   data: EncounterData | null
+  map: SharedMap | null
   clientName: string
   hostId: string | null
   setClientName: (name: string) => void
@@ -342,6 +350,24 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
           }
         }
 
+        const mapMessage = parseMapMessage(receivedData)
+        if (mapMessage) {
+          const previous = get().map
+          if (previous) URL.revokeObjectURL(previous.url)
+          set({
+            map:
+              mapMessage.type === 'map'
+                ? {
+                    name: mapMessage.name,
+                    url: URL.createObjectURL(
+                      new Blob([mapMessage.image as BlobPart], { type: 'image/jpeg' })
+                    ),
+                  }
+                : null,
+          })
+          return
+        }
+
         // Validate and update encounter data
         if (validateEncounterData(receivedData)) {
           set({ data: receivedData })
@@ -382,6 +408,7 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
     connectionStatus: 'name-entry',
     error: null,
     data: null,
+    map: null,
     clientName: '',
     hostId: null,
 
@@ -409,8 +436,10 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
       cleanupState.reconnectAttempts = 0
       cleanupState.isReconnecting = false
       cleanupConnection()
+      const map = get().map
+      if (map) URL.revokeObjectURL(map.url)
       const nameEntered = Boolean(get().clientName.trim())
-      set({ connectionStatus: nameEntered ? 'disconnected' : 'name-entry', error: null })
+      set({ connectionStatus: nameEntered ? 'disconnected' : 'name-entry', error: null, map: null })
     },
 
     sendAttack: (monsterId: string) => {

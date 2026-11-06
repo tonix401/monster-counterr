@@ -69,6 +69,7 @@ export const CONNECTION = {
   MAX_CONNECTIONS: 25,
   MAX_MESSAGE_SIZE: 102400, // 100KB
   MAX_MESSAGES_PER_SECOND: 10,
+  MAX_MAP_BYTES: 8 * 1024 * 1024, // 8MB - largest map picture a client accepts from the host
 } as const
 
 export const TIMING = {

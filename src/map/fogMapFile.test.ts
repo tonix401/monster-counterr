@@ -67,6 +67,26 @@ describe('fog_map files', () => {
     expect(bad.walls).toEqual([])
   })
 
+  it('loads a triangle from an older file as a polygon', () => {
+    const back = parseFogMap(
+      JSON.stringify({
+        format: 'fog_map',
+        image: 'x',
+        walls: [{ type: 'shape', kind: 'tri', x1: 10, y1: 10, x2: 50, y2: 30 }],
+      })
+    )!
+    expect(back.walls).toEqual([
+      {
+        type: 'poly',
+        pts: [
+          [30, 10],
+          [50, 30],
+          [10, 30],
+        ],
+      },
+    ])
+  })
+
   it('rejects anything that is not a fog_map', () => {
     expect(parseFogMap('not json')).toBeNull()
     expect(parseFogMap('{"format":"other","image":"x"}')).toBeNull()

@@ -26,7 +26,6 @@ import {
   ShareIcon,
   SlidersIcon,
   TrashIcon,
-  TriangleIcon,
   UndoIcon,
   WallIcon,
   ZoomInIcon,
@@ -57,13 +56,6 @@ const TOOL_GROUPS: Tool[][] = [
   [
     { mode: 'wall', label: 'mapModeWall', hint: 'mapHintWall', key: 'w', icon: <WallIcon /> },
     { mode: 'rect', label: 'mapModeRect', hint: 'mapHintShape', key: 'r', icon: <RectIcon /> },
-    {
-      mode: 'tri',
-      label: 'mapModeTriangle',
-      hint: 'mapHintShape',
-      key: 't',
-      icon: <TriangleIcon />,
-    },
     {
       mode: 'circle',
       label: 'mapModeCircle',

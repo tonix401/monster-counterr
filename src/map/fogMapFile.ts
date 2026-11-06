@@ -1,3 +1,4 @@
+import { triangleToPoly } from './shapes'
 import type { MapOp, MapView } from './types'
 
 /** The `.fog_map` file written by the standalone Map Fog tool; kept compatible with it. */
@@ -79,7 +80,20 @@ export function parseFogMap(text: string): FogMapFile | null {
       })
     } else if (
       op.type === 'shape' &&
-      (op.kind === 'rect' || op.kind === 'tri' || op.kind === 'circle') &&
+      op.kind === 'tri' &&
+      [op.x1, op.y1, op.x2, op.y2].every((v) => typeof v === 'number' && isFinite(v))
+    ) {
+      // the triangle tool is gone; a saved triangle becomes the equivalent polygon
+      const rot = typeof op.rot === 'number' && isFinite(op.rot) ? op.rot : 0
+      walls.push(
+        triangleToPoly(
+          { x1: op.x1 as number, y1: op.y1 as number, x2: op.x2 as number, y2: op.y2 as number },
+          rot
+        )
+      )
+    } else if (
+      op.type === 'shape' &&
+      (op.kind === 'rect' || op.kind === 'circle') &&
       [op.x1, op.y1, op.x2, op.y2].every((v) => typeof v === 'number' && isFinite(v))
     ) {
       walls.push({

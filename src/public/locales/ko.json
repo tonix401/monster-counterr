@@ -168,7 +168,6 @@
     "mapPanelClose": "패널 닫기",
     "mapModeSelect": "선택 및 이동",
     "mapModeRect": "사각형",
-    "mapModeTriangle": "삼각형",
     "mapModeCircle": "원",
     "mapModePoly": "다각형",
     "mapHintPoly": "클릭해서 꼭짓점을 찍습니다. 첫 꼭짓점을 클릭하거나 더블클릭, Enter로 마칩니다. Backspace는 마지막 꼭짓점 취소, Esc는 중단합니다.",

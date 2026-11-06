@@ -168,7 +168,6 @@
     "mapPanelClose": "Fermer le panneau",
     "mapModeSelect": "Sélectionner et déplacer",
     "mapModeRect": "Rectangle",
-    "mapModeTriangle": "Triangle",
     "mapModeCircle": "Cercle",
     "mapModePoly": "Polygone",
     "mapHintPoly": "Cliquez pour placer les coins. Cliquez sur le premier coin, double-cliquez ou appuyez sur Entrée pour finir ; Retour arrière annule le dernier coin, Échap annule tout.",

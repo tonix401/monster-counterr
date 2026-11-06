@@ -168,7 +168,6 @@
     "mapPanelClose": "Close panel",
     "mapModeSelect": "Select and move",
     "mapModeRect": "Rectangle",
-    "mapModeTriangle": "Triangle",
     "mapModeCircle": "Circle",
     "mapModePoly": "Polygon",
     "mapHintPoly": "Click to place corners. Click the first corner, double-click or press Enter to finish; Backspace undoes the last corner, Esc cancels.",

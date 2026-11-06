@@ -5,12 +5,12 @@ export interface WallSegment {
   y2: number
 }
 
-export type ShapeKind = 'rect' | 'tri' | 'circle'
+export type ShapeKind = 'rect' | 'circle'
 
 /** A drawn line; `id` is assigned by the store so the item can be selected, moved and erased */
 export type WallOp = { type: 'wall'; id?: number } & WallSegment
 /**
- * A rectangle, triangle or ellipse; x1,y1 and x2,y2 are opposite corners of its bounding box,
+ * A rectangle or ellipse; x1,y1 and x2,y2 are opposite corners of its bounding box,
  * which is then turned by `rot` radians about its centre
  */
 export type ShapeOp = { type: 'shape'; kind: ShapeKind; id?: number; rot?: number } & WallSegment

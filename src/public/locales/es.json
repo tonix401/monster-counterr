@@ -168,7 +168,6 @@
     "mapPanelClose": "Cerrar panel",
     "mapModeSelect": "Seleccionar y mover",
     "mapModeRect": "Rectángulo",
-    "mapModeTriangle": "Triángulo",
     "mapModeCircle": "Círculo",
     "mapModePoly": "Polígono",
     "mapHintPoly": "Haz clic para colocar esquinas. Haz clic en la primera esquina, doble clic o Intro para terminar; Retroceso quita la última esquina, Esc cancela.",

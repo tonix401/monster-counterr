@@ -18,6 +18,8 @@ export interface DetectParams {
   gap: number
   /** Widest wall, as a fraction of the longer map side; parallel edges closer than this become one line */
   thickness?: number
+  /** Also look for walls at other angles (default on) */
+  oblique?: boolean
 }
 
 export interface Room {

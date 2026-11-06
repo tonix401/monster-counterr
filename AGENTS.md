@@ -109,7 +109,7 @@ src/
 │       └── localization/
 │           └── localizationHelpers.ts  # Language loading & term resolution
 ├── map/                 # Map & fog of war (browser-only, no backend)
-│   ├── detectWalls.ts   # Straight-wall detection on a grayscale image (bright ridge bands, H/V only)
+│   ├── detectWalls.ts   # Straight-wall detection on a grayscale image (bright ridge bands; H/V first, then a rotated pass per dominant slanted angle found from tile-wise gradient histograms)
 │   ├── wallFilters.ts   # Cleanup of detected lines: merge thick-wall edge pairs into one centerline,
 │   │                    # reject staircase/roof stacks, stringers, dim furniture lines, loose stubs,
 │   │                    # slivers beside walls; bridges small jogs in the outline

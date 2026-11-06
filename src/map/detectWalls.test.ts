@@ -43,6 +43,77 @@ describe('detectWalls', () => {
   })
 })
 
+describe('slanted buildings', () => {
+  it('finds the four walls of a square turned by 35 degrees', () => {
+    const g = canvas()
+    const t = (35 * Math.PI) / 180
+    const c = { x: 400, y: 300 }
+    const h = 130
+    const corner = (sx: number, sy: number): [number, number] => [
+      c.x + sx * h * Math.cos(t) - sy * h * Math.sin(t),
+      c.y + sx * h * Math.sin(t) + sy * h * Math.cos(t),
+    ]
+    const pts = [corner(-1, -1), corner(1, -1), corner(1, 1), corner(-1, 1)]
+    const dist = (x: number, y: number): number =>
+      Math.min(
+        ...pts.map(([ax, ay], i) => {
+          const [bx, by] = pts[(i + 1) % 4]
+          const u = Math.max(
+            0,
+            Math.min(
+              1,
+              ((x - ax) * (bx - ax) + (y - ay) * (by - ay)) / ((bx - ax) ** 2 + (by - ay) ** 2)
+            )
+          )
+          return Math.hypot(x - (ax + u * (bx - ax)), y - (ay + u * (by - ay)))
+        })
+      )
+    for (let y = 100; y < 520; y++)
+      for (let x = 190; x < 620; x++) {
+        const k = Math.max(0, Math.min(1, 3.5 - dist(x, y)))
+        g[y * W + x] = 50 + 180 * k
+      }
+    const segs = detectWalls(g, W, H, params)
+    const slanted = segs.filter((s) => {
+      const dx = Math.abs(s.x2 - s.x1)
+      const dy = Math.abs(s.y2 - s.y1)
+      return Math.min(dx, dy) > 0.3 * Math.max(dx, dy)
+    })
+    expect(slanted.length).toBeGreaterThanOrEqual(3)
+    // every slanted segment lies on the drawn outline (within a few pixels at both ends)
+    for (const s of slanted) {
+      for (const [x, y] of [
+        [s.x1, s.y1],
+        [s.x2, s.y2],
+      ]) {
+        const near = Math.min(
+          ...pts.map(([ax, ay], i) => {
+            const [bx, by] = pts[(i + 1) % 4]
+            const u = Math.max(
+              0,
+              Math.min(
+                1,
+                ((x - ax) * (bx - ax) + (y - ay) * (by - ay)) / ((bx - ax) ** 2 + (by - ay) ** 2)
+              )
+            )
+            return Math.hypot(x - (ax + u * (bx - ax)), y - (ay + u * (by - ay)))
+          })
+        )
+        expect(near).toBeLessThan(8)
+      }
+    }
+  })
+
+  it('leaves axis-aligned maps without slanted walls', () => {
+    const g = canvas()
+    rect(g, 100, 100, 600, 103, 230)
+    rect(g, 100, 400, 600, 403, 230)
+    rect(g, 100, 100, 103, 403, 230)
+    rect(g, 600, 100, 603, 403, 230)
+    for (const s of detectWalls(g, W, H, params)) expect(s.x1 === s.x2 || s.y1 === s.y2).toBe(true)
+  })
+})
+
 describe('wall filters', () => {
   const line = (pos: number, a: number, b: number): Line => [pos, a, b, 1, 1, 100]
 

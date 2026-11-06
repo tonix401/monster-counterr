@@ -2,6 +2,8 @@ import type { StateCreator } from 'zustand'
 import type { ClientStore } from '../ClientStore'
 import { Peer, type DataConnection } from 'peerjs'
 import type { MonsterStatus } from '@/types/Monster'
+import type { ClientToHostMessage } from '@/types/Protocol'
+import { checkMessageSize } from '@/store/helpers/connections/connectionHelpers'
 import { CONNECTION } from '@/constants'
 
 export interface Enemy {
@@ -16,27 +18,6 @@ export interface EncounterData {
 }
 
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error' | 'name-entry'
-
-// Message validation types
-interface PingMessage {
-  type: 'ping'
-}
-
-interface PongMessage {
-  type: 'pong'
-}
-
-interface ClientNameMessage {
-  type: 'client-name'
-  name: string
-}
-
-interface AttackMessage {
-  type: 'attack'
-  monsterId: string
-}
-
-type OutgoingMessage = PingMessage | PongMessage | ClientNameMessage | AttackMessage
 
 export type ConnectionSlice = {
   peer: Peer | null
@@ -56,8 +37,7 @@ export type ConnectionSlice = {
 
 export const createConnectionSlice: StateCreator<ClientStore, [], [], ConnectionSlice> = (
   set,
-  get,
-  _api
+  get
 ) => {
   // Track cleanup state to prevent memory leaks and race conditions
   const cleanupState = {
@@ -141,15 +121,6 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
     })
   }
 
-  const checkMessageSize = (message: OutgoingMessage): boolean => {
-    try {
-      const size = JSON.stringify(message).length
-      return size <= CONNECTION.MAX_MESSAGE_SIZE
-    } catch {
-      return false
-    }
-  }
-
   const checkRateLimit = (): boolean => {
     const now = Date.now()
 
@@ -163,7 +134,7 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
     return cleanupState.messageCount <= CONNECTION.MAX_MESSAGES_PER_SECOND
   }
 
-  const sendMessage = (message: OutgoingMessage): boolean => {
+  const sendMessage = (message: ClientToHostMessage): boolean => {
     const connection = get().connection
     if (!connection?.open || get().connectionStatus !== 'connected') {
       return false

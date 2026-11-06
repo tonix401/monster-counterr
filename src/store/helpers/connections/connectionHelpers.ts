@@ -1,5 +1,14 @@
 import type { DataConnection } from 'peerjs'
 import type { Monster } from '@/types/Monster'
+import type {
+  PingMessage,
+  PongMessage,
+  ClientNameMessage,
+  AttackMessage,
+  ClientToHostMessage,
+  HostToClientMessage,
+} from '@/types/Protocol'
+import { MAX_CLIENT_NAME_LENGTH } from '@/types/Protocol'
 import type { ClientConnection } from '@/store/types'
 import { CONNECTION } from '@/constants'
 
@@ -7,26 +16,10 @@ import { CONNECTION } from '@/constants'
  * Connection validation helpers
  */
 
-export interface PingMessage {
-  type: 'ping'
-}
+export type { PingMessage, PongMessage, ClientNameMessage, AttackMessage }
 
-export interface PongMessage {
-  type: 'pong'
-}
-
-export interface ClientNameMessage {
-  type: 'client-name'
-  name: string
-}
-
-export interface AttackMessage {
-  type: 'attack'
-  monsterId: string
-}
-
-export type IncomingMessage = PingMessage | ClientNameMessage | AttackMessage
-export type OutgoingMessage = PongMessage
+export type IncomingMessage = ClientToHostMessage
+export type OutgoingMessage = HostToClientMessage
 
 /**
  * Validate incoming message structure and content
@@ -41,7 +34,7 @@ export function validateIncomingMessage(data: unknown): data is IncomingMessage 
     case 'ping':
       return true
     case 'client-name':
-      return typeof msg.name === 'string' && msg.name.length <= 50
+      return typeof msg.name === 'string' && msg.name.length <= MAX_CLIENT_NAME_LENGTH
     case 'attack':
       return typeof msg.monsterId === 'string'
     default:

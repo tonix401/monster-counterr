@@ -42,31 +42,33 @@ When the user askes you to implement something:
 - Browser localStorage for data persistence
 - External D&D 5e SRD API integration
 - Multi-language support with dynamic locale loading
-- Type-safe state management with no `any` types
+- Type-safe state management (`any` is disallowed by ESLint; existing violations are being cleaned up)
 
 ## Project structure
 
 ```
 src/
-├── App.tsx               # Main app component with routing outlet
+├── App.tsx              # Main app component with routing outlet
 ├── main.tsx             # Entry point, sets up BrowserRouter and routes
-├── components/          # Reusable UI components
+├── components/         # Reusable UI components
+│   ├── ErrorBoundary.tsx
 │   ├── Header.tsx       # App header with menu button
-│   ├── popups/          # Modal/popup components
+│   ├── popups/          # Modal/popup components (rendered directly by the router)
 │   │   ├── Popup.tsx    # Base popup component
 │   │   ├── AddMonsterPopup.tsx
 │   │   ├── MonsterInfoPopup.tsx
-│   │   ├── MenuPopup.tsx        # Main menu popup (Settings, Manage Data, Custom Monsters)
+│   │   ├── MenuPopup.tsx           # Main menu popup (Settings, Manage Data, Custom Monsters)
 │   │   ├── CustomMonstersPopup.tsx # Custom monsters management popup
-│   │   └── settingsPopup/
-│   │       ├── SettingsPopup.tsx
-│   │       ├── BinarySettingsRow.tsx
-│   │       └── LanguageSelectionRow.tsx
+│   │   ├── ConnectionsPopup.tsx
+│   │   ├── ManageDataPopup.tsx
+│   │   └── SettingsPopup.tsx
 │   ├── table/           # Monster table components
 │   │   ├── MonsterTable.tsx        # Main table component
 │   │   ├── MonsterTableRow.tsx     # Individual row
 │   │   ├── TableHeaderRow.tsx
 │   │   ├── TableColgroup.tsx
+│   │   ├── AddMonsterRow.tsx
+│   │   ├── DragHandleTableData.tsx
 │   │   ├── NameTableData.tsx
 │   │   ├── HpTableData.tsx
 │   │   ├── ChangeHpTableData.tsx
@@ -74,13 +76,22 @@ src/
 │   │   ├── ConditionsTableData.tsx
 │   │   └── QuickActionsTableData.tsx
 │   └── ui/              # Generic UI components
-│       ├── MonsterSuggestionInput.tsx
+│       ├── BinarySettingsRow.tsx
+│       ├── LanguageSelectionRow.tsx
+│       ├── DropdownInput.tsx
+│       ├── DropdownInputHelper.ts
 │       ├── ExportFileButton.tsx
-│       └── ImportFileButton.tsx
-├── routes/              # Route components (used as popup overlays)
-│   # Popup routes are now handled directly by rendering popup components in the router. No wrapper route files.
+│       ├── ImportFileButton.tsx
+│       └── NotificationsContainer.tsx
+├── client_app/          # Read-only client view for connected peers
+│   ├── ClientView.tsx
+│   └── store/
+│       ├── ClientStore.ts
+│       └── slices/
+│           ├── connectionSlice.ts
+│           └── termSlice.ts
 ├── store/               # Zustand state management
-│   ├── useMonsterStore.ts       # Consolidated store (all state & actions)
+│   ├── useMonsterStore.ts       # Consolidated store (all state & actions) and its hooks
 │   ├── types.ts                 # Comprehensive MonsterCounterStore types
 │   ├── middleware/
 │   │   └── temporal.ts          # Undo/redo functionality
@@ -99,17 +110,17 @@ src/
 │   ├── Settings.ts      # Settings structure
 │   └── Term.ts          # Localization terms
 ├── hooks/               # Custom React hooks
-│   ├── useKeyboardShortcut.ts
-│   └── useTerm.ts       # Localization hook
+│   └── useKeyboardShortcut.ts
 ├── constants/
 │   └── index.ts         # App constants (URLs, durations, keys)
-└── public/
-    └── locales/         # Localization files
-        ├── locales.json # List of available languages
-        ├── en.json
-        ├── de.json
-        ├── es.json
-        └── ...
+├── public/              # Static assets (SVG icons)
+│   └── locales/         # Localization files
+│       ├── README.md
+│       ├── locales.json # List of available languages
+│       ├── en.json
+│       ├── de.json
+│       ├── es.json
+│       └── ...
 ```
 
 **Key Architecture Patterns:**
@@ -118,8 +129,8 @@ src/
   - `MonsterCounterStore` interface covers all state (monsters, settings, xp, conditions, terms, notifications, connections)
   - `MonsterCounterActions` interface covers all 40+ actions
   - Persist middleware for localStorage, temporal middleware for undo/redo
-  - No `any` types - fully type-safe with comprehensive types in `store/types.ts`
-  - Consistent custom hooks for optimized subscriptions (useMonsters, useSettings, useTerm, etc.)
+  - Fully typed with comprehensive types in `store/types.ts`; `any` is disallowed by ESLint and existing violations are being cleaned up
+  - Consistent custom hooks for optimized subscriptions (useMonsters, useSettings, useTerm, etc.), exported from `store/useMonsterStore.ts`
   - Pure utility functions in `store/helpers/*` for testability & composition
 - **Routing**: React Router with nested routes (popups overlay main view)
 - **Data Persistence**: All data stored in browser localStorage via Zustand persist
@@ -137,10 +148,12 @@ src/
 - `npm install` - Install dependencies
 - `npm run dev` - Start development server (localhost:14120)
 - `npm run build` - Build for production
-- `npm run preview` - Preview production build (localhost:14121)
-- `npm run start` - Start development server (custom script via start.js)
+- `npm run preview` - Preview production build (localhost:14120)
 - `npm run format` - Format code with Prettier
 - `npm run format:check` - Check code formatting
+- `npm run lint` - Lint with ESLint
+- `npm run typecheck` - Type check with TypeScript (`tsc -b`)
+- `npm run test` - Run tests once with Vitest
 
 ## Goals
 

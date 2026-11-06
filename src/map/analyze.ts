@@ -1,4 +1,4 @@
-import { detectWalls } from './detectWalls'
+import { DetectCache, detectWalls } from './detectWalls'
 import type { Analysis, DetectParams, Room, WallSegment } from './types'
 
 export function lineWidth(M: number): number {
@@ -233,16 +233,18 @@ export class Analyzer {
   private gray: Float32Array = new Float32Array(0)
   private W = 0
   private H = 0
+  private cache = new DetectCache()
 
   load(gray: Float32Array, W: number, H: number): void {
     this.gray = gray
     this.W = W
     this.H = H
+    this.cache = new DetectCache()
   }
 
   /** Walls found in the picture */
   detect(params: DetectParams): WallSegment[] {
-    return detectWalls(this.gray, this.W, this.H, params)
+    return detectWalls(this.gray, this.W, this.H, params, this.cache)
   }
 
   /** Rooms between the given walls */

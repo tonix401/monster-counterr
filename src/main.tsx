@@ -11,6 +11,9 @@ import ManageDataPopup from '@/components/popups/ManageDataPopup'
 import ConnectionsPopup from '@/components/popups/ConnectionsPopup'
 import MonsterInfoPopup from '@/components/popups/MonsterInfoPopup'
 import ClientView from '@/client_app/ClientView'
+import { startMapSync } from '@/map/mapSync'
+
+startMapSync()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -24,8 +27,12 @@ createRoot(document.getElementById('root')!).render(
           <Route path="connections" element={<ConnectionsPopup />} />
           <Route path="custom-monsters" element={<CustomMonstersPopup />} />
           <Route path="manage-data" element={<ManageDataPopup />} />
+          {/* The map tab is drawn by App itself; this route only makes the path valid */}
+          <Route path="map" element={null} />
         </Route>
-        <Route path="client" element={<ClientView />} />
+        <Route path="client" element={<ClientView />}>
+          <Route path="map" element={null} />
+        </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </HashRouter>

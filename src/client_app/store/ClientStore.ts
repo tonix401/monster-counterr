@@ -45,6 +45,7 @@ export const useClientConnectionStatus = (): ConnectionSlice['connectionStatus']
 export const useClientConnectionError = (): string | null => useClientStore((state) => state.error)
 export const useClientEncounterData = (): ConnectionSlice['data'] =>
   useClientStore((state) => state.data)
+export const useClientMap = (): ConnectionSlice['map'] => useClientStore((state) => state.map)
 export const useClientClientName = (): string => useClientStore((state) => state.clientName)
 export const useClientSetClientName = (): ((name: string) => void) =>
   useClientStore((state) => state.setClientName)

@@ -137,7 +137,7 @@
     "mapModeErase": "Borrar pared",
     "mapHintFog": "Haz clic en una sala para cubrirla de niebla y de nuevo para revelarla. Arrastra por varias salas para cambiar varias.",
     "mapHintWall": "Arrastra para dibujar una pared. Se ajusta recta y a las paredes cercanas; mantén Shift para cualquier ángulo. Dibuja sobre una puerta para separar dos salas.",
-    "mapHintErase": "Pasa el pincel sobre una pared que no debería estar para unir las salas de ambos lados.",
+    "mapHintErase": "Haz clic en una línea o forma, o arrastra sobre varias, para eliminarlas por completo.",
     "mapUndoEdit": "Deshacer cambio de pared",
     "mapClearEdits": "Quitar todas las ediciones",
     "mapViewMap": "Mapa",
@@ -146,7 +146,6 @@
     "mapFogAll": "Niebla en todas las salas",
     "mapRevealAll": "Revelar todo",
     "mapPlayerView": "Vista de jugadores",
-    "mapExitPlayerView": "Salir de la vista de jugadores",
     "mapShare": "Compartir con los jugadores",
     "mapShareHint": "Los jugadores ven el mapa sin las salas cubiertas por la niebla. Las salas ocultas nunca se les envían.",
     "mapWallDetection": "Detección de paredes",
@@ -166,6 +165,19 @@
     "mapGroupView": "Vista",
     "mapGroupTools": "Herramientas",
     "mapGroupFog": "Acciones de niebla",
-    "mapPanelClose": "Cerrar panel"
+    "mapPanelClose": "Cerrar panel",
+    "mapModeSelect": "Seleccionar y mover",
+    "mapModeRect": "Rectángulo",
+    "mapModeTriangle": "Triángulo",
+    "mapModeCircle": "Círculo",
+    "mapModePan": "Desplazar",
+    "mapHintSelect": "Haz clic en una línea o forma para seleccionarla, arrástrala para moverla, usa los tiradores para cambiar su tamaño y pulsa Supr para borrarla. También se pueden seleccionar las paredes detectadas.",
+    "mapHintShape": "Arrastra para dibujar. Mantén Mayús para un cuadrado o círculo.",
+    "mapHintPan": "Arrastra para mover el mapa; desplaza o pellizca para hacer zoom. Arrastrar con el botón derecho o con Espacio mueve con cualquier herramienta.",
+    "mapDelete": "Eliminar",
+    "mapZoomIn": "Acercar",
+    "mapZoomOut": "Alejar",
+    "mapZoomFit": "Ajustar a la ventana",
+    "mapGroupZoom": "Zoom"
   }
 }

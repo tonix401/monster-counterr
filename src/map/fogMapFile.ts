@@ -18,11 +18,24 @@ const VIEWS: MapView[] = ['map', 'lines', 'blueprint']
 const r1 = (v: number): number => Math.round(v * 10) / 10
 
 export function serializeFogMap(f: Omit<FogMapFile, 'format' | 'version' | 'app'>): string {
-  const walls = f.walls.map((op) =>
-    op.type === 'wall'
-      ? { type: 'wall', x1: r1(op.x1), y1: r1(op.y1), x2: r1(op.x2), y2: r1(op.y2) }
-      : { type: 'erase', w: r1(op.w), pts: op.pts.map((p) => [r1(p[0]), r1(p[1])]) }
-  )
+  const walls = f.walls
+    .filter((op) => op.type !== 'cut')
+    .map((op) =>
+      op.type === 'wall'
+        ? { type: 'wall', x1: r1(op.x1), y1: r1(op.y1), x2: r1(op.x2), y2: r1(op.y2) }
+        : op.type === 'shape'
+          ? {
+              type: 'shape',
+              kind: op.kind,
+              x1: r1(op.x1),
+              y1: r1(op.y1),
+              x2: r1(op.x2),
+              y2: r1(op.y2),
+            }
+          : op.type === 'erase'
+            ? { type: 'erase', w: r1(op.w), pts: op.pts.map((p) => [r1(p[0]), r1(p[1])]) }
+            : op
+    )
   return JSON.stringify({ format: 'fog_map', version: 1, app: 'Map Fog', ...f, walls })
 }
 
@@ -48,6 +61,19 @@ export function parseFogMap(text: string): FogMapFile | null {
           Number((p as number[])[0]),
           Number((p as number[])[1]),
         ]),
+      })
+    } else if (
+      op.type === 'shape' &&
+      (op.kind === 'rect' || op.kind === 'tri' || op.kind === 'circle') &&
+      [op.x1, op.y1, op.x2, op.y2].every((v) => typeof v === 'number' && isFinite(v))
+    ) {
+      walls.push({
+        type: 'shape',
+        kind: op.kind,
+        x1: op.x1 as number,
+        y1: op.y1 as number,
+        x2: op.x2 as number,
+        y2: op.y2 as number,
       })
     } else if ([op.x1, op.y1, op.x2, op.y2].every((v) => typeof v === 'number' && isFinite(v))) {
       walls.push({

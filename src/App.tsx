@@ -53,7 +53,7 @@ function App() {
   }
 
   return (
-    <div className="app">
+    <div className={`app ${onMapTab ? 'app-wide' : ''}`}>
       <Header />
       <TabBar
         tabs={[

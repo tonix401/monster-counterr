@@ -137,7 +137,7 @@
     "mapModeErase": "벽 지우기",
     "mapHintFog": "방을 클릭하면 안개로 가려지고 다시 클릭하면 드러납니다. 여러 방을 드래그하면 한 번에 바꿀 수 있습니다.",
     "mapHintWall": "드래그해서 벽을 그립니다. 곧게, 근처 벽에 맞춰집니다. Shift를 누르면 어떤 각도로든 그릴 수 있습니다. 문 위로 그리면 두 방이 나뉩니다.",
-    "mapHintErase": "있어서는 안 되는 벽을 브러시로 지나가면 양쪽 방이 이어집니다.",
+    "mapHintErase": "선이나 도형을 클릭하거나 여러 개 위로 드래그하여 통째로 삭제합니다.",
     "mapUndoEdit": "벽 편집 실행 취소",
     "mapClearEdits": "모든 편집 제거",
     "mapViewMap": "지도",
@@ -146,7 +146,6 @@
     "mapFogAll": "모든 방 안개 덮기",
     "mapRevealAll": "모두 드러내기",
     "mapPlayerView": "플레이어 보기",
-    "mapExitPlayerView": "플레이어 보기 종료",
     "mapShare": "플레이어와 공유",
     "mapShareHint": "플레이어는 안개로 가려진 방이 빠진 지도를 봅니다. 숨겨진 방은 전송되지 않습니다.",
     "mapWallDetection": "벽 감지",
@@ -166,6 +165,19 @@
     "mapGroupView": "보기",
     "mapGroupTools": "도구",
     "mapGroupFog": "안개 작업",
-    "mapPanelClose": "패널 닫기"
+    "mapPanelClose": "패널 닫기",
+    "mapModeSelect": "선택 및 이동",
+    "mapModeRect": "사각형",
+    "mapModeTriangle": "삼각형",
+    "mapModeCircle": "원",
+    "mapModePan": "화면 이동",
+    "mapHintSelect": "선이나 도형을 클릭해 선택하고, 드래그로 이동, 핸들로 크기 조절, Delete로 삭제합니다. 감지된 벽도 선택할 수 있습니다.",
+    "mapHintShape": "드래그해서 그립니다. Shift를 누르면 정사각형·정원이 됩니다.",
+    "mapHintPan": "드래그로 지도를 옮기고, 스크롤이나 핀치로 확대/축소합니다. 오른쪽 드래그나 Space+드래그는 어떤 도구에서도 이동합니다.",
+    "mapDelete": "삭제",
+    "mapZoomIn": "확대",
+    "mapZoomOut": "축소",
+    "mapZoomFit": "창에 맞추기",
+    "mapGroupZoom": "확대/축소"
   }
 }

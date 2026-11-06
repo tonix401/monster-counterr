@@ -137,7 +137,7 @@
     "mapModeErase": "Radera vägg",
     "mapHintFog": "Klicka på ett rum för att lägga dimma över det, klicka igen för att avslöja det. Dra över flera rum för att ändra flera.",
     "mapHintWall": "Dra för att rita en vägg. Den snappar rakt och till närliggande väggar; håll Skift för valfri vinkel. Rita över en dörr för att dela två rum.",
-    "mapHintErase": "Borsta över en vägg som inte ska finnas för att förena rummen på båda sidor.",
+    "mapHintErase": "Klicka på en linje eller form, eller dra över flera, för att ta bort dem helt.",
     "mapUndoEdit": "Ångra väggändring",
     "mapClearEdits": "Ta bort alla ändringar",
     "mapViewMap": "Karta",
@@ -146,7 +146,6 @@
     "mapFogAll": "Dimma över alla rum",
     "mapRevealAll": "Avslöja allt",
     "mapPlayerView": "Spelarvy",
-    "mapExitPlayerView": "Lämna spelarvyn",
     "mapShare": "Dela med spelarna",
     "mapShareHint": "Spelarna ser kartan utan de dimmade rummen. Dolda rum skickas aldrig till dem.",
     "mapWallDetection": "Väggdetektering",
@@ -166,6 +165,19 @@
     "mapGroupView": "Vy",
     "mapGroupTools": "Verktyg",
     "mapGroupFog": "Dimåtgärder",
-    "mapPanelClose": "Stäng panelen"
+    "mapPanelClose": "Stäng panelen",
+    "mapModeSelect": "Markera och flytta",
+    "mapModeRect": "Rektangel",
+    "mapModeTriangle": "Triangel",
+    "mapModeCircle": "Cirkel",
+    "mapModePan": "Panorera",
+    "mapHintSelect": "Klicka på en linje eller form för att markera den, dra för att flytta, dra i handtagen för att ändra storlek, Delete tar bort. Upptäckta väggar går också att markera.",
+    "mapHintShape": "Dra för att rita. Håll Skift för kvadrat eller cirkel.",
+    "mapHintPan": "Dra för att flytta kartan, scrolla eller nyp för att zooma. Högerdrag eller Blanksteg+dra panorerar med alla verktyg.",
+    "mapDelete": "Ta bort",
+    "mapZoomIn": "Zooma in",
+    "mapZoomOut": "Zooma ut",
+    "mapZoomFit": "Anpassa till fönstret",
+    "mapGroupZoom": "Zoom"
   }
 }

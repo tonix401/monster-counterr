@@ -137,7 +137,7 @@
     "mapModeErase": "Apagar parede",
     "mapHintFog": "Clique numa sala para cobri-la de névoa e clique de novo para revelá-la. Arraste por várias salas para alterar várias.",
     "mapHintWall": "Arraste para desenhar uma parede. Ela se alinha reta e às paredes próximas; segure Shift para qualquer ângulo. Desenhe sobre uma porta para separar duas salas.",
-    "mapHintErase": "Passe o pincel sobre uma parede que não deveria existir para unir as salas dos dois lados.",
+    "mapHintErase": "Clique numa linha ou forma, ou arraste sobre várias, para removê-las por completo.",
     "mapUndoEdit": "Desfazer edição de parede",
     "mapClearEdits": "Remover todas as edições",
     "mapViewMap": "Mapa",
@@ -146,7 +146,6 @@
     "mapFogAll": "Névoa em todas as salas",
     "mapRevealAll": "Revelar tudo",
     "mapPlayerView": "Visão dos jogadores",
-    "mapExitPlayerView": "Sair da visão dos jogadores",
     "mapShare": "Compartilhar com os jogadores",
     "mapShareHint": "Os jogadores veem o mapa sem as salas cobertas por névoa. Salas ocultas nunca são enviadas a eles.",
     "mapWallDetection": "Detecção de paredes",
@@ -166,6 +165,19 @@
     "mapGroupView": "Vista",
     "mapGroupTools": "Ferramentas",
     "mapGroupFog": "Ações de névoa",
-    "mapPanelClose": "Fechar painel"
+    "mapPanelClose": "Fechar painel",
+    "mapModeSelect": "Selecionar e mover",
+    "mapModeRect": "Retângulo",
+    "mapModeTriangle": "Triângulo",
+    "mapModeCircle": "Círculo",
+    "mapModePan": "Mover vista",
+    "mapHintSelect": "Clique numa linha ou forma para selecioná-la, arraste para mover, use as alças para redimensionar e Delete para remover. As paredes detetadas também podem ser selecionadas.",
+    "mapHintShape": "Arraste para desenhar. Segure Shift para quadrado ou círculo.",
+    "mapHintPan": "Arraste para mover o mapa, role ou pince para ampliar. Arrastar com o botão direito ou Espaço+arrastar move com qualquer ferramenta.",
+    "mapDelete": "Excluir",
+    "mapZoomIn": "Ampliar",
+    "mapZoomOut": "Reduzir",
+    "mapZoomFit": "Ajustar à janela",
+    "mapGroupZoom": "Zoom"
   }
 }

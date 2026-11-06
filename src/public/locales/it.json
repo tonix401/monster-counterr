@@ -137,7 +137,7 @@
     "mapModeErase": "Cancella muro",
     "mapHintFog": "Clicca una stanza per coprirla di nebbia, clicca di nuovo per rivelarla. Trascina su più stanze per cambiarne diverse.",
     "mapHintWall": "Trascina per disegnare un muro. Si allinea dritto e ai muri vicini; tieni Maiusc per qualsiasi angolo. Disegna su una porta per separare due stanze.",
-    "mapHintErase": "Passa il pennello su un muro che non dovrebbe esserci per unire le stanze ai due lati.",
+    "mapHintErase": "Clicca su una linea o forma, o trascina su più elementi, per rimuoverli del tutto.",
     "mapUndoEdit": "Annulla modifica muro",
     "mapClearEdits": "Rimuovi tutte le modifiche",
     "mapViewMap": "Mappa",
@@ -146,7 +146,6 @@
     "mapFogAll": "Nebbia su tutte le stanze",
     "mapRevealAll": "Rivela tutto",
     "mapPlayerView": "Vista giocatori",
-    "mapExitPlayerView": "Esci dalla vista giocatori",
     "mapShare": "Condividi con i giocatori",
     "mapShareHint": "I giocatori vedono la mappa senza le stanze nascoste dalla nebbia. Le stanze nascoste non vengono mai inviate loro.",
     "mapWallDetection": "Rilevamento dei muri",
@@ -166,6 +165,19 @@
     "mapGroupView": "Vista",
     "mapGroupTools": "Strumenti",
     "mapGroupFog": "Azioni nebbia",
-    "mapPanelClose": "Chiudi il pannello"
+    "mapPanelClose": "Chiudi il pannello",
+    "mapModeSelect": "Seleziona e sposta",
+    "mapModeRect": "Rettangolo",
+    "mapModeTriangle": "Triangolo",
+    "mapModeCircle": "Cerchio",
+    "mapModePan": "Sposta vista",
+    "mapHintSelect": "Clicca su una linea o forma per selezionarla, trascinala per spostarla, usa le maniglie per ridimensionarla, Canc la elimina. Si possono selezionare anche i muri rilevati.",
+    "mapHintShape": "Trascina per disegnare. Tieni Maiusc per un quadrato o un cerchio.",
+    "mapHintPan": "Trascina per spostare la mappa, scorri o pizzica per zoomare. Trascinare con il tasto destro o Spazio+trascina sposta con qualsiasi strumento.",
+    "mapDelete": "Elimina",
+    "mapZoomIn": "Ingrandisci",
+    "mapZoomOut": "Riduci",
+    "mapZoomFit": "Adatta alla finestra",
+    "mapGroupZoom": "Zoom"
   }
 }

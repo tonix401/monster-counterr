@@ -42,6 +42,29 @@ export const EraserIcon = icon(
     <path d="m5 11 9 9" />
   </>
 )
+export const SelectIcon = icon(<path d="m5 3 14 7-6 2-2 6z" />)
+export const RectIcon = icon(<rect x="4" y="5" width="16" height="14" rx="1" />)
+export const TriangleIcon = icon(<path d="M12 4 21 19H3z" />)
+export const CircleIcon = icon(<circle cx="12" cy="12" r="8" />)
+export const PanIcon = icon(
+  <>
+    <path d="M12 3v18M3 12h18" />
+    <path d="m9 6 3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3" />
+  </>
+)
+export const ZoomInIcon = icon(
+  <>
+    <circle cx="11" cy="11" r="7" />
+    <path d="m21 21-4.3-4.3M11 8v6M8 11h6" />
+  </>
+)
+export const ZoomOutIcon = icon(
+  <>
+    <circle cx="11" cy="11" r="7" />
+    <path d="m21 21-4.3-4.3M8 11h6" />
+  </>
+)
+export const FitIcon = icon(<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />)
 export const MapIcon = icon(
   <>
     <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z" />
@@ -137,7 +160,7 @@ interface IconButtonProps {
   disabled?: boolean
   onClick?: () => void
   /** Side the tooltip opens towards */
-  tip?: 'right' | 'below' | 'above'
+  tip?: 'right' | 'left' | 'below' | 'above'
 }
 
 /** Square icon button with a tooltip (label plus keyboard shortcut) and an aria-label */

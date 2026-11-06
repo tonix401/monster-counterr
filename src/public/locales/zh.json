@@ -137,7 +137,7 @@
     "mapModeErase": "擦除墙壁",
     "mapHintFog": "点击房间以覆盖迷雾，再次点击以揭开。拖过多个房间可一次切换多个。",
     "mapHintWall": "拖动绘制墙壁。它会自动对齐水平、垂直方向和附近的墙；按住 Shift 可任意角度绘制。在门口处绘制可分隔两个房间。",
-    "mapHintErase": "用画笔涂抹不该存在的墙，即可连通两侧的房间。",
+    "mapHintErase": "点击线条或图形，或在多个上拖过，即可整体删除。",
     "mapUndoEdit": "撤销墙壁编辑",
     "mapClearEdits": "移除所有编辑",
     "mapViewMap": "地图",
@@ -146,7 +146,6 @@
     "mapFogAll": "所有房间覆盖迷雾",
     "mapRevealAll": "全部揭开",
     "mapPlayerView": "玩家视图",
-    "mapExitPlayerView": "退出玩家视图",
     "mapShare": "与玩家共享",
     "mapShareHint": "玩家看到的地图不包含被迷雾覆盖的房间。隐藏的房间绝不会发送给他们。",
     "mapWallDetection": "墙壁识别",
@@ -166,6 +165,19 @@
     "mapGroupView": "视图",
     "mapGroupTools": "工具",
     "mapGroupFog": "迷雾操作",
-    "mapPanelClose": "关闭面板"
+    "mapPanelClose": "关闭面板",
+    "mapModeSelect": "选择并移动",
+    "mapModeRect": "矩形",
+    "mapModeTriangle": "三角形",
+    "mapModeCircle": "圆形",
+    "mapModePan": "平移",
+    "mapHintSelect": "点击线条或图形即可选中，拖动移动，拖动控制点调整大小，按 Delete 删除。检测到的墙壁也可选中。",
+    "mapHintShape": "拖动绘制。按住 Shift 可画正方形或正圆。",
+    "mapHintPan": "拖动移动地图，滚轮或双指缩放。右键拖动或 空格+拖动 可在任何工具下平移。",
+    "mapDelete": "删除",
+    "mapZoomIn": "放大",
+    "mapZoomOut": "缩小",
+    "mapZoomFit": "适应窗口",
+    "mapGroupZoom": "缩放"
   }
 }

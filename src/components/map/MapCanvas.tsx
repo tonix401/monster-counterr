@@ -256,7 +256,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     cancelPoly()
     const onKey = (e: KeyboardEvent): void => {
       if (useMapStore.getState().mode !== 'poly' || !poly.current.length) return
-      if (e.key === 'Enter') finishPoly()
+      if (e.key === 'Enter') finishPoly(false)
       else if (e.key === 'Escape') cancelPoly()
       else if (e.key === 'Backspace') {
         poly.current = poly.current.slice(0, -1)
@@ -468,7 +468,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     } else if (s.mode === 'poly') {
       const pts = poly.current
       const r = 10 * unit()
-      if (pts.length >= 3 && Math.hypot(x - pts[0][0], y - pts[0][1]) <= r) return finishPoly()
+      if (pts.length >= 3 && Math.hypot(x - pts[0][0], y - pts[0][1]) <= r) return finishPoly(true)
       const near = e.shiftKey
         ? null
         : nearestOnWalls(x, y, Math.max(8, Math.max(s.width, s.height) * 0.012))
@@ -489,15 +489,16 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     }
   }
 
-  const finishPoly = (): void => {
+  /** Only a click on the first corner closes the shape; otherwise the lines stay open */
+  const finishPoly = (closed: boolean): void => {
     const pts = poly.current
     poly.current = []
     polyAt.current = null
-    if (pts.length >= 3) {
+    if (pts.length >= 2) {
       // every side becomes its own line, all within one undo step
       const s = useMapStore.getState()
       s.beginGesture()
-      for (const w of polygonWalls(pts)) s.addOp(w)
+      for (const w of polygonWalls(pts, closed)) s.addOp(w)
       s.endGesture()
     }
     draw()
@@ -601,7 +602,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endPointer}
-        onDoubleClick={() => mode === 'poly' && finishPoly()}
+        onDoubleClick={() => mode === 'poly' && finishPoly(false)}
         onPointerCancel={endPointer}
         onContextMenu={(e) => e.preventDefault()}
         onPointerLeave={() => {

@@ -246,8 +246,10 @@ export function scaleOp<T extends Exclude<MapOp, EraseOp>>(op: T, fx: number, fy
 }
 
 /** A closed polygon as one independent line per side, so each can be moved or erased on its own. */
-export function polygonWalls(pts: [number, number][]): WallOp[] {
-  return pts.map((p, i) => {
+export function polygonWalls(pts: [number, number][], closed = true): WallOp[] {
+  const n = closed ? pts.length : pts.length - 1
+  return Array.from({ length: Math.max(0, n) }, (_, i) => {
+    const p = pts[i]
     const q = pts[(i + 1) % pts.length]
     return { type: 'wall', x1: p[0], y1: p[1], x2: q[0], y2: q[1] }
   })

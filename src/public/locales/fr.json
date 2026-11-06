@@ -170,7 +170,7 @@
     "mapModeRect": "Rectangle",
     "mapModeCircle": "Cercle",
     "mapModePoly": "Polygone",
-    "mapHintPoly": "Cliquez pour placer les coins. Cliquez sur le premier coin, double-cliquez ou appuyez sur Entrée pour finir ; Retour arrière annule le dernier coin, Échap annule tout.",
+    "mapHintPoly": "Cliquez pour placer les coins. Cliquez sur le premier coin pour fermer la forme ; double-clic ou Entrée la termine ouverte. Retour arrière annule le dernier coin, Échap annule tout.",
     "mapModePan": "Déplacer la vue",
     "mapHintSelect": "Cliquez sur une ligne ou une forme pour la sélectionner, faites-la glisser pour la déplacer, tirez les poignées pour la redimensionner, Suppr l'efface. Les murs détectés sont aussi sélectionnables. Tournez une forme avec la poignée ronde au-dessus (Maj aimante par pas de 15°).",
     "mapHintShape": "Faites glisser pour dessiner ; un cercle grandit depuis son centre. Maj pour un carré.",

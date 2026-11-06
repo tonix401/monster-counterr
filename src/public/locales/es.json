@@ -170,7 +170,7 @@
     "mapModeRect": "Rectángulo",
     "mapModeCircle": "Círculo",
     "mapModePoly": "Polígono",
-    "mapHintPoly": "Haz clic para colocar esquinas. Haz clic en la primera esquina, doble clic o Intro para terminar; Retroceso quita la última esquina, Esc cancela.",
+    "mapHintPoly": "Haz clic para colocar esquinas. Haz clic en la primera esquina para cerrar la forma; doble clic o Intro terminan sin cerrar. Retroceso quita la última esquina, Esc cancela.",
     "mapModePan": "Desplazar",
     "mapHintSelect": "Haz clic en una línea o forma para seleccionarla, arrástrala para moverla, usa los tiradores para cambiar su tamaño y pulsa Supr para borrarla. También se pueden seleccionar las paredes detectadas. Gira una forma con el tirador redondo de arriba (Mayús ajusta a 15°).",
     "mapHintShape": "Arrastra para dibujar; un círculo crece desde su centro. Mantén Mayús para un cuadrado.",

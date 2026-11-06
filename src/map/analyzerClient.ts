@@ -1,14 +1,13 @@
-import { Analyzer, type AnalyzeRequest } from './analyze'
+import { Analyzer } from './analyze'
 import type { WorkerRequest } from './analysis.worker'
-import type { Analysis, DetectParams, WallSegment } from './types'
+import type { DetectParams, WallSegment } from './types'
 
 /**
- * Runs wall detection and room building off the main thread. Falls back to running inline where
+ * Runs wall detection off the main thread. Falls back to running inline where
  * Workers don't exist (tests).
  */
 export interface AnalyzerClient {
   load(gray: Float32Array, W: number, H: number): void
-  run(req: AnalyzeRequest): Promise<Analysis>
   detect(params: DetectParams): Promise<WallSegment[]>
 }
 
@@ -17,7 +16,6 @@ export function createAnalyzerClient(): AnalyzerClient {
     const inline = new Analyzer()
     return {
       load: (gray, W, H) => inline.load(gray, W, H),
-      run: async (req) => inline.run(req),
       detect: async (params) => inline.detect(params),
     }
   }
@@ -40,7 +38,6 @@ export function createAnalyzerClient(): AnalyzerClient {
 
   return {
     load: (gray, W, H) => post({ kind: 'load', gray, W, H }, [gray.buffer]),
-    run: (req) => ask<Analysis>((id) => ({ kind: 'run', id, req })),
     detect: (params) => ask<WallSegment[]>((id) => ({ kind: 'detect', id, params })),
   }
 }

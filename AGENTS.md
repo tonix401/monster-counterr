@@ -114,8 +114,9 @@ src/
 │   ├── wallFilters.ts   # Cleanup of detected lines: merge thick-wall edge pairs into one centerline,
 │   │                    # reject staircase/roof stacks, stringers, dim furniture lines, loose stubs,
 │   │                    # slivers beside walls; bridges small jogs in the outline
-│   ├── analyze.ts       # Wall rasterizing + room labelling; `Analyzer` keeps the picture's pixels for `detect` and `run`
-│   ├── analysis.worker.ts / analyzerClient.ts # Runs the analysis in a Web Worker (inline fallback in tests)
+│   ├── analyze.ts       # `Analyzer` keeps the picture's pixels for wall `detect`
+│   ├── rooms.ts         # Rooms straight from the node graph (faces of the planar drawing, painted once into a per-pixel map); runs on the main thread
+│   ├── analysis.worker.ts / analyzerClient.ts # Runs wall detection in a Web Worker (inline fallback in tests)
 │   ├── graph.ts         # The walls as nodes and lines between them (pure functions on an immutable `Graph`): snapping, splitting, moving, joining and dissolving nodes, rectangle/ellipse/polyline builders, the merge step that turns detected lines into shared nodes, and the lists a file keeps
 │   ├── mapStore.ts      # Zustand store for the current map, edits and fog (separate from the monster store)
 │   ├── mapStorage.ts    # IndexedDB persistence of the current map (too big for localStorage)
@@ -153,7 +154,7 @@ src/
   - Consistent custom hooks for optimized subscriptions (useMonsters, useSettings, useTerm, etc.), exported from `store/useMonsterStore.ts`
   - Pure utility functions in `store/helpers/*` for testability & composition
 - **Routing**: React Router with nested routes (popups overlay main view). Tabs are routes too: `/` (encounter) and `/map` in the DM app, `/client` and `/client/map` for players
-- **Map & fog**: the DM loads a battle map image or `.fog_map` file. Walls are nodes and the lines between them: detection is a one-shot import that joins line ends into shared nodes, and from then on the walls are ordinary nodes and lines. Moving a node moves every line on it, and new lines snap to nodes. Rooms are derived from the walls, and rooms can be fogged. Players never receive walls or hidden rooms: when "Share with players" is on, the DM's browser renders a JPEG with fogged rooms painted over and sends it over the existing PeerJS connection (`map` / `map-clear` messages), debounced and resent on every change and when a player joins
+- **Map & fog**: the DM loads a battle map image or `.fog_map` file. Walls are nodes and the lines between them: detection is a one-shot import that joins line ends into shared nodes, and from then on the walls are ordinary nodes and lines. Moving a node moves every line on it, and new lines snap to nodes. Rooms are the faces of that graph (`rooms.ts`, a few ms, no pixel tracing), and rooms can be fogged. Players never receive walls or hidden rooms: when "Share with players" is on, the DM's browser renders a JPEG with fogged rooms painted over and sends it over the existing PeerJS connection (`map` / `map-clear` messages), debounced and resent on every change and when a player joins
 - **Data Persistence**: All data stored in browser localStorage via Zustand persist
 - **Localization**: Dynamic language loading from JSON files
 - **External API**: D&D 5e SRD API for official monster data

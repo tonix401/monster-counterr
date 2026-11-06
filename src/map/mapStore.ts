@@ -1,9 +1,9 @@
 import { create } from 'zustand'
+import { analyzeGraph } from './rooms'
 import { createAnalyzerClient, type AnalyzerClient } from './analyzerClient'
 import { parseFogMap, serializeFogMap, type FogMapFile } from './fogMapFile'
 import { loadMapText, saveMapText } from './mapStorage'
 import {
-  edgeSegments,
   emptyGraph,
   graphFromLists,
   graphFromSegments,
@@ -103,7 +103,6 @@ const detectParams = (p: MapParams) => ({
 })
 
 let client: AnalyzerClient | null = null
-let seq = 0
 let timer: ReturnType<typeof setTimeout> | undefined
 let previewSeq = 0
 let previewBusy = false
@@ -114,8 +113,6 @@ let pendingFog: number[] = []
 let gesture = false
 let gestureFresh = false
 let pending = false
-let inflight = false
-let dirty = false
 
 export const useMapStore = create<MapState>()((set, get) => {
   const analyzer = (): AnalyzerClient => (client ??= createAnalyzerClient())
@@ -125,35 +122,20 @@ export const useMapStore = create<MapState>()((set, get) => {
     saveTimer = setTimeout(() => void saveMapText(get().toText()), 800)
   }
 
-  /** `throttle` is for drags: keep one run going and queue another instead of restarting the timer */
+  /** Finds the rooms between the walls. `throttle` is for drags: an update already waiting is enough. */
   function analyze(delay: number, throttle = false): void {
-    if (throttle && (pending || inflight)) {
-      dirty = true
-      return
-    }
+    if (throttle && pending) return
     clearTimeout(timer)
-    set({ busy: true })
     pending = true
-    timer = setTimeout(async () => {
+    timer = setTimeout(() => {
       pending = false
-      inflight = true
-      const mine = ++seq
       const s = get()
-      const res = await analyzer().run({
-        segments: edgeSegments(s.graph),
-        minRoom: s.params.minRoom,
-      })
-      inflight = false
-      if (dirty) {
-        dirty = false
-        analyze(0, true)
-      }
-      if (mine !== seq) return
+      if (!s.loaded) return
+      const res = analyzeGraph(s.graph, s.width, s.height, s.params.minRoom)
 
       // carry the fog over to whichever rooms now cover the same spots
-      const old = get()
-      const keep = [...old.fog]
-        .map((id) => old.analysis?.rooms[id]?.sample)
+      const keep = [...s.fog]
+        .map((id) => s.analysis?.rooms[id]?.sample)
         .filter((v): v is number => v !== undefined)
         .concat(pendingFog)
       pendingFog = []
@@ -329,7 +311,6 @@ export const useMapStore = create<MapState>()((set, get) => {
 
     closeMap: () => {
       clearTimeout(timer)
-      seq++
       pendingFog = []
       previewSeq++
       set({

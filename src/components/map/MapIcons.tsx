@@ -1,0 +1,167 @@
+import React from 'react'
+
+const Svg: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    focusable="false"
+  >
+    {children}
+  </svg>
+)
+
+const icon = (children: React.ReactNode): React.FC => {
+  const Icon: React.FC = () => <Svg>{children}</Svg>
+  return Icon
+}
+
+export const FogIcon = icon(
+  <>
+    <path d="M7 17a4 4 0 0 1-.5-7.97A5.5 5.5 0 0 1 17 8.5a3.75 3.75 0 0 1 .5 7.5H7z" />
+    <path d="M4 21h16" />
+  </>
+)
+export const WallIcon = icon(
+  <>
+    <path d="M4 20 20 4" />
+    <circle cx="4" cy="20" r="1.5" />
+    <circle cx="20" cy="4" r="1.5" />
+  </>
+)
+export const EraserIcon = icon(
+  <>
+    <path d="m7 21-4.3-4.3a1 1 0 0 1 0-1.4l9.6-9.6a1 1 0 0 1 1.4 0l5.6 5.6a1 1 0 0 1 0 1.4L13 21" />
+    <path d="M22 21H7" />
+    <path d="m5 11 9 9" />
+  </>
+)
+export const MapIcon = icon(
+  <>
+    <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z" />
+    <path d="M9 4v14M15 6v14" />
+  </>
+)
+export const LinesIcon = icon(
+  <>
+    <rect x="3" y="3" width="18" height="18" rx="2" />
+    <path d="M3 12h9V3M12 12v9M12 16h9" />
+  </>
+)
+export const BlueprintIcon = icon(
+  <>
+    <rect x="3" y="3" width="18" height="18" rx="2" />
+    <path d="M3 9h18M9 21V9M15 9v12" strokeDasharray="2 2" />
+  </>
+)
+export const OpenIcon = icon(
+  <>
+    <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+  </>
+)
+export const SaveIcon = icon(
+  <>
+    <path d="M12 3v12m0 0-4-4m4 4 4-4" />
+    <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+  </>
+)
+export const CloseIcon = icon(<path d="M18 6 6 18M6 6l12 12" />)
+export const ShareIcon = icon(
+  <>
+    <circle cx="6" cy="12" r="2.5" />
+    <circle cx="18" cy="6" r="2.5" />
+    <circle cx="18" cy="18" r="2.5" />
+    <path d="m8.2 10.8 7.6-3.6M8.2 13.2l7.6 3.6" />
+  </>
+)
+export const PlayerIcon = icon(
+  <>
+    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
+    <circle cx="12" cy="12" r="3" />
+  </>
+)
+export const SlidersIcon = icon(
+  <>
+    <path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0" />
+    <circle cx="16" cy="6" r="2" />
+    <circle cx="8" cy="12" r="2" />
+    <circle cx="18" cy="18" r="2" />
+  </>
+)
+export const FogAllIcon = icon(
+  <>
+    <rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" fillOpacity="0.35" />
+    <path d="M8 12h8" />
+  </>
+)
+export const RevealAllIcon = icon(
+  <>
+    <rect x="3" y="3" width="18" height="18" rx="2" strokeDasharray="3 3" />
+    <path d="M12 8v8M8 12h8" />
+  </>
+)
+export const UndoIcon = icon(
+  <>
+    <path d="M9 14 4 9l5-5" />
+    <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />
+  </>
+)
+export const TrashIcon = icon(
+  <>
+    <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
+    <path d="M10 11v6M14 11v6" />
+  </>
+)
+export const RefreshIcon = icon(
+  <>
+    <path d="M21 12a9 9 0 0 1-15.5 6.2L3 16" />
+    <path d="M3 21v-5h5" />
+    <path d="M3 12A9 9 0 0 1 18.5 5.8L21 8" />
+    <path d="M21 3v5h-5" />
+  </>
+)
+
+interface IconButtonProps {
+  label: string
+  shortcut?: string
+  icon: React.ReactNode
+  active?: boolean
+  pressed?: boolean
+  danger?: boolean
+  disabled?: boolean
+  onClick?: () => void
+  /** Side the tooltip opens towards */
+  tip?: 'right' | 'below' | 'above'
+}
+
+/** Square icon button with a tooltip (label plus keyboard shortcut) and an aria-label */
+export const IconButton: React.FC<IconButtonProps> = ({
+  label,
+  shortcut,
+  icon: glyph,
+  active,
+  pressed,
+  danger,
+  disabled,
+  onClick,
+  tip = 'below',
+}) => (
+  <button
+    type="button"
+    className={`map-icon-btn ${active ? 'active' : ''} ${danger ? 'danger' : ''}`}
+    aria-label={shortcut ? `${label} (${shortcut})` : label}
+    aria-pressed={pressed}
+    data-tip={shortcut ? `${label}  ${shortcut}` : label}
+    data-tip-side={tip}
+    disabled={disabled}
+    onClick={onClick}
+  >
+    {glyph}
+  </button>
+)

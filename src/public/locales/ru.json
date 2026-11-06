@@ -160,6 +160,12 @@
     "mapFogged": "в тумане",
     "mapNotShared": "Мастер ещё не показал карту.",
     "mapInvalidFile": "Выберите изображение карты (PNG, JPG, WebP) или файл .fog_map.",
-    "mapLoadFailed": "Не удалось прочитать карту."
+    "mapLoadFailed": "Не удалось прочитать карту.",
+    "mapRedetect": "Повторить обнаружение",
+    "mapGroupFile": "Файл",
+    "mapGroupView": "Вид",
+    "mapGroupTools": "Инструменты",
+    "mapGroupFog": "Действия с туманом",
+    "mapPanelClose": "Закрыть панель"
   }
 }

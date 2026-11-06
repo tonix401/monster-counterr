@@ -160,6 +160,12 @@
     "mapFogged": "霧",
     "mapNotShared": "ゲームマスターはまだマップを共有していません。",
     "mapInvalidFile": "マップ画像（PNG、JPG、WebP）または .fog_map ファイルを選んでください。",
-    "mapLoadFailed": "マップを読み込めませんでした。"
+    "mapLoadFailed": "マップを読み込めませんでした。",
+    "mapRedetect": "検出を再実行",
+    "mapGroupFile": "ファイル",
+    "mapGroupView": "表示",
+    "mapGroupTools": "ツール",
+    "mapGroupFog": "霧の操作",
+    "mapPanelClose": "パネルを閉じる"
   }
 }

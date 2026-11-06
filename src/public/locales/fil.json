@@ -160,6 +160,12 @@
     "mapFogged": "natakpan ng hamog",
     "mapNotShared": "Hindi pa nagbabahagi ng mapa ang game master.",
     "mapInvalidFile": "Pumili ng larawan ng mapa (PNG, JPG, WebP) o .fog_map file.",
-    "mapLoadFailed": "Hindi mabasa ang mapa."
+    "mapLoadFailed": "Hindi mabasa ang mapa.",
+    "mapRedetect": "Patakbuhin muli ang detection",
+    "mapGroupFile": "File",
+    "mapGroupView": "Tanaw",
+    "mapGroupTools": "Mga tool",
+    "mapGroupFog": "Mga aksyon sa fog",
+    "mapPanelClose": "Isara ang panel"
   }
 }

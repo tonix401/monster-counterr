@@ -160,6 +160,12 @@
     "mapFogged": "brouillées",
     "mapNotShared": "Le maître du jeu n'a pas encore partagé de carte.",
     "mapInvalidFile": "Choisissez une image de carte (PNG, JPG, WebP) ou un fichier .fog_map.",
-    "mapLoadFailed": "La carte n'a pas pu être lue."
+    "mapLoadFailed": "La carte n'a pas pu être lue.",
+    "mapRedetect": "Relancer la détection",
+    "mapGroupFile": "Fichier",
+    "mapGroupView": "Vue",
+    "mapGroupTools": "Outils",
+    "mapGroupFog": "Actions de brouillard",
+    "mapPanelClose": "Fermer le panneau"
   }
 }

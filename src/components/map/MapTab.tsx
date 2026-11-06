@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useTerm } from '@/store/useMonsterStore'
-import { foggedCount, roomCount, useMapStore, type MapParams } from '@/map/mapStore'
+import { useMapStore, type MapParams } from '@/map/mapStore'
 import type { MapMode, MapView } from '@/map/types'
 import MapCanvas from './MapCanvas'
 import {
@@ -37,7 +37,6 @@ import './MapTab.css'
 interface Tool {
   mode: MapMode
   label: string
-  hint: string
   key: string
   icon: React.ReactNode
 }
@@ -47,26 +46,24 @@ const TOOL_GROUPS: Tool[][] = [
     {
       mode: 'select',
       label: 'mapModeSelect',
-      hint: 'mapHintSelect',
       key: 'v',
       icon: <SelectIcon />,
     },
-    { mode: 'fog', label: 'mapModeFog', hint: 'mapHintFog', key: 'f', icon: <FogIcon /> },
-    { mode: 'pan', label: 'mapModePan', hint: 'mapHintPan', key: 'h', icon: <PanIcon /> },
+    { mode: 'fog', label: 'mapModeFog', key: 'f', icon: <FogIcon /> },
+    { mode: 'pan', label: 'mapModePan', key: 'h', icon: <PanIcon /> },
   ],
   [
-    { mode: 'wall', label: 'mapModeWall', hint: 'mapHintWall', key: 'w', icon: <WallIcon /> },
-    { mode: 'rect', label: 'mapModeRect', hint: 'mapHintShape', key: 'r', icon: <RectIcon /> },
+    { mode: 'wall', label: 'mapModeWall', key: 'w', icon: <WallIcon /> },
+    { mode: 'rect', label: 'mapModeRect', key: 'r', icon: <RectIcon /> },
     {
       mode: 'circle',
       label: 'mapModeCircle',
-      hint: 'mapHintShape',
       key: 'c',
       icon: <CircleIcon />,
     },
-    { mode: 'poly', label: 'mapModePoly', hint: 'mapHintPoly', key: 'g', icon: <PolygonIcon /> },
+    { mode: 'poly', label: 'mapModePoly', key: 'g', icon: <PolygonIcon /> },
   ],
-  [{ mode: 'erase', label: 'mapModeErase', hint: 'mapHintErase', key: 'e', icon: <EraserIcon /> }],
+  [{ mode: 'erase', label: 'mapModeErase', key: 'e', icon: <EraserIcon /> }],
 ]
 const MODES = TOOL_GROUPS.flat()
 const zoom = (factor: number): boolean =>
@@ -176,9 +173,6 @@ const MapTab: React.FC = () => {
       </div>
     )
 
-  const rooms = roomCount(s.analysis)
-  const fogged = foggedCount(s.analysis, s.fog)
-  const mode = MODES.find((m) => m.mode === s.mode)!
   const hasEdits = s.history.length > 0
 
   return (
@@ -309,9 +303,6 @@ const MapTab: React.FC = () => {
         )}
 
         <div className="map-bottom">
-          <p className="map-toast" role="status">
-            <strong>{t(mode.label)}</strong> {t(mode.hint)}
-          </p>
           <div className="map-bottom-row">
             <div className="map-group" role="group" aria-label={t('mapGroupFog')}>
               <IconButton
@@ -372,12 +363,12 @@ const MapTab: React.FC = () => {
                 onClick={s.clearEdits}
               />
             </div>
-            <p className="map-status" role="status">
-              {s.busy || !s.analysis
-                ? t('mapFindingWalls')
-                : `${rooms} ${t('mapRooms')} · ${fogged} ${t('mapFogged')}`}
-              {s.error && <span className="map-error"> {t(s.error)}</span>}
-            </p>
+            {(s.busy || !s.analysis || s.error) && (
+              <p className="map-status" role="status">
+                {(s.busy || !s.analysis) && t('mapFindingWalls')}
+                {s.error && <span className="map-error"> {t(s.error)}</span>}
+              </p>
+            )}
           </div>
         </div>
 

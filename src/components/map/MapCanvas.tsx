@@ -527,7 +527,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     polyAt.current = null
     if (pts.length >= 2) {
       const s = useMapStore.getState()
-      s.setGraph(addPolyline(s.graph, pts, closed))
+      s.setGraph(addPolyline(s.graph, pts, closed, tol()))
     }
     draw()
   }
@@ -626,7 +626,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       let sel = s.selected
       for (const id of ids) {
         if (!mergeTarget(g, id, 1)) continue
-        const out = dropNode(g, id, 1)
+        const out = dropNode(g, id, 1, tol())
         g = out.g
         if (dg.kind === 'node') sel = { kind: 'node', id: out.id }
       }
@@ -645,10 +645,15 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     const r = tol()
     if (c.mode === 'wall')
       s.setGraph(
-        addPolyline(s.graph, [
-          [b.x1, b.y1],
-          [b.x2, b.y2],
-        ])
+        addPolyline(
+          s.graph,
+          [
+            [b.x1, b.y1],
+            [b.x2, b.y2],
+          ],
+          false,
+          r
+        )
       )
     else if (c.mode === 'rect') s.setGraph(addRect(s.graph, b.x1, b.y1, b.x2, b.y2, r))
     else s.setGraph(addEllipse(s.graph, b.x1, b.y1, b.x2, b.y2, M, r))

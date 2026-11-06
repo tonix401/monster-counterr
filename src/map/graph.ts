@@ -150,26 +150,38 @@ export function splitEdge(
 }
 
 /** The node at a point, made by splitting the wall under it or adding a new one if there is none */
-function placeNode(g: Graph, x: number, y: number): { g: Graph; id: number } {
+function placeNode(g: Graph, x: number, y: number): { g: Graph; id: number; joined: boolean } {
   const s = snapPoint(g, x, y, SAME)
-  if (s.kind === 'node') return { g, id: s.node.id }
-  if (s.kind === 'edge') return splitEdge(g, s.edge.id, s.x, s.y)
-  return { g: { ...g, nodes: [...g.nodes, { id: g.next, x, y }], next: g.next + 1 }, id: g.next }
+  if (s.kind === 'node') return { g, id: s.node.id, joined: true }
+  if (s.kind === 'edge') return { ...splitEdge(g, s.edge.id, s.x, s.y), joined: true }
+  return {
+    g: { ...g, nodes: [...g.nodes, { id: g.next, x, y }], next: g.next + 1 },
+    id: g.next,
+    joined: false,
+  }
 }
 
 /** Walls along the points, joined to the nodes and walls already at those spots */
-export function addPolyline(g: Graph, pts: [number, number][], closed = false): Graph {
+export function addPolyline(
+  g: Graph,
+  pts: [number, number][],
+  closed = false,
+  tidyReach = 0
+): Graph {
   let out = g
   let first = -1
   let prev = -1
+  const joined: number[] = []
   for (const p of pts) {
     const placed = placeNode(out, p[0], p[1])
     out = placed.g
+    if (placed.joined) joined.push(placed.id)
     if (prev !== -1) out = addEdge(out, prev, placed.id)
     else first = placed.id
     prev = placed.id
   }
-  return closed && pts.length > 2 ? addEdge(out, prev, first) : out
+  if (closed && pts.length > 2) out = addEdge(out, prev, first)
+  return tidy(out, tidyReach, joined)
 }
 
 /** The points moved onto nodes and walls within `r` (this is what the pointer snaps to) */
@@ -193,7 +205,7 @@ export function addRect(
     [x2, y2],
     [x1, y2],
   ]
-  return addPolyline(g, snapAll(g, pts, r), true)
+  return addPolyline(g, snapAll(g, pts, r), true, r)
 }
 
 /** How many corners a ring around the box gets: a smooth look, but few enough to edit by hand */
@@ -232,7 +244,7 @@ export function addEllipse(
   M: number,
   r: number
 ): Graph {
-  return addPolyline(g, snapAll(g, ellipsePoints(x1, y1, x2, y2, M), r), true)
+  return addPolyline(g, snapAll(g, ellipsePoints(x1, y1, x2, y2, M), r), true, r)
 }
 
 /** Moves a node; every wall on it follows. */
@@ -272,10 +284,111 @@ export function mergeTarget(g: Graph, id: number, r: number): MapNode | null {
   return target
 }
 
+const degreeOf = (g: Graph): Map<number, number> => {
+  const d = new Map<number, number>()
+  for (const e of g.edges) {
+    d.set(e.a, (d.get(e.a) ?? 0) + 1)
+    d.set(e.b, (d.get(e.b) ?? 0) + 1)
+  }
+  return d
+}
+
+/** Smallest angle between two directions, in degrees (0..90 when taken between lines) */
+const lineAngle = (dx1: number, dy1: number, dx2: number, dy2: number): number => {
+  const a = Math.abs(Math.atan2(dy1, dx1) - Math.atan2(dy2, dx2)) * (180 / Math.PI)
+  const m = a % 180
+  return Math.min(m, 180 - m)
+}
+
+/**
+ * Cleans up where walls were just joined, so slips of the hand do not stay as flaws: tiny stubs
+ * sticking out past a junction are removed, a wall shorter than `r` collapses into one node, a
+ * node that two nearly straight walls meet in is moved onto the straight line, and a loose end
+ * that is almost horizontal or vertical is made so. `ids` are the nodes that were touched (their
+ * neighbours are looked at too); without it the whole graph is tidied. `r` is the reach in pixels.
+ */
+export function tidy(g: Graph, r: number, ids?: Iterable<number>): Graph {
+  if (r <= 0) return g
+  let out = g
+  const touched = ids ? new Set(ids) : null
+  for (let pass = 0; pass < 300; pass++) {
+    const before = out
+    const at = nodeMap(out)
+    const deg = degreeOf(out)
+    const near = (id: number): boolean => {
+      if (!touched) return true
+      if (touched.has(id)) return true
+      return out.edges.some(
+        (e) => (e.a === id && touched.has(e.b)) || (e.b === id && touched.has(e.a))
+      )
+    }
+
+    // a stub: a loose end hanging off a junction, shorter than the reach
+    for (const e of out.edges) {
+      const p = at.get(e.a)
+      const q = at.get(e.b)
+      if (!p || !q || Math.hypot(p.x - q.x, p.y - q.y) > r * 1.5) continue
+      const [leaf, hub] = deg.get(e.a) === 1 ? [p, q] : deg.get(e.b) === 1 ? [q, p] : [null, null]
+      if (!leaf || (deg.get(hub.id) ?? 0) < 3 || !(near(leaf.id) || near(hub.id))) continue
+      out = removeEdge(out, e.id)
+      break
+    }
+    if (out !== before) continue
+
+    // a wall so short it is only a kink: its two nodes become one
+    for (const e of out.edges) {
+      const p = at.get(e.a)
+      const q = at.get(e.b)
+      if (!p || !q || Math.hypot(p.x - q.x, p.y - q.y) >= r * 0.6 || !(near(p.id) || near(q.id)))
+        continue
+      const mid = { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 }
+      out = mergeNodes(moveNode(out, p.id, mid.x, mid.y), q.id, p.id)
+      break
+    }
+    if (out !== before) continue
+
+    // a node between two almost straight walls goes onto the straight line
+    for (const n of out.nodes) {
+      if (deg.get(n.id) !== 2 || !near(n.id)) continue
+      const ends = out.edges
+        .filter((e) => e.a === n.id || e.b === n.id)
+        .map((e) => at.get(e.a === n.id ? e.b : e.a)!)
+      const [a, b] = ends
+      if (!a || !b || a.id === b.id) continue
+      const bend = lineAngle(n.x - a.x, n.y - a.y, b.x - n.x, b.y - n.y)
+      if (bend === 0 || bend > 8) continue
+      const c = closestOnSegment(n.x, n.y, { x1: a.x, y1: a.y, x2: b.x, y2: b.y })
+      if (Math.hypot(c[0] - n.x, c[1] - n.y) > r * 2) continue
+      out = moveNode(out, n.id, c[0], c[1])
+      break
+    }
+    if (out !== before) continue
+
+    // a loose end of a touched wall that is almost level or plumb is made so
+    for (const e of out.edges) {
+      const p = at.get(e.a)
+      const q = at.get(e.b)
+      if (!p || !q) continue
+      const [hub, leaf] = deg.get(e.b) === 1 ? [p, q] : deg.get(e.a) === 1 ? [q, p] : [null, null]
+      if (!hub || !leaf || !(near(hub.id) || near(leaf.id))) continue
+      const dx = leaf.x - hub.x
+      const dy = leaf.y - hub.y
+      if (!dx && !dy) continue
+      if (lineAngle(dx, dy, 1, 0) < 4 && dy !== 0) out = moveNode(out, leaf.id, leaf.x, hub.y)
+      else if (lineAngle(dx, dy, 0, 1) < 4 && dx !== 0) out = moveNode(out, leaf.id, hub.x, leaf.y)
+      if (out !== before) break
+    }
+    if (out === before) break
+  }
+  return out
+}
+
 /** Lets go of a dragged node: it joins a node close to it, if there is one. Returns the node left. */
-export function dropNode(g: Graph, id: number, r: number): { g: Graph; id: number } {
+export function dropNode(g: Graph, id: number, r: number, tidyReach = 0): { g: Graph; id: number } {
   const t = mergeTarget(g, id, r)
-  return t ? { g: mergeNodes(g, id, t.id), id: t.id } : { g, id }
+  const joined = t ? mergeNodes(g, id, t.id) : g
+  const at = t ? t.id : id
+  return { g: tidy(joined, tidyReach, [at]), id: at }
 }
 
 /** The wall nearest to the point within `tol`, ignoring nodes */
@@ -379,7 +492,7 @@ export function graphFromSegments(segs: WallSegment[], M: number): Graph {
     edges.push({ id: next++, a: a + 1, b: b + 1 })
   }
   const nodes = corners.map((c, i) => ({ id: i + 1, x: c.x, y: c.y }))
-  return dropOrphans({ nodes, edges, next })
+  return tidy(dropOrphans({ nodes, edges, next }), tol)
 }
 
 /** The walls as a list of points and a list of point-index pairs, the way a file keeps them */

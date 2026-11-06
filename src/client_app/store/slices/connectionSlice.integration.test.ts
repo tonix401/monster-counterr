@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest'
 import { create } from 'zustand'
 import { createConnectionSlice, type ConnectionSlice } from './connectionSlice'
 import type { TermSlice } from './termSlice'
@@ -7,16 +7,16 @@ import { CONNECTION } from '@/constants'
 // Mock PeerJS with full event emitter implementation
 vi.mock('peerjs', () => {
   const EventEmitter = class {
-    private handlers: Record<string, Function[]> = {}
+    private handlers: Record<string, Array<(...args: unknown[]) => void>> = {}
 
-    on(event: string, handler: Function) {
+    on(event: string, handler: (...args: unknown[]) => void) {
       if (!this.handlers[event]) {
         this.handlers[event] = []
       }
       this.handlers[event].push(handler)
     }
 
-    emit(event: string, ...args: any[]) {
+    emit(event: string, ...args: unknown[]) {
       const eventHandlers = this.handlers[event]
       if (eventHandlers) {
         eventHandlers.forEach((handler) => handler(...args))
@@ -40,6 +40,17 @@ vi.mock('peerjs', () => {
     DataConnection: MockConnection,
   }
 })
+
+// Narrow views of the mocked PeerJS objects used by these tests
+interface MockPeerHandle {
+  emit: (event: string, ...args: unknown[]) => void
+  connect: Mock
+}
+
+interface MockConnectionHandle {
+  emit: (event: string, ...args: unknown[]) => void
+  send: Mock
+}
 
 type TestStore = ConnectionSlice &
   TermSlice & {
@@ -97,13 +108,13 @@ describe('Connection Integration Tests', () => {
       expect(store.getState().peer).toBeTruthy()
 
       // Step 4: Peer opens
-      const peer = store.getState().peer as any
+      const peer = store.getState().peer as unknown as MockPeerHandle
       peer.emit('open', 'peer-id-123')
       expect(store.getState().peerId).toBe('peer-id-123')
       expect(store.getState().connection).toBeTruthy()
 
       // Step 5: Connection opens
-      const connection = store.getState().connection as any
+      const connection = store.getState().connection as unknown as MockConnectionHandle
       connection.emit('open')
       expect(store.getState().connectionStatus).toBe('connected')
       expect(connection.send).toHaveBeenCalledWith({
@@ -142,10 +153,10 @@ describe('Connection Integration Tests', () => {
       store.getState().setHostId('host-123')
       store.getState().connectToHost()
 
-      const peer = store.getState().peer as any
+      const peer = store.getState().peer as unknown as MockPeerHandle
       peer.emit('open', 'peer-id-123')
 
-      const connection = store.getState().connection as any
+      const connection = store.getState().connection as unknown as MockConnectionHandle
       connection.emit('open')
 
       expect(store.getState().connectionStatus).toBe('connected')
@@ -180,10 +191,10 @@ describe('Connection Integration Tests', () => {
       store.getState().setHostId('host-123')
       store.getState().connectToHost()
 
-      const peer = store.getState().peer as any
+      const peer = store.getState().peer as unknown as MockPeerHandle
       peer.emit('open', 'peer-id-123')
 
-      const connection = store.getState().connection as any
+      const connection = store.getState().connection as unknown as MockConnectionHandle
       connection.emit('open')
 
       expect(store.getState().connectionStatus).toBe('connected')
@@ -201,10 +212,10 @@ describe('Connection Integration Tests', () => {
       expect(store.getState().peer).toBeTruthy()
 
       // New peer opens
-      const newPeer = store.getState().peer as any
+      const newPeer = store.getState().peer as unknown as MockPeerHandle
       newPeer.emit('open', 'peer-id-456')
 
-      const newConnection = store.getState().connection as any
+      const newConnection = store.getState().connection as unknown as MockConnectionHandle
       newConnection.emit('open')
 
       // Successfully reconnected
@@ -217,10 +228,10 @@ describe('Connection Integration Tests', () => {
       store.getState().setHostId('host-123')
       store.getState().connectToHost()
 
-      const peer = store.getState().peer as any
+      const peer = store.getState().peer as unknown as MockPeerHandle
       peer.emit('open', 'peer-id-123')
 
-      const connection = store.getState().connection as any
+      const connection = store.getState().connection as unknown as MockConnectionHandle
       connection.emit('open')
 
       expect(store.getState().connectionStatus).toBe('connected')
@@ -245,10 +256,10 @@ describe('Connection Integration Tests', () => {
       store.getState().setHostId('host-123')
       store.getState().connectToHost()
 
-      const peer = store.getState().peer as any
+      const peer = store.getState().peer as unknown as MockPeerHandle
       peer.emit('open', 'peer-id-123')
 
-      const connection = store.getState().connection as any
+      const connection = store.getState().connection as unknown as MockConnectionHandle
       connection.emit('open')
 
       // Initial encounter data
@@ -283,7 +294,7 @@ describe('Connection Integration Tests', () => {
       store.getState().setHostId('host-123')
       store.getState().connectToHost()
 
-      const peer = store.getState().peer as any
+      const peer = store.getState().peer as unknown as MockPeerHandle
       peer.emit('error', { message: 'Failed to initialize peer' })
 
       expect(store.getState().connectionStatus).toBe('disconnected')
@@ -299,10 +310,10 @@ describe('Connection Integration Tests', () => {
       store.getState().setHostId('host-123')
       store.getState().connectToHost()
 
-      const peer = store.getState().peer as any
+      const peer = store.getState().peer as unknown as MockPeerHandle
       peer.emit('open', 'peer-id-123')
 
-      const connection = store.getState().connection as any
+      const connection = store.getState().connection as unknown as MockConnectionHandle
       connection.emit('error', new Error('Connection failed'))
 
       expect(store.getState().connectionStatus).toBe('disconnected')
@@ -319,7 +330,7 @@ describe('Connection Integration Tests', () => {
       // Attempt connection and fail 6 times (initial + 5 retries)
       for (let i = 0; i <= 5; i++) {
         store.getState().connectToHost()
-        const peer = store.getState().peer as any
+        const peer = store.getState().peer as unknown as MockPeerHandle
         if (peer) {
           peer.emit('error', { message: 'Connection failed' })
         }
@@ -359,10 +370,10 @@ describe('Connection Integration Tests', () => {
       store.getState().connectToHost()
       expect(store.getState().connectionStatus).toBe('connecting')
 
-      const peer = store.getState().peer as any
+      const peer = store.getState().peer as unknown as MockPeerHandle
       peer.emit('open', 'peer-id-123')
 
-      const connection = store.getState().connection as any
+      const connection = store.getState().connection as unknown as MockConnectionHandle
       connection.emit('open')
 
       expect(store.getState().connectionStatus).toBe('connected')
@@ -373,10 +384,10 @@ describe('Connection Integration Tests', () => {
       store.getState().setHostId('host-123')
       store.getState().connectToHost()
 
-      const peer = store.getState().peer as any
+      const peer = store.getState().peer as unknown as MockPeerHandle
       peer.emit('open', 'peer-id-123')
 
-      const connection = store.getState().connection as any
+      const connection = store.getState().connection as unknown as MockConnectionHandle
       connection.emit('open')
 
       // Disconnect

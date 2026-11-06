@@ -52,6 +52,10 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
   const poly = useRef<[number, number][]>([])
   const polyAt = useRef<[number, number] | null>(null)
   const drag = useRef<Drag | null>(null)
+  /** A line started with a click: it follows the pointer until the next click */
+  const pending = useRef(false)
+  /** Where the next mode change starts a line (a double click on a node in select mode) */
+  const startAt = useRef<[number, number] | null>(null)
   const painting = useRef<boolean | null>(null)
   const lastPainted = useRef(0)
   const hover = useRef(0)
@@ -213,11 +217,21 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     g.lineWidth = (s.view === 'blueprint' ? 2 : 3) * (dpr / sc)
     g.lineCap = 'square'
     g.strokeStyle = s.view === 'blueprint' ? '#e8f4ff' : '#28beff'
+    // while the detection preview is open the current walls step back and the preview stands out
+    g.save()
+    if (s.preview) g.globalAlpha = 0.35
+    g.beginPath()
+    for (const m of edgeSegments(s.graph)) {
+      g.moveTo(m.x1, m.y1)
+      g.lineTo(m.x2, m.y2)
+    }
+    g.stroke()
+    g.restore()
     if (s.preview) {
-      // walls the detection panel would put on the map, dimmed
+      // walls the detection panel would put on the map
       g.save()
-      g.globalAlpha = 0.55
-      g.strokeStyle = '#ff9a3c'
+      g.strokeStyle = '#ffb347'
+      g.lineWidth = 3.5 * (dpr / sc)
       g.setLineDash([8 * (dpr / sc), 5 * (dpr / sc)])
       g.beginPath()
       for (const m of s.preview) {
@@ -227,15 +241,10 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       g.stroke()
       g.restore()
     }
-    g.beginPath()
-    for (const m of edgeSegments(s.graph)) {
-      g.moveTo(m.x1, m.y1)
-      g.lineTo(m.x2, m.y2)
-    }
-    g.stroke()
     if (editing) {
       // the nodes the walls hang on: where new lines attach and what can be dragged
       const rr = 3.5 * (dpr / sc)
+      if (s.preview) g.globalAlpha = 0.35
       g.fillStyle = s.view === 'blueprint' ? '#28beff' : '#fff'
       g.strokeStyle = s.view === 'blueprint' ? '#e8f4ff' : '#0a6e99'
       g.lineWidth = 1.5 * (dpr / sc)
@@ -294,7 +303,29 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
   // Backspace takes back the last corner
   useEffect(() => {
     cancelPoly()
+    draft.current = null
+    pending.current = false
+    snapHint.current = null
+    const from = startAt.current
+    startAt.current = null
+    if (mode === 'wall' && from) {
+      draft.current = {
+        mode: 'wall',
+        sx: from[0],
+        sy: from[1],
+        box: { x1: from[0], y1: from[1], x2: from[0], y2: from[1] },
+      }
+      pending.current = true
+      draw()
+    }
     const onKey = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape' && pending.current) {
+        draft.current = null
+        pending.current = false
+        draw()
+        e.preventDefault()
+        return e.stopImmediatePropagation()
+      }
       if (useMapStore.getState().mode !== 'poly' || !poly.current.length) return
       if (e.key === 'Enter') finishPoly(false)
       else if (e.key === 'Escape') cancelPoly()
@@ -469,12 +500,34 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       return
     }
     const s = useMapStore.getState()
+    if (e.button === 2 && ['wall', 'rect', 'circle', 'poly'].includes(s.mode) && !space.current) {
+      // while drawing, the right button moves a node
+      const hit = hitTest(s.graph, ...toWork(e), tol())
+      if (hit?.kind === 'node') {
+        e.preventDefault()
+        s.beginGesture()
+        drag.current = { kind: 'node', id: hit.node.id, g0: s.graph }
+        return
+      }
+    }
     if (e.button === 1 || e.button === 2 || space.current || s.mode === 'pan') {
       e.preventDefault()
       return startPan(e)
     }
     if (e.button > 0) return
     const [x, y] = toWork(e)
+    if (pending.current && draft.current && s.mode === 'wall') {
+      // the second click of a line: it ends here
+      const c = draft.current
+      commitDraft({
+        ...c,
+        box: boxFor(c.mode, c.sx, c.sy, x, y, e.shiftKey, s.graph, tol()),
+      })
+      draft.current = null
+      pending.current = false
+      snapHint.current = null
+      return draw()
+    }
     if (s.mode === 'fog' || player) {
       const id = roomAt(x, y)
       if (!id) return
@@ -562,7 +615,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     if (!analysis) return
     const [x, y] = toWork(e)
     const s = useMapStore.getState()
-    const drawing = ['wall', 'rect', 'circle', 'poly'].includes(s.mode)
+    const drawing = !dg && ['wall', 'rect', 'circle', 'poly'].includes(s.mode)
     if (drawing) {
       const h = snapTo(x, y, e.shiftKey)
       const had = snapHint.current
@@ -572,7 +625,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       if (s.mode === 'poly') return
     }
     const cur = draft.current
-    if (cur) {
+    if (cur && !dg) {
       const box = boxFor(cur.mode, cur.sx, cur.sy, x, y, e.shiftKey, s.graph, tol())
       draft.current = { ...cur, box }
       // the ring shows what the end of the line lands on
@@ -637,8 +690,20 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     }
     if (dg && dg.kind !== 'pan') s.endGesture()
     const c = draft.current
-    if (!c) return
+    if (!c || pending.current) return
+    const b = c.box
+    if (c.mode === 'wall' && Math.max(Math.abs(b.x2 - b.x1), Math.abs(b.y2 - b.y1)) < 6) {
+      // a click rather than a drag: the line goes on until the next click
+      pending.current = true
+      return draw()
+    }
     draft.current = null
+    commitDraft(c)
+  }
+
+  /** Puts a finished line, rectangle or circle on the map */
+  const commitDraft = (c: Draft): void => {
+    const s = useMapStore.getState()
     const b = c.box
     if (Math.max(Math.abs(b.x2 - b.x1), Math.abs(b.y2 - b.y1)) < 6) return draw()
     const M = Math.max(s.width, s.height)
@@ -682,7 +747,16 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endPointer}
-        onDoubleClick={() => mode === 'poly' && finishPoly(false)}
+        onDoubleClick={(e) => {
+          if (mode === 'poly') return finishPoly(false)
+          if (mode !== 'select') return
+          // a double click on a node starts a line there
+          const s = useMapStore.getState()
+          const hit = hitTest(s.graph, ...toWork(e), tol())
+          if (hit?.kind !== 'node') return
+          startAt.current = [hit.node.x, hit.node.y]
+          s.setMode('wall')
+        }}
         onPointerCancel={endPointer}
         onContextMenu={(e) => e.preventDefault()}
         onPointerLeave={() => {

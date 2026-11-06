@@ -5,12 +5,20 @@ export interface WallSegment {
   y2: number
 }
 
-export type WallOp = { type: 'wall' } & WallSegment
-export type EraseOp = { type: 'erase'; w: number; pts: [number, number][] }
-export type MapOp = WallOp | EraseOp
+export type ShapeKind = 'rect' | 'tri' | 'circle'
+
+/** A drawn line; `id` is assigned by the store so the item can be selected, moved and erased */
+export type WallOp = { type: 'wall'; id?: number } & WallSegment
+/** A rectangle, triangle or ellipse; x1,y1 and x2,y2 are opposite corners of its bounding box */
+export type ShapeOp = { type: 'shape'; kind: ShapeKind; id?: number } & WallSegment
+/** Hides one automatically detected wall, so erasing and moving such walls survives re-rendering */
+export type CutOp = { type: 'cut'; id?: number } & WallSegment
+/** Pixel brush from older files; no longer created */
+export type EraseOp = { type: 'erase'; id?: number; w: number; pts: [number, number][] }
+export type MapOp = WallOp | ShapeOp | CutOp | EraseOp
 
 export type MapView = 'map' | 'lines' | 'blueprint'
-export type MapMode = 'fog' | 'wall' | 'erase'
+export type MapMode = 'fog' | 'select' | 'wall' | ShapeKind | 'erase' | 'pan'
 
 export interface DetectParams {
   sensitivity: number

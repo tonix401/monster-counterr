@@ -137,7 +137,7 @@
     "mapModeErase": "Burahin ang pader",
     "mapHintFog": "I-click ang silid para takpan ng hamog, i-click ulit para ibunyag. I-drag sa maraming silid para baguhin ang marami.",
     "mapHintWall": "I-drag para gumuhit ng pader. Awtomatiko itong tumutuwid at dumidikit sa kalapit na pader; pindutin ang Shift para sa kahit anong anggulo. Gumuhit sa ibabaw ng pinto para paghiwalayin ang dalawang silid.",
-    "mapHintErase": "Pahiran ng brush ang pader na hindi dapat naroon para pagdugtungin ang mga silid sa magkabilang panig.",
+    "mapHintErase": "I-click ang linya o hugis, o i-drag sa ilan, para tuluyang alisin.",
     "mapUndoEdit": "I-undo ang pagbabago sa pader",
     "mapClearEdits": "Alisin ang lahat ng pagbabago",
     "mapViewMap": "Mapa",
@@ -146,7 +146,6 @@
     "mapFogAll": "Takpan ng hamog ang lahat ng silid",
     "mapRevealAll": "Ibunyag ang lahat",
     "mapPlayerView": "Tanaw ng manlalaro",
-    "mapExitPlayerView": "Lumabas sa tanaw ng manlalaro",
     "mapShare": "Ibahagi sa mga manlalaro",
     "mapShareHint": "Nakikita ng mga manlalaro ang mapa nang walang mga silid na natakpan ng hamog. Hindi kailanman ipinapadala sa kanila ang mga nakatagong silid.",
     "mapWallDetection": "Pagtukoy ng pader",
@@ -166,6 +165,19 @@
     "mapGroupView": "Tanaw",
     "mapGroupTools": "Mga tool",
     "mapGroupFog": "Mga aksyon sa fog",
-    "mapPanelClose": "Isara ang panel"
+    "mapPanelClose": "Isara ang panel",
+    "mapModeSelect": "Pumili at ilipat",
+    "mapModeRect": "Parihaba",
+    "mapModeTriangle": "Tatsulok",
+    "mapModeCircle": "Bilog",
+    "mapModePan": "I-pan",
+    "mapHintSelect": "I-click ang linya o hugis para piliin, i-drag para ilipat, i-drag ang mga handle para baguhin ang laki, Delete para alisin. Mapipili rin ang mga natukoy na pader.",
+    "mapHintShape": "I-drag para gumuhit. Pindutin ang Shift para sa parisukat o bilog.",
+    "mapHintPan": "I-drag para ilipat ang mapa, mag-scroll o mag-pinch para mag-zoom. Right-drag o Space+drag ay nagpa-pan sa anumang tool.",
+    "mapDelete": "Burahin",
+    "mapZoomIn": "I-zoom in",
+    "mapZoomOut": "I-zoom out",
+    "mapZoomFit": "Ibagay sa window",
+    "mapGroupZoom": "Zoom"
   }
 }

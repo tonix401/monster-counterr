@@ -137,7 +137,7 @@
     "mapModeErase": "Wand löschen",
     "mapHintFog": "Raum anklicken, um ihn zu vernebeln, erneut klicken, um ihn aufzudecken. Über mehrere Räume ziehen, um mehrere zu ändern.",
     "mapHintWall": "Ziehen, um eine Wand zu zeichnen. Sie rastet gerade und an nahen Wänden ein; mit Umschalt in beliebigem Winkel. Über eine Tür zeichnen, um zwei Räume zu trennen.",
-    "mapHintErase": "Über eine Wand streichen, die nicht da sein soll, um die Räume auf beiden Seiten zu verbinden.",
+    "mapHintErase": "Eine Linie oder Form anklicken oder über mehrere ziehen, um sie ganz zu entfernen.",
     "mapUndoEdit": "Wand-Änderung rückgängig",
     "mapClearEdits": "Alle Änderungen entfernen",
     "mapViewMap": "Karte",
@@ -146,7 +146,6 @@
     "mapFogAll": "Alle Räume vernebeln",
     "mapRevealAll": "Alles aufdecken",
     "mapPlayerView": "Spieleransicht",
-    "mapExitPlayerView": "Spieleransicht verlassen",
     "mapShare": "Mit Spielern teilen",
     "mapShareHint": "Spieler sehen die Karte ohne die vernebelten Räume. Versteckte Räume werden nie an sie gesendet.",
     "mapWallDetection": "Wanderkennung",
@@ -166,6 +165,19 @@
     "mapGroupView": "Ansicht",
     "mapGroupTools": "Werkzeuge",
     "mapGroupFog": "Nebel-Aktionen",
-    "mapPanelClose": "Panel schließen"
+    "mapPanelClose": "Panel schließen",
+    "mapModeSelect": "Auswählen und verschieben",
+    "mapModeRect": "Rechteck",
+    "mapModeTriangle": "Dreieck",
+    "mapModeCircle": "Kreis",
+    "mapModePan": "Verschieben",
+    "mapHintSelect": "Linie oder Form anklicken, um sie auszuwählen; ziehen verschiebt sie, an den Griffen ändert man die Größe, Entf löscht sie. Auch erkannte Wände lassen sich auswählen.",
+    "mapHintShape": "Ziehen zum Zeichnen. Mit Umschalt wird es ein Quadrat bzw. Kreis.",
+    "mapHintPan": "Ziehen verschiebt die Karte, Scrollen oder Zwei-Finger-Geste zoomt. Rechtsklick-Ziehen oder Leertaste+Ziehen verschiebt mit jedem Werkzeug.",
+    "mapDelete": "Löschen",
+    "mapZoomIn": "Vergrößern",
+    "mapZoomOut": "Verkleinern",
+    "mapZoomFit": "An Fenster anpassen",
+    "mapGroupZoom": "Zoom"
   }
 }

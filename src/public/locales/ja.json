@@ -137,7 +137,7 @@
     "mapModeErase": "壁を消す",
     "mapHintFog": "部屋をクリックすると霧で隠れ、もう一度クリックすると表示されます。複数の部屋をドラッグすると一度に切り替えられます。",
     "mapHintWall": "ドラッグして壁を描きます。まっすぐ、近くの壁にスナップします。Shift で任意の角度。ドアの上に描くと2つの部屋を分けられます。",
-    "mapHintErase": "不要な壁をブラシでなぞると、両側の部屋がつながります。",
+    "mapHintErase": "線や図形をクリック、または複数をなぞって丸ごと削除します。",
     "mapUndoEdit": "壁の編集を元に戻す",
     "mapClearEdits": "すべての編集を削除",
     "mapViewMap": "マップ",
@@ -146,7 +146,6 @@
     "mapFogAll": "すべての部屋を霧で隠す",
     "mapRevealAll": "すべて表示",
     "mapPlayerView": "プレイヤー表示",
-    "mapExitPlayerView": "プレイヤー表示を終了",
     "mapShare": "プレイヤーと共有",
     "mapShareHint": "プレイヤーには霧で隠れた部屋を除いたマップが表示されます。隠れた部屋は送信されません。",
     "mapWallDetection": "壁の検出",
@@ -166,6 +165,19 @@
     "mapGroupView": "表示",
     "mapGroupTools": "ツール",
     "mapGroupFog": "霧の操作",
-    "mapPanelClose": "パネルを閉じる"
+    "mapPanelClose": "パネルを閉じる",
+    "mapModeSelect": "選択と移動",
+    "mapModeRect": "四角形",
+    "mapModeTriangle": "三角形",
+    "mapModeCircle": "円",
+    "mapModePan": "パン",
+    "mapHintSelect": "線や図形をクリックして選択し、ドラッグで移動、ハンドルで大きさ変更、Delete で削除します。検出された壁も選択できます。",
+    "mapHintShape": "ドラッグして描画。Shift で正方形・正円になります。",
+    "mapHintPan": "ドラッグでマップを移動、スクロールまたはピンチでズーム。右ドラッグか Space+ドラッグならどのツールでも移動できます。",
+    "mapDelete": "削除",
+    "mapZoomIn": "拡大",
+    "mapZoomOut": "縮小",
+    "mapZoomFit": "ウィンドウに合わせる",
+    "mapGroupZoom": "ズーム"
   }
 }

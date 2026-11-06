@@ -137,7 +137,7 @@
     "mapModeErase": "Erase wall",
     "mapHintFog": "Click a room to fog it, click again to reveal. Drag across rooms to fog or reveal several.",
     "mapHintWall": "Drag to draw a wall. It snaps straight and to nearby walls; hold Shift to draw at any angle. Draw across a doorway to split two rooms.",
-    "mapHintErase": "Brush over a wall that shouldn't be there to join the rooms on either side.",
+    "mapHintErase": "Click a line or shape, or drag across several, to remove them completely.",
     "mapUndoEdit": "Undo wall edit",
     "mapClearEdits": "Remove all edits",
     "mapViewMap": "Map",
@@ -146,7 +146,6 @@
     "mapFogAll": "Fog every room",
     "mapRevealAll": "Reveal everything",
     "mapPlayerView": "Player view",
-    "mapExitPlayerView": "Exit player view",
     "mapShare": "Share with players",
     "mapShareHint": "Players see the map with fogged rooms hidden. Hidden rooms are never sent to them.",
     "mapWallDetection": "Wall detection",
@@ -166,6 +165,19 @@
     "mapGroupView": "View",
     "mapGroupTools": "Tools",
     "mapGroupFog": "Fog actions",
-    "mapPanelClose": "Close panel"
+    "mapPanelClose": "Close panel",
+    "mapModeSelect": "Select and move",
+    "mapModeRect": "Rectangle",
+    "mapModeTriangle": "Triangle",
+    "mapModeCircle": "Circle",
+    "mapModePan": "Pan",
+    "mapHintSelect": "Click a line or shape to select it, drag to move it, drag the handles to resize it, press Delete to remove it. Detected walls can be selected too.",
+    "mapHintShape": "Drag to draw. Hold Shift for a square or circle.",
+    "mapHintPan": "Drag to move the map, scroll or pinch to zoom. Right-drag or Space+drag pans with any tool.",
+    "mapDelete": "Delete",
+    "mapZoomIn": "Zoom in",
+    "mapZoomOut": "Zoom out",
+    "mapZoomFit": "Fit to window",
+    "mapGroupZoom": "Zoom"
   }
 }

@@ -137,7 +137,7 @@
     "mapModeErase": "Forviŝi muron",
     "mapHintFog": "Alklaku ĉambron por nebuligi ĝin, alklaku denove por malkaŝi. Treŝovu trans pluraj ĉambroj por ŝanĝi plurajn.",
     "mapHintWall": "Treŝovu por desegni muron. Ĝi ĝustiĝas rekte kaj al proksimaj muroj; tenu Shift por ajna angulo. Desegnu trans pordon por apartigi du ĉambrojn.",
-    "mapHintErase": "Brosu trans muron, kiu ne devus esti, por kunigi la ĉambrojn ambaŭflanke.",
+    "mapHintErase": "Alklaku linion aŭ formon, aŭ treŝovu trans pluraj, por tute forigi ilin.",
     "mapUndoEdit": "Malfari murŝanĝon",
     "mapClearEdits": "Forigi ĉiujn redaktojn",
     "mapViewMap": "Mapo",
@@ -146,7 +146,6 @@
     "mapFogAll": "Nebuligi ĉiujn ĉambrojn",
     "mapRevealAll": "Malkaŝi ĉion",
     "mapPlayerView": "Ludantvido",
-    "mapExitPlayerView": "Eliri el ludantvido",
     "mapShare": "Dividi kun ludantoj",
     "mapShareHint": "Ludantoj vidas la mapon sen la nebuligitaj ĉambroj. Kaŝitaj ĉambroj neniam estas senditaj al ili.",
     "mapWallDetection": "Murdetekto",
@@ -166,6 +165,19 @@
     "mapGroupView": "Vido",
     "mapGroupTools": "Iloj",
     "mapGroupFog": "Nebulaj agoj",
-    "mapPanelClose": "Fermi panelon"
+    "mapPanelClose": "Fermi panelon",
+    "mapModeSelect": "Elekti kaj movi",
+    "mapModeRect": "Rektangulo",
+    "mapModeTriangle": "Triangulo",
+    "mapModeCircle": "Cirklo",
+    "mapModePan": "Ŝovi",
+    "mapHintSelect": "Alklaku linion aŭ formon por elekti ĝin, treŝovu por movi, treŝovu la tenilojn por ŝanĝi grandecon, premu Del por forigi. Ankaŭ trovitaj muroj estas elekteblaj.",
+    "mapHintShape": "Treŝovu por desegni. Tenu Shift por kvadrato aŭ cirklo.",
+    "mapHintPan": "Treŝovu por movi la mapon, rulumu aŭ pinĉu por zomi. Dekstra treŝovo aŭ Spaco+treŝovo ŝovas per ĉiu ilo.",
+    "mapDelete": "Forigi",
+    "mapZoomIn": "Zomi",
+    "mapZoomOut": "Malzomi",
+    "mapZoomFit": "Adapti al fenestro",
+    "mapGroupZoom": "Zomo"
   }
 }

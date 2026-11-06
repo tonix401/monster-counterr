@@ -1,4 +1,5 @@
 import { detectWalls } from './detectWalls'
+import { opSegments, sameSegment } from './shapes'
 import type { Analysis, DetectParams, MapOp, Room, WallSegment } from './types'
 
 export function lineWidth(M: number): number {
@@ -63,7 +64,8 @@ export function rasterizeWalls(
   for (const s of auto) stampLine(wall, W, H, s, lw)
   for (const op of ops) {
     if (op.type === 'wall') stampLine(wall, W, H, op, lw)
-    else stampErase(wall, W, H, op.pts, op.w)
+    else if (op.type === 'shape') for (const s of opSegments(op)) stampLine(wall, W, H, s, lw)
+    else if (op.type === 'erase') stampErase(wall, W, H, op.pts, op.w)
   }
   return wall
 }
@@ -263,8 +265,12 @@ export class Analyzer {
     const { W, H } = this
     if (req.detect === null) this.auto = []
     else if (req.detect) this.auto = detectWalls(this.gray, W, H, req.detect)
-    const wall = rasterizeWalls(W, H, this.auto, req.ops)
+    const cuts = req.ops.filter((o) => o.type === 'cut')
+    const auto = cuts.length
+      ? this.auto.filter((s) => !cuts.some((c) => sameSegment(c, s)))
+      : this.auto
+    const wall = rasterizeWalls(W, H, auto, req.ops)
     const { own, rooms } = buildRooms(wall, W, H, req.minRoom)
-    return { W, H, wall, own, rooms, auto: this.auto }
+    return { W, H, wall, own, rooms, auto }
   }
 }

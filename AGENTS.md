@@ -76,9 +76,9 @@ src/
 │   │   ├── ConditionsTableData.tsx
 │   │   └── QuickActionsTableData.tsx
 │   ├── map/             # Map tab (DM side)
-│   │   ├── MapTab.tsx   # Floating icon overlays over the map (file, view, tools, fog actions, detection popover), drop zone, player view
+│   │   ├── MapTab.tsx   # Floating icon overlays over the map (file, view, tool palette, fog actions, zoom, detection popover), drop zone, live player-view pane beside the map
 │   │   ├── MapIcons.tsx # Inline SVG icons and the IconButton (tooltip + aria-label) used by the map overlays
-│   │   └── MapCanvas.tsx # Canvas layers, fog painting, wall drawing/erasing
+│   │   └── MapCanvas.tsx # Canvas layers, fog painting, select/move/resize, line and shape drawing, whole-item eraser, zoom and pan
 │   └── ui/              # Generic UI components
 │       ├── TabBar.tsx   # Route-based tabs (used by the DM app and the client view)
 │       ├── BinarySettingsRow.tsx
@@ -116,6 +116,7 @@ src/
 │   │                    # slivers beside walls; bridges small jogs in the outline
 │   ├── analyze.ts       # Wall rasterizing + room labelling; `Analyzer` keeps the last detection
 │   ├── analysis.worker.ts / analyzerClient.ts # Runs the analysis in a Web Worker (inline fallback in tests)
+│   ├── shapes.ts        # Rectangle/triangle/ellipse outlines, hit-testing, move and resize handles
 │   ├── mapStore.ts      # Zustand store for the current map, edits and fog (separate from the monster store)
 │   ├── mapStorage.ts    # IndexedDB persistence of the current map (too big for localStorage)
 │   ├── fogMapFile.ts    # `.fog_map` file format (compatible with the standalone Map Fog tool)

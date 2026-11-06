@@ -8,6 +8,12 @@
   overflow: hidden;
 }
 
+/* The map wants all the room there is */
+.app.app-wide,
+#root:has(.app-wide) {
+  max-width: none;
+}
+
 /* Loading Skeleton Styles */
 .skeleton {
   background: linear-gradient(

@@ -137,7 +137,7 @@
     "mapModeErase": "Effacer un mur",
     "mapHintFog": "Cliquez sur une salle pour la brouiller, cliquez à nouveau pour la révéler. Glissez sur plusieurs salles pour en changer plusieurs.",
     "mapHintWall": "Glissez pour tracer un mur. Il s'aligne droit et sur les murs proches ; maintenez Maj pour tout angle. Tracez sur une porte pour séparer deux salles.",
-    "mapHintErase": "Passez le pinceau sur un mur qui ne devrait pas être là pour relier les salles de chaque côté.",
+    "mapHintErase": "Cliquez sur une ligne ou une forme, ou glissez sur plusieurs, pour les supprimer entièrement.",
     "mapUndoEdit": "Annuler la modification de mur",
     "mapClearEdits": "Supprimer toutes les modifications",
     "mapViewMap": "Carte",
@@ -146,7 +146,6 @@
     "mapFogAll": "Brouiller toutes les salles",
     "mapRevealAll": "Tout révéler",
     "mapPlayerView": "Vue joueurs",
-    "mapExitPlayerView": "Quitter la vue joueurs",
     "mapShare": "Partager avec les joueurs",
     "mapShareHint": "Les joueurs voient la carte sans les salles brouillées. Les salles cachées ne leur sont jamais envoyées.",
     "mapWallDetection": "Détection des murs",
@@ -166,6 +165,19 @@
     "mapGroupView": "Vue",
     "mapGroupTools": "Outils",
     "mapGroupFog": "Actions de brouillard",
-    "mapPanelClose": "Fermer le panneau"
+    "mapPanelClose": "Fermer le panneau",
+    "mapModeSelect": "Sélectionner et déplacer",
+    "mapModeRect": "Rectangle",
+    "mapModeTriangle": "Triangle",
+    "mapModeCircle": "Cercle",
+    "mapModePan": "Déplacer la vue",
+    "mapHintSelect": "Cliquez sur une ligne ou une forme pour la sélectionner, faites-la glisser pour la déplacer, tirez les poignées pour la redimensionner, Suppr l'efface. Les murs détectés sont aussi sélectionnables.",
+    "mapHintShape": "Faites glisser pour dessiner. Maj pour un carré ou un cercle.",
+    "mapHintPan": "Faites glisser pour déplacer la carte, molette ou pincement pour zoomer. Clic droit glissé ou Espace+glisser déplace avec tous les outils.",
+    "mapDelete": "Supprimer",
+    "mapZoomIn": "Zoom avant",
+    "mapZoomOut": "Zoom arrière",
+    "mapZoomFit": "Ajuster à la fenêtre",
+    "mapGroupZoom": "Zoom"
   }
 }

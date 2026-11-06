@@ -3,7 +3,14 @@ import { createAnalyzerClient, type AnalyzerClient } from './analyzerClient'
 import { parseFogMap, serializeFogMap, type FogMapFile } from './fogMapFile'
 import { loadMapText, saveMapText } from './mapStorage'
 import { makeCanvas } from './render'
-import { MAP_MAX_DIM, type Analysis, type MapMode, type MapOp, type MapView } from './types'
+import {
+  MAP_MAX_DIM,
+  type Analysis,
+  type MapMode,
+  type MapOp,
+  type MapView,
+  type WallSegment,
+} from './types'
 
 export interface MapParams {
   /** Percent, 0 to 100 */
@@ -27,9 +34,13 @@ interface MapState {
   base: HTMLCanvasElement | null
   analysis: Analysis | null
   fog: Set<number>
-  /** Walls and erasing that came from a saved file; not undoable */
-  baseOps: MapOp[]
-  edits: MapOp[]
+  /** Everything drawn on top of the detected walls, loaded walls included */
+  ops: MapOp[]
+  /** `ops` as it was before each edit, newest last */
+  history: MapOp[][]
+  /** The state a map was opened with; "clear edits" returns to it */
+  baseline: MapOp[]
+  selected: number | null
   auto: boolean
   params: MapParams
   view: MapView
@@ -48,7 +59,17 @@ interface MapState {
   setView: (view: MapView) => void
   setMode: (mode: MapMode) => void
   setShared: (on: boolean) => void
-  addEdit: (op: MapOp) => void
+  /** Edits between begin and end (a drag) become one undo step */
+  beginGesture: () => void
+  endGesture: () => void
+  addOp: (op: MapOp) => number
+  updateOp: (id: number, op: MapOp) => void
+  removeOp: (id: number) => void
+  /** Hides a detected wall */
+  cutAuto: (seg: WallSegment) => void
+  /** Turns a detected wall into a drawn one so it can be moved; returns the new id */
+  adoptAuto: (seg: WallSegment) => number
+  select: (id: number | null) => void
   undoEdit: () => void
   clearEdits: () => void
   setFog: (id: number, on: boolean) => boolean
@@ -65,6 +86,13 @@ let needDetect = false
 let saveTimer: ReturnType<typeof setTimeout> | undefined
 /** Fog from a loaded file, applied once the first analysis exists */
 let pendingFog: number[] = []
+let nextId = 1
+let gesture = false
+let gestureFresh = false
+let pending = false
+let inflight = false
+let dirty = false
+const withId = (op: MapOp): MapOp => (op.type === 'erase' ? op : { ...op, id: nextId++ })
 
 export const useMapStore = create<MapState>()((set, get) => {
   const analyzer = (): AnalyzerClient => (client ??= createAnalyzerClient())
@@ -74,11 +102,19 @@ export const useMapStore = create<MapState>()((set, get) => {
     saveTimer = setTimeout(() => void saveMapText(get().toText()), 800)
   }
 
-  function analyze(detect: boolean, delay: number): void {
+  /** `throttle` is for drags: keep one run going and queue another instead of restarting the timer */
+  function analyze(detect: boolean, delay: number, throttle = false): void {
     needDetect ||= detect
+    if (throttle && (pending || inflight)) {
+      dirty = true
+      return
+    }
     clearTimeout(timer)
     set({ busy: true })
+    pending = true
     timer = setTimeout(async () => {
+      pending = false
+      inflight = true
       const mine = ++seq
       const s = get()
       const doDetect = needDetect
@@ -93,9 +129,14 @@ export const useMapStore = create<MapState>()((set, get) => {
                 gap: s.params.gap / 100,
               }
             : undefined,
-        ops: s.baseOps.concat(s.edits),
+        ops: s.ops,
         minRoom: s.params.minRoom,
       })
+      inflight = false
+      if (dirty) {
+        dirty = false
+        analyze(false, 0, true)
+      }
       if (mine !== seq) return
 
       // carry the fog over to whichever rooms now cover the same spots
@@ -139,10 +180,14 @@ export const useMapStore = create<MapState>()((set, get) => {
 
         const fx = saved?.width ? W / saved.width : 1
         const fy = saved?.height ? H / saved.height : 1
-        const baseOps: MapOp[] = (saved?.walls ?? []).map((op) =>
-          op.type === 'erase'
-            ? { type: 'erase', w: op.w * fx, pts: op.pts.map(([x, y]) => [x * fx, y * fy]) }
-            : { type: 'wall', x1: op.x1 * fx, y1: op.y1 * fy, x2: op.x2 * fx, y2: op.y2 * fy }
+        const ops: MapOp[] = (saved?.walls ?? []).map((op) =>
+          withId(
+            op.type === 'erase'
+              ? { type: 'erase', w: op.w * fx, pts: op.pts.map(([x, y]) => [x * fx, y * fy]) }
+              : op.type === 'shape'
+                ? { ...op, x1: op.x1 * fx, y1: op.y1 * fy, x2: op.x2 * fx, y2: op.y2 * fy }
+                : { ...op, x1: op.x1 * fx, y1: op.y1 * fy, x2: op.x2 * fx, y2: op.y2 * fy }
+          )
         )
         pendingFog = (saved?.fog ?? [])
           .map(([x, y]) => Math.round(y * fy) * W + Math.round(x * fx))
@@ -160,8 +205,10 @@ export const useMapStore = create<MapState>()((set, get) => {
           base,
           analysis: null,
           fog: new Set(),
-          baseOps,
-          edits: [],
+          ops,
+          history: [],
+          baseline: ops,
+          selected: null,
           auto: saved ? false : get().auto,
           view: saved ? saved.view : get().view,
           error: null,
@@ -173,7 +220,16 @@ export const useMapStore = create<MapState>()((set, get) => {
     })
   }
 
-  const rebuild = (): void => {
+  function edit(ops: MapOp[], live = false): void {
+    const s = get()
+    const history = gesture && !gestureFresh ? s.history : [...s.history, s.ops]
+    gestureFresh = false
+    set({ ops, history })
+    if (live) analyze(false, 30, true)
+    else rebuild()
+  }
+
+  function rebuild(): void {
     analyze(false, 20)
     scheduleSave()
   }
@@ -188,8 +244,10 @@ export const useMapStore = create<MapState>()((set, get) => {
     base: null,
     analysis: null,
     fog: new Set(),
-    baseOps: [],
-    edits: [],
+    ops: [],
+    history: [],
+    baseline: [],
+    selected: null,
     auto: true,
     params: DEFAULT_PARAMS,
     view: 'lines',
@@ -245,8 +303,10 @@ export const useMapStore = create<MapState>()((set, get) => {
         base: null,
         analysis: null,
         fog: new Set(),
-        baseOps: [],
-        edits: [],
+        ops: [],
+        history: [],
+        baseline: [],
+        selected: null,
         busy: false,
         shared: false,
         image: '',
@@ -264,7 +324,7 @@ export const useMapStore = create<MapState>()((set, get) => {
         width: s.width,
         height: s.height,
         view: s.view,
-        walls: auto.concat(s.baseOps, s.edits),
+        walls: auto.concat(s.ops),
         fog: [...s.fog]
           .map((id) => rooms[id]?.sample)
           .filter((v): v is number => v !== undefined)
@@ -288,16 +348,39 @@ export const useMapStore = create<MapState>()((set, get) => {
     setMode: (mode) => set({ mode }),
     setShared: (shared) => set({ shared }),
 
-    addEdit: (op) => {
-      set({ edits: [...get().edits, op] })
-      rebuild()
+    beginGesture: () => {
+      gesture = true
+      gestureFresh = true
     },
+    endGesture: () => {
+      gesture = false
+    },
+    addOp: (op) => {
+      const added = withId(op)
+      edit(get().ops.concat(added))
+      return (added as { id: number }).id
+    },
+    updateOp: (id, op) =>
+      edit(get().ops.map((o) => (o.id === id ? { ...op, id } : o)) as MapOp[], true),
+    removeOp: (id) => {
+      edit(get().ops.filter((o) => o.id !== id))
+      if (get().selected === id) set({ selected: null })
+    },
+    cutAuto: (seg) => edit(get().ops.concat(withId({ type: 'cut', ...seg }))),
+    adoptAuto: (seg) => {
+      const wall = withId({ type: 'wall', ...seg })
+      edit(get().ops.concat(withId({ type: 'cut', ...seg }), wall))
+      return (wall as { id: number }).id
+    },
+    select: (selected) => set({ selected }),
     undoEdit: () => {
-      set({ edits: get().edits.slice(0, -1) })
+      const { history } = get()
+      if (!history.length) return
+      set({ ops: history[history.length - 1], history: history.slice(0, -1), selected: null })
       rebuild()
     },
     clearEdits: () => {
-      set({ edits: [] })
+      set({ ops: get().baseline, history: [], selected: null })
       rebuild()
     },
 

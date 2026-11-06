@@ -65,7 +65,6 @@ export interface Room {
 export interface Analysis {
   W: number
   H: number
-  wall: Uint8Array
   /** Room id per pixel, 0 for none */
   own: Int32Array
   rooms: (Room | null)[]

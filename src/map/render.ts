@@ -9,7 +9,7 @@ export function makeCanvas(w: number, h: number): HTMLCanvasElement {
 }
 
 export function paintBlueprint(canvas: HTMLCanvasElement, a: Analysis): void {
-  const { W, H, wall, own, rooms } = a
+  const { W, H, own, rooms } = a
   const M = Math.max(W, H)
   const g = canvas.getContext('2d')!
   g.fillStyle = '#123a63'
@@ -31,8 +31,8 @@ export function paintBlueprint(canvas: HTMLCanvasElement, a: Analysis): void {
   const lg = layer.getContext('2d')!
   const im = lg.createImageData(W, H)
   const b = im.data
-  for (let i = 0, p = 0; i < wall.length; i++, p += 4) {
-    const R = wall[i] ? null : rooms[own[i]]
+  for (let i = 0, p = 0; i < own.length; i++, p += 4) {
+    const R = rooms[own[i]]
     if (R && !R.ext) {
       b[p] = 150
       b[p + 1] = 200

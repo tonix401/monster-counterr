@@ -15,6 +15,7 @@ import {
   removeEdge,
   removeNode,
   snapPoint,
+  tidy,
 } from './graph'
 import type { Graph } from './types'
 
@@ -227,5 +228,76 @@ describe('file lists', () => {
     )
     expect(odd.edges).toHaveLength(1)
     expect(odd.nodes).toHaveLength(2)
+  })
+})
+
+describe('tidy', () => {
+  it('removes a tiny stub sticking out of a junction', () => {
+    const g = addPolyline(emptyGraph(), [
+      [0, 0],
+      [100, 0],
+      [200, 0],
+    ])
+    const stub = addPolyline(g, [
+      [100, 0],
+      [100, 4],
+    ])
+    expect(stub.edges).toHaveLength(3)
+    const out = tidy(stub, 5, [nodeAt(stub, 100, 0).id])
+    expect(out.edges).toHaveLength(2)
+    expect(out.nodes).toHaveLength(3)
+  })
+
+  it('keeps a stub that is longer than the reach', () => {
+    const g = addPolyline(
+      addPolyline(emptyGraph(), [
+        [0, 0],
+        [100, 0],
+        [200, 0],
+      ]),
+      [
+        [100, 0],
+        [100, 40],
+      ]
+    )
+    expect(tidy(g, 5)).toBe(g)
+  })
+
+  it('straightens a node that two nearly straight walls meet in', () => {
+    const g = addPolyline(emptyGraph(), [
+      [0, 0],
+      [100, 3],
+      [200, 0],
+    ])
+    const out = tidy(g, 5)
+    expect(nodeAt(out, 100, 0)).toBeDefined()
+  })
+
+  it('does not straighten a real corner', () => {
+    const g = addPolyline(emptyGraph(), [
+      [0, 0],
+      [100, 30],
+      [200, 0],
+    ])
+    expect(tidy(g, 5)).toBe(g)
+  })
+
+  it('collapses a kink: a wall shorter than the reach', () => {
+    const g = addPolyline(emptyGraph(), [
+      [0, 0],
+      [100, 0],
+      [100, 2],
+      [200, 2],
+    ])
+    const out = tidy(g, 5)
+    expect(out.nodes).toHaveLength(3)
+  })
+
+  it('makes a loose end that is almost level, level', () => {
+    const g = addPolyline(emptyGraph(), [
+      [0, 0],
+      [100, 4],
+    ])
+    expect(edgeSegments(tidy(g, 5))[0]).toEqual({ x1: 0, y1: 0, x2: 100, y2: 0 })
   })
 })

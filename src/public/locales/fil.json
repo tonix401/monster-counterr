@@ -144,6 +144,8 @@
     "mapViewLines": "Mapa + mga pader",
     "mapViewBlueprint": "Blueprint",
     "mapFogAll": "Takpan ng hamog ang lahat ng silid",
+    "mapStyleFog": "Kulay-abong fog ang makikita ng mga manlalaro",
+    "mapStyleDark": "Kadiliman ang makikita ng mga manlalaro (walang ilaw)",
     "mapRevealAll": "Ibunyag ang lahat",
     "mapPlayerView": "Tanaw ng manlalaro",
     "mapShare": "Ibahagi sa mga manlalaro",

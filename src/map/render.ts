@@ -1,4 +1,5 @@
-import type { Analysis } from './types'
+import { cloudFog, DARK_SOLID } from './fogShade'
+import type { Analysis, FogStyle } from './types'
 
 export function makeCanvas(w: number, h: number): HTMLCanvasElement {
   const c = document.createElement('canvas')
@@ -6,8 +7,6 @@ export function makeCanvas(w: number, h: number): HTMLCanvasElement {
   c.height = h
   return c
 }
-
-export const FOG_SOLID = [96, 98, 102] as const
 
 export function paintBlueprint(canvas: HTMLCanvasElement, a: Analysis): void {
   const { W, H, wall, own, rooms } = a
@@ -45,11 +44,15 @@ export function paintBlueprint(canvas: HTMLCanvasElement, a: Analysis): void {
   g.drawImage(layer, 0, 0)
 }
 
-/** `solid` is the opaque fog players see; the DM's own fog is translucent and hatched. */
+/**
+ * `solid` is what players see: cloudy grey fog, or solid darkness. The DM's own fog is
+ * translucent and hatched, in a deeper shade for darkness.
+ */
 export function paintFog(
   canvas: HTMLCanvasElement,
   a: Analysis,
   fog: Set<number>,
+  style: FogStyle,
   solid: boolean
 ): void {
   const { W, H, own } = a
@@ -60,21 +63,42 @@ export function paintFog(
   for (const id of fog) flag[id] = 1
   const im = g.createImageData(W, H)
   const d = im.data
-  for (let i = 0, p = 0; i < own.length; i++, p += 4) {
-    if (!flag[own[i]]) continue
-    if (solid) {
-      d[p] = FOG_SOLID[0]
-      d[p + 1] = FOG_SOLID[1]
-      d[p + 2] = FOG_SOLID[2]
-      d[p + 3] = 255
-    } else {
+  const dark = style === 'dark'
+
+  if (solid && !dark) {
+    const mist = new Uint8Array(own.length)
+    for (let i = 0; i < own.length; i++) mist[i] = flag[own[i]]
+    const cloud = cloudFog(mist, W, H, Math.max(2, Math.round(Math.max(W, H) * 0.005)))
+    for (let i = 0, p = 0; i < own.length; i++, p += 4) {
+      if (!cloud.alpha[i]) continue
+      const v = cloud.grey[i]
+      d[p] = v
+      d[p + 1] = v + 2
+      d[p + 2] = v + 6
+      d[p + 3] = cloud.alpha[i]
+    }
+  } else {
+    for (let i = 0, p = 0; i < own.length; i++, p += 4) {
+      if (!flag[own[i]]) continue
       const x = i % W
       const y = (i - x) / W
       const s = (x + y) % 14 < 2
-      d[p] = s ? 80 : 112
-      d[p + 1] = s ? 82 : 114
-      d[p + 2] = s ? 86 : 118
-      d[p + 3] = s ? 235 : 195
+      if (solid) {
+        d[p] = DARK_SOLID[0]
+        d[p + 1] = DARK_SOLID[1]
+        d[p + 2] = DARK_SOLID[2]
+        d[p + 3] = 255
+      } else if (dark) {
+        d[p] = s ? 14 : 30
+        d[p + 1] = s ? 14 : 30
+        d[p + 2] = s ? 20 : 38
+        d[p + 3] = s ? 245 : 215
+      } else {
+        d[p] = s ? 80 : 112
+        d[p + 1] = s ? 82 : 114
+        d[p + 2] = s ? 86 : 118
+        d[p + 3] = s ? 235 : 195
+      }
     }
   }
   g.putImageData(im, 0, 0)
@@ -108,13 +132,14 @@ export function paintHover(canvas: HTMLCanvasElement, a: Analysis, id: number): 
 export async function renderPlayerImage(
   base: HTMLCanvasElement,
   a: Analysis,
-  fog: Set<number>
+  fog: Set<number>,
+  style: FogStyle
 ): Promise<Blob | null> {
   const out = makeCanvas(a.W, a.H)
   const g = out.getContext('2d')!
   g.drawImage(base, 0, 0)
   const fogLayer = makeCanvas(a.W, a.H)
-  paintFog(fogLayer, a, fog, true)
+  paintFog(fogLayer, a, fog, style, true)
   g.drawImage(fogLayer, 0, 0)
   return new Promise((resolve) => out.toBlob(resolve, 'image/jpeg', 0.8))
 }

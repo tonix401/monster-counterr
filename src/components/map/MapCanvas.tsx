@@ -73,6 +73,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
   const height = useMapStore((s) => s.height)
   const analysis = useMapStore((s) => s.analysis)
   const fog = useMapStore((s) => s.fog)
+  const fogStyle = useMapStore((s) => s.fogStyle)
   const mapView = useMapStore((s) => s.view)
   const mode = useMapStore((s) => s.mode)
   const ops = useMapStore((s) => s.ops)
@@ -224,17 +225,17 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     paintBlueprint(L.blueprint, analysis)
     layers.current = L
     hover.current = 0
-    paintFog(L.fog, analysis, useMapStore.getState().fog, player)
+    paintFog(L.fog, analysis, useMapStore.getState().fog, useMapStore.getState().fogStyle, player)
     draw()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [analysis])
 
   useEffect(() => {
-    if (analysis && layers.current) paintFog(layers.current.fog, analysis, fog, player)
+    if (analysis && layers.current) paintFog(layers.current.fog, analysis, fog, fogStyle, player)
     hoverItem.current = null
     draw()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fog, player, mapView, mode, width, height, ops, selected, view.scale])
+  }, [fog, fogStyle, player, mapView, mode, width, height, ops, selected, view.scale])
 
   useEffect(() => {
     drawVectors()

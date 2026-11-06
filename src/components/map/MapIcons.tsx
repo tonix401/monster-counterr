@@ -28,6 +28,9 @@ export const FogIcon = icon(
     <path d="M4 21h16" />
   </>
 )
+export const DarkIcon = icon(
+  <path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z" fill="currentColor" fillOpacity="0.35" />
+)
 export const WallIcon = icon(
   <>
     <path d="M4 20 20 4" />

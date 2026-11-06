@@ -144,6 +144,8 @@
     "mapViewLines": "Mapa + paredes",
     "mapViewBlueprint": "Plano",
     "mapFogAll": "Niebla en todas las salas",
+    "mapStyleFog": "Los jugadores ven niebla gris",
+    "mapStyleDark": "Los jugadores ven oscuridad (sin luz)",
     "mapRevealAll": "Revelar todo",
     "mapPlayerView": "Vista de jugadores",
     "mapShare": "Compartir con los jugadores",

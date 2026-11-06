@@ -144,6 +144,8 @@
     "mapViewLines": "Mappa + muri",
     "mapViewBlueprint": "Planimetria",
     "mapFogAll": "Nebbia su tutte le stanze",
+    "mapStyleFog": "I giocatori vedono nebbia grigia",
+    "mapStyleDark": "I giocatori vedono il buio (nessuna luce)",
     "mapRevealAll": "Rivela tutto",
     "mapPlayerView": "Vista giocatori",
     "mapShare": "Condividi con i giocatori",

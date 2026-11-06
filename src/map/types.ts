@@ -20,6 +20,8 @@ export type CutOp = { type: 'cut'; id?: number } & WallSegment
 export type EraseOp = { type: 'erase'; id?: number; w: number; pts: [number, number][] }
 export type MapOp = WallOp | ShapeOp | CutOp | EraseOp
 
+/** How a fogged room looks to players: grey fog, or no light at all */
+export type FogStyle = 'fog' | 'dark'
 export type MapView = 'map' | 'lines' | 'blueprint'
 export type MapMode = 'fog' | 'select' | 'wall' | ShapeKind | 'poly' | 'erase' | 'pan'
 

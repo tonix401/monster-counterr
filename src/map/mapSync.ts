@@ -27,9 +27,15 @@ function sendTo(conns: { conn: { open: boolean; send: (m: unknown) => void } }[]
 async function publish(): Promise<void> {
   const m = useMapStore.getState()
   if (m.shared && m.base && m.analysis) {
-    const blob = await renderPlayerImage(m.base, m.analysis, m.fog)
+    const blob = await renderPlayerImage(m.base, m.analysis, m.fog, m.fogStyle)
     // the DM may have changed things while the image was encoding
-    if (!blob || useMapStore.getState().fog !== m.fog || !useMapStore.getState().shared) return
+    if (
+      !blob ||
+      useMapStore.getState().fog !== m.fog ||
+      useMapStore.getState().fogStyle !== m.fogStyle ||
+      !useMapStore.getState().shared
+    )
+      return
     last = { type: 'map', name: m.name, image: await blob.arrayBuffer() }
   } else last = { type: 'map-clear' }
 
@@ -47,6 +53,7 @@ export function startMapSync(): void {
     if (
       s.shared === prev.shared &&
       s.fog === prev.fog &&
+      s.fogStyle === prev.fogStyle &&
       s.analysis === prev.analysis &&
       s.name === prev.name
     )

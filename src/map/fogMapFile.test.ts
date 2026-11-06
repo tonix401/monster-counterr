@@ -98,4 +98,19 @@ describe('fog_map files', () => {
     expect(f.view).toBe('lines')
     expect(f.name).toBe('map')
   })
+
+  it('keeps the fog style, and tolerates files without one', () => {
+    const base = {
+      name: 'm',
+      width: 10,
+      height: 10,
+      view: 'lines' as const,
+      walls: [],
+      fog: [],
+      image: 'x',
+    }
+    expect(parseFogMap(serializeFogMap({ ...base, fogStyle: 'dark' }))!.fogStyle).toBe('dark')
+    expect(parseFogMap(serializeFogMap(base))!.fogStyle).toBeUndefined()
+    expect(parseFogMap('{"format":"fog_map","image":"x","fogStyle":"x"}')!.fogStyle).toBeUndefined()
+  })
 })

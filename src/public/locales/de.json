@@ -144,6 +144,8 @@
     "mapViewLines": "Karte + Wände",
     "mapViewBlueprint": "Bauplan",
     "mapFogAll": "Alle Räume vernebeln",
+    "mapStyleFog": "Spieler sehen grauen Nebel",
+    "mapStyleDark": "Spieler sehen Dunkelheit (kein Licht)",
     "mapRevealAll": "Alles aufdecken",
     "mapPlayerView": "Spieleransicht",
     "mapShare": "Mit Spielern teilen",

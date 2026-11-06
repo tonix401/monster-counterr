@@ -144,6 +144,8 @@
     "mapViewLines": "Carte + murs",
     "mapViewBlueprint": "Plan",
     "mapFogAll": "Brouiller toutes les salles",
+    "mapStyleFog": "Les joueurs voient un brouillard gris",
+    "mapStyleDark": "Les joueurs voient l'obscurité (pas de lumière)",
     "mapRevealAll": "Tout révéler",
     "mapPlayerView": "Vue joueurs",
     "mapShare": "Partager avec les joueurs",

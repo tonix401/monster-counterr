@@ -122,7 +122,8 @@ src/
 │   ├── fogMapFile.ts    # `.fog_map` file format (compatible with the standalone Map Fog tool)
 │   ├── mapSync.ts       # Sends the fogged picture to connected players
 │   ├── mapMessage.ts    # Validation of map messages on the client
-│   └── render.ts        # Layer painting and the player picture
+│   ├── fogShade.ts      # Cloudy fog edges (blur and noise on plain arrays) and the darkness colour
+│   └── render.ts        # Layer painting and the player picture (grey fog or darkness)
 ├── types/               # TypeScript type definitions
 │   ├── Monster.ts       # Monster entity
 │   ├── MonsterDetails.ts # Monster stat blocks

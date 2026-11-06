@@ -10,6 +10,7 @@ import {
   CloseIcon,
   EraserIcon,
   FitIcon,
+  DarkIcon,
   FogAllIcon,
   FogIcon,
   IconButton,
@@ -319,6 +320,23 @@ const MapTab: React.FC = () => {
           </p>
           <div className="map-bottom-row">
             <div className="map-group" role="group" aria-label={t('mapGroupFog')}>
+              <IconButton
+                label={t('mapStyleFog')}
+                icon={<FogIcon />}
+                tip="above"
+                active={s.fogStyle === 'fog'}
+                pressed={s.fogStyle === 'fog'}
+                onClick={() => s.setFogStyle('fog')}
+              />
+              <IconButton
+                label={t('mapStyleDark')}
+                icon={<DarkIcon />}
+                tip="above"
+                active={s.fogStyle === 'dark'}
+                pressed={s.fogStyle === 'dark'}
+                onClick={() => s.setFogStyle('dark')}
+              />
+              <span className="map-divider" />
               <IconButton
                 label={t('mapFogAll')}
                 icon={<FogAllIcon />}

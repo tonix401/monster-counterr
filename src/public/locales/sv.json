@@ -144,6 +144,8 @@
     "mapViewLines": "Karta + väggar",
     "mapViewBlueprint": "Ritning",
     "mapFogAll": "Dimma över alla rum",
+    "mapStyleFog": "Spelarna ser grå dimma",
+    "mapStyleDark": "Spelarna ser mörker (inget ljus)",
     "mapRevealAll": "Avslöja allt",
     "mapPlayerView": "Spelarvy",
     "mapShare": "Dela med spelarna",

@@ -144,6 +144,8 @@
     "mapViewLines": "Карта + стены",
     "mapViewBlueprint": "Чертёж",
     "mapFogAll": "Туман на все комнаты",
+    "mapStyleFog": "Игроки видят серый туман",
+    "mapStyleDark": "Игроки видят тьму (нет света)",
     "mapRevealAll": "Открыть всё",
     "mapPlayerView": "Вид игроков",
     "mapShare": "Показать игрокам",

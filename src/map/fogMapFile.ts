@@ -1,5 +1,5 @@
 import { polygonWalls, triangleWalls } from './shapes'
-import type { MapOp, MapView } from './types'
+import type { FogStyle, MapOp, MapView } from './types'
 
 /** The `.fog_map` file written by the standalone Map Fog tool; kept compatible with it. */
 export interface FogMapFile {
@@ -12,6 +12,8 @@ export interface FogMapFile {
   view: MapView
   walls: MapOp[]
   fog: [number, number][]
+  /** How players see fogged rooms; absent in files from the standalone tool */
+  fogStyle?: FogStyle
   image: string
 }
 
@@ -127,6 +129,7 @@ export function parseFogMap(text: string): FogMapFile | null {
     view: VIEWS.includes(data.view as MapView) ? (data.view as MapView) : 'lines',
     walls,
     fog,
+    ...(data.fogStyle === 'dark' ? { fogStyle: 'dark' as const } : {}),
     image: data.image,
   }
 }

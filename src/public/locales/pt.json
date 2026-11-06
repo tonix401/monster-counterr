@@ -144,6 +144,8 @@
     "mapViewLines": "Mapa + paredes",
     "mapViewBlueprint": "Planta",
     "mapFogAll": "Névoa em todas as salas",
+    "mapStyleFog": "Os jogadores veem névoa cinzenta",
+    "mapStyleDark": "Os jogadores veem escuridão (sem luz)",
     "mapRevealAll": "Revelar tudo",
     "mapPlayerView": "Visão dos jogadores",
     "mapShare": "Compartilhar com os jogadores",

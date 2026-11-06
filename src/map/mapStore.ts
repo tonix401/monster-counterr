@@ -7,6 +7,7 @@ import { makeCanvas } from './render'
 import {
   MAP_MAX_DIM,
   type Analysis,
+  type FogStyle,
   type MapMode,
   type MapOp,
   type MapView,
@@ -47,6 +48,8 @@ interface MapState {
   base: HTMLCanvasElement | null
   analysis: Analysis | null
   fog: Set<number>
+  /** How players see the fogged rooms */
+  fogStyle: FogStyle
   /** Everything drawn on top of the detected walls, loaded walls included */
   ops: MapOp[]
   /** The state before each edit, newest last: drawn items and wall detection settings alike */
@@ -86,6 +89,7 @@ interface MapState {
   undoEdit: () => void
   clearEdits: () => void
   setFog: (id: number, on: boolean) => boolean
+  setFogStyle: (style: FogStyle) => void
   fogAll: () => void
   revealAll: () => void
 }
@@ -246,6 +250,7 @@ export const useMapStore = create<MapState>()((set, get) => {
           base,
           analysis: null,
           fog: new Set(),
+          fogStyle: saved?.fogStyle ?? 'fog',
           ops,
           history: [],
           selected: null,
@@ -287,6 +292,7 @@ export const useMapStore = create<MapState>()((set, get) => {
     base: null,
     analysis: null,
     fog: new Set(),
+    fogStyle: 'fog',
     ops: [],
     history: [],
     baseline: { ops: [], auto: true, ...detectOf(DEFAULT_PARAMS) },
@@ -368,6 +374,7 @@ export const useMapStore = create<MapState>()((set, get) => {
         height: s.height,
         view: s.view,
         walls: auto.concat(s.ops),
+        fogStyle: s.fogStyle,
         fog: [...s.fog]
           .map((id) => rooms[id]?.sample)
           .filter((v): v is number => v !== undefined)
@@ -458,6 +465,10 @@ export const useMapStore = create<MapState>()((set, get) => {
       set({ fog: next })
       scheduleSave()
       return true
+    },
+    setFogStyle: (fogStyle) => {
+      set({ fogStyle })
+      scheduleSave()
     },
     fogAll: () => {
       const { analysis } = get()

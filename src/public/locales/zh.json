@@ -144,6 +144,8 @@
     "mapViewLines": "地图 + 墙壁",
     "mapViewBlueprint": "蓝图",
     "mapFogAll": "所有房间覆盖迷雾",
+    "mapStyleFog": "玩家看到灰色迷雾",
+    "mapStyleDark": "玩家看到黑暗（没有光）",
     "mapRevealAll": "全部揭开",
     "mapPlayerView": "玩家视图",
     "mapShare": "与玩家共享",

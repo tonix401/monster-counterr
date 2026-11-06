@@ -144,6 +144,8 @@
     "mapViewLines": "Map + walls",
     "mapViewBlueprint": "Blueprint",
     "mapFogAll": "Fog every room",
+    "mapStyleFog": "Players see grey fog",
+    "mapStyleDark": "Players see darkness (no light)",
     "mapRevealAll": "Reveal everything",
     "mapPlayerView": "Player view",
     "mapShare": "Share with players",

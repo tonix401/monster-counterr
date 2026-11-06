@@ -144,6 +144,8 @@
     "mapViewLines": "Mapo + muroj",
     "mapViewBlueprint": "Plano",
     "mapFogAll": "Nebuligi ĉiujn ĉambrojn",
+    "mapStyleFog": "Ludantoj vidas grizan nebulon",
+    "mapStyleDark": "Ludantoj vidas mallumon (sen lumo)",
     "mapRevealAll": "Malkaŝi ĉion",
     "mapPlayerView": "Ludantvido",
     "mapShare": "Dividi kun ludantoj",

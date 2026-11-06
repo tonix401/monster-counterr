@@ -144,6 +144,8 @@
     "mapViewLines": "지도 + 벽",
     "mapViewBlueprint": "청사진",
     "mapFogAll": "모든 방 안개 덮기",
+    "mapStyleFog": "플레이어에게 회색 안개로 보임",
+    "mapStyleDark": "플레이어에게 어둠으로 보임 (빛 없음)",
     "mapRevealAll": "모두 드러내기",
     "mapPlayerView": "플레이어 보기",
     "mapShare": "플레이어와 공유",

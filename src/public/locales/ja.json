@@ -144,6 +144,8 @@
     "mapViewLines": "マップ + 壁",
     "mapViewBlueprint": "設計図",
     "mapFogAll": "すべての部屋を霧で隠す",
+    "mapStyleFog": "プレイヤーには灰色の霧が見える",
+    "mapStyleDark": "プレイヤーには暗闇が見える（光なし）",
     "mapRevealAll": "すべて表示",
     "mapPlayerView": "プレイヤー表示",
     "mapShare": "プレイヤーと共有",

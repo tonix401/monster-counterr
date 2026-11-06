@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { detectWalls, splitAtJunctions } from './detectWalls'
+import { DetectCache, detectWalls, splitAtJunctions } from './detectWalls'
 import { dropSlivers, mergeDoubles, rejectStacks, type Line } from './wallFilters'
 
 const W = 800
@@ -111,6 +111,36 @@ describe('slanted buildings', () => {
     rect(g, 100, 100, 103, 403, 230)
     rect(g, 600, 100, 603, 403, 230)
     for (const s of detectWalls(g, W, H, params)) expect(s.x1 === s.x2 || s.y1 === s.y2).toBe(true)
+  })
+})
+
+describe('DetectCache', () => {
+  it('gives the same walls as a fresh run, for every setting it is reused with', () => {
+    const g = canvas()
+    rect(g, 100, 100, 500, 104, 230)
+    rect(g, 100, 300, 500, 304, 230)
+    rect(g, 100, 100, 104, 304, 230)
+    rect(g, 496, 100, 500, 304, 230)
+    // a building turned by 35 degrees
+    const t = (35 * Math.PI) / 180
+    for (let s = -120; s <= 120; s++)
+      for (const [u, v] of [
+        [s, -120],
+        [s, 120],
+        [-120, s],
+        [120, s],
+      ])
+        for (let d = 0; d < 4; d++)
+          g[
+            Math.round(300 + u * Math.sin(t) + v * Math.cos(t) + d) * W +
+              Math.round(560 + u * Math.cos(t) - v * Math.sin(t))
+          ] = 230
+    const cache = new DetectCache()
+    for (const sensitivity of [params.sensitivity, 12, 25]) {
+      const p = { ...params, sensitivity }
+      expect(detectWalls(g, W, H, p, cache)).toEqual(detectWalls(g, W, H, p))
+    }
+    expect(cache.turned.size).toBeGreaterThan(0)
   })
 })
 

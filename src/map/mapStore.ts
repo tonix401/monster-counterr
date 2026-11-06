@@ -105,8 +105,9 @@ const detectParams = (p: MapParams) => ({
 let client: AnalyzerClient | null = null
 let seq = 0
 let timer: ReturnType<typeof setTimeout> | undefined
-let previewTimer: ReturnType<typeof setTimeout> | undefined
 let previewSeq = 0
+let previewBusy = false
+let previewAgain = false
 let saveTimer: ReturnType<typeof setTimeout> | undefined
 /** Fog from a loaded file, applied once the first analysis exists */
 let pendingFog: number[] = []
@@ -245,14 +246,23 @@ export const useMapStore = create<MapState>()((set, get) => {
     scheduleSave()
   }
 
-  /** Shows the walls the current settings would find */
-  function previewWalls(delay: number): void {
-    clearTimeout(previewTimer)
-    previewTimer = setTimeout(async () => {
-      const mine = ++previewSeq
+  /**
+   * Shows the walls the current settings would find. Runs at once, and while a run is going on
+   * only the latest settings wait, so a slider drag updates as fast as detection allows.
+   */
+  async function previewWalls(): Promise<void> {
+    if (previewBusy) {
+      previewAgain = true
+      return
+    }
+    previewBusy = true
+    do {
+      previewAgain = false
+      const mine = previewSeq
       const segs = await analyzer().detect(detectParams(get().params))
       if (mine === previewSeq && get().previewing) set({ preview: segs })
-    }, delay)
+    } while (previewAgain)
+    previewBusy = false
   }
 
   return {
@@ -362,12 +372,12 @@ export const useMapStore = create<MapState>()((set, get) => {
     setParam: (key, value) => {
       set({ params: { ...get().params, [key]: value } })
       if (key === 'minRoom') analyze(150)
-      else if (DETECT_KEYS.includes(key) && get().previewing) previewWalls(150)
+      else if (DETECT_KEYS.includes(key) && get().previewing) void previewWalls()
     },
     showPreview: (previewing) => {
       previewSeq++
       set({ previewing, preview: null })
-      if (previewing) previewWalls(0)
+      if (previewing) void previewWalls()
     },
     applyDetection: async () => {
       const s = get()

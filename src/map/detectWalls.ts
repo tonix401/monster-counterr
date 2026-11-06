@@ -23,21 +23,19 @@ interface AxisWalls {
   vs: Line[]
 }
 
-/** `M` is the size the length thresholds scale with (the original map, also for rotated copies) */
-function axisWalls(
-  g: Float32Array,
-  W: number,
-  H: number,
-  p: DetectParams,
-  M: number,
-  oblique = false
-): AxisWalls {
+/** How strongly each pixel looks like part of a horizontal or vertical bright band */
+interface BarResponses {
+  Rh: Float32Array
+  Rv: Float32Array
+}
+
+/**
+ * The band responses of an image. They take most of the time and do not depend on the detection
+ * settings, so they are kept (see `DetectCache`) while only the settings change.
+ */
+function barResponses(g: Float32Array, W: number, H: number, M: number): BarResponses {
   const N = W * H
   const k = M / 1600
-  const T = p.sensitivity
-  const L = Math.round(M * p.minLen)
-  const G = Math.round(M * p.gap)
-  const D = Math.round(M * 0.04)
   const ts = [4, 6, 9, 13].map((t) => Math.max(2, Math.round(t * Math.max(k, 0.5))))
 
   function box(src: Float32Array, r: number, horiz: boolean): Float32Array {
@@ -94,6 +92,35 @@ function axisWalls(
     }
     return R
   }
+
+  return { Rh: barResp(true), Rv: barResp(false) }
+}
+
+/**
+ * What detection computes from one picture whatever the settings are: band responses, slanted
+ * angles, and the picture turned to each. Make one per picture and pass it to every `detectWalls`
+ * call, so moving a slider only redoes the cheap part.
+ */
+export class DetectCache {
+  axis: BarResponses | null = null
+  angles: number[] | null = null
+  turned = new Map<number, { r: ReturnType<typeof rotated>; resp: BarResponses }>()
+}
+
+/** `M` is the size the length thresholds scale with (the original map, also for rotated copies) */
+function axisWalls(
+  g: Float32Array,
+  W: number,
+  H: number,
+  p: DetectParams,
+  M: number,
+  oblique: boolean,
+  resp: BarResponses
+): AxisWalls {
+  const T = p.sensitivity
+  const L = Math.round(M * p.minLen)
+  const G = Math.round(M * p.gap)
+  const D = Math.round(M * 0.04)
 
   function lines(R: Float32Array, horizWall: boolean): Line[] {
     const n = horizWall ? W : H
@@ -228,8 +255,7 @@ function axisWalls(
 
   const maxThick = Math.round(M * (p.thickness ?? 0.016))
   const stairGap = Math.round(M * 0.035)
-  const Rh = barResp(true)
-  const Rv = barResp(false)
+  const { Rh, Rv } = resp
   const hs = cleanLines(lines(Rh, true), maxThick, stairGap, Math.round(M * 0.28))
   const vs = cleanLines(lines(Rv, false), maxThick, stairGap, Math.round(M * 0.28))
 
@@ -415,13 +441,26 @@ function rotated(
  * Horizontal and vertical walls come first; buildings drawn at a slant are found by turning the
  * image to each dominant angle and running the same detector. Coordinates are image pixels.
  */
-export function detectWalls(g: Float32Array, W: number, H: number, p: DetectParams): WallSegment[] {
+export function detectWalls(
+  g: Float32Array,
+  W: number,
+  H: number,
+  p: DetectParams,
+  cache = new DetectCache()
+): WallSegment[] {
   const M = Math.max(W, H)
-  const out = toSegments(axisWalls(g, W, H, p, M), (x, y) => [x, y])
+  cache.axis ??= barResponses(g, W, H, M)
+  const out = toSegments(axisWalls(g, W, H, p, M, false, cache.axis), (x, y) => [x, y])
   if (p.oblique === false) return splitAtJunctions(out, M)
-  for (const deg of dominantAngles(g, W, H)) {
-    const r = rotated(g, W, H, deg)
-    const found = toSegments(axisWalls(r.img, r.w, r.h, p, M, true), r.back)
+  cache.angles ??= dominantAngles(g, W, H)
+  for (const deg of cache.angles) {
+    let t = cache.turned.get(deg)
+    if (!t) {
+      const r = rotated(g, W, H, deg)
+      t = { r, resp: barResponses(r.img, r.w, r.h, M) }
+      cache.turned.set(deg, t)
+    }
+    const found = toSegments(axisWalls(t.r.img, t.r.w, t.r.h, p, M, true, t.resp), t.r.back)
     // a wrong angle gives ghosts of walls already found; keep only what is new
     const reach = M * 0.045
     out.push(

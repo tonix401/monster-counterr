@@ -29,7 +29,7 @@ const NameTableData: React.FC<NameTableDataProps> = ({ monster }) => {
         >
           {monster.name}
         </span>
-        <span>{monster.number ? ` ${monster.number}` : ''}</span>
+        <span>{monster.number ? `\u00A0${monster.number}` : ''}</span>
       </div>
     </td>
   )

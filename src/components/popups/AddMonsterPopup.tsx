@@ -30,7 +30,7 @@ const AddMonsterPopup: React.FC = () => {
         .map((entry) => entry.source)
         .filter((v, i, a) => a.indexOf(v) === i)
         .sort(),
-    [monsterIndex, source]
+    [monsterIndex]
   )
 
   const handleAdd = () => {
@@ -102,7 +102,11 @@ const AddMonsterPopup: React.FC = () => {
       <form
         onSubmit={(e) => {
           e.preventDefault()
-          name.trim() ? handleAdd() : expandDetails()
+          if (name.trim()) {
+            handleAdd()
+          } else {
+            expandDetails()
+          }
         }}
         id="add-monster-form"
       >

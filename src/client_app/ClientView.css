@@ -211,3 +211,10 @@
     padding: var(--spacing-xl);
   }
 }
+
+.client-map {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg);
+}

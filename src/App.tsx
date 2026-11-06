@@ -1,8 +1,10 @@
 import { useEffect } from 'react'
-import { Outlet } from 'react-router'
+import { Outlet, useMatch } from 'react-router'
 import './App.css'
 import MonsterTable from '@/components/table/MonsterTable'
 import Header from '@/components/Header'
+import TabBar from '@/components/ui/TabBar'
+import MapTab from '@/components/map/MapTab'
 import { useMonsterStore, useIsLoading, useTerm } from '@/store/useMonsterStore'
 import { NotificationContainer } from './components/ui/NotificationsContainer'
 import ErrorBoundary from './components/ErrorBoundary'
@@ -16,6 +18,7 @@ function App() {
   }, [initialize])
 
   const t = useTerm()
+  const onMapTab = useMatch('/map') !== null
 
   const isLoading = useIsLoading()
 
@@ -52,11 +55,23 @@ function App() {
   return (
     <div className="app">
       <Header />
-      <div id="monsterList">
+      <TabBar
+        tabs={[
+          { to: '/', label: t('encounter'), end: true },
+          { to: '/map', label: t('map') },
+        ]}
+      />
+      {onMapTab ? (
         <ErrorBoundary>
-          <MonsterTable />
+          <MapTab />
         </ErrorBoundary>
-      </div>
+      ) : (
+        <div id="monsterList">
+          <ErrorBoundary>
+            <MonsterTable />
+          </ErrorBoundary>
+        </div>
+      )}
       <Outlet />
       <NotificationContainer />
       <a href="https://buymeacoffee.com/tonix401" className="coffee-link" target="_blank">

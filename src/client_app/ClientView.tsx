@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
-import { useSearchParams } from 'react-router'
+import { useLocation, useMatch, useSearchParams } from 'react-router'
+import TabBar from '@/components/ui/TabBar'
 import './ClientView.css'
 import { ASSETS } from '../constants'
 import type { MonsterStatus } from '../types/Monster'
@@ -19,6 +20,7 @@ import {
   useClientConnectToHost,
   useClientDisconnect,
   useClientSendAttack,
+  useClientMap,
 } from './store/ClientStore'
 
 const ClientView: React.FC = () => {
@@ -40,6 +42,9 @@ const ClientView: React.FC = () => {
   const connectToHost = useClientConnectToHost()
   const disconnect = useClientDisconnect()
   const sendAttack = useClientSendAttack()
+  const map = useClientMap()
+  const { search } = useLocation()
+  const onMapTab = useMatch('/client/map') !== null
 
   useEffect(() => {
     initialize()
@@ -143,7 +148,19 @@ const ClientView: React.FC = () => {
           ))}
         </select>
       </div>
-      {!data || !data.enemies || data.enemies.length === 0 ? (
+      <TabBar
+        tabs={[
+          { to: { pathname: '/client', search }, label: t('enemies'), end: true },
+          { to: { pathname: '/client/map', search }, label: t('map') },
+        ]}
+      />
+      {onMapTab ? (
+        map ? (
+          <img className="client-map" src={map.url} alt={map.name} />
+        ) : (
+          <p>{t('mapNotShared')}</p>
+        )
+      ) : !data || !data.enemies || data.enemies.length === 0 ? (
         <p>{t('noEnemiesInEncounter')}</p>
       ) : (
         <div className="client-view-grid">

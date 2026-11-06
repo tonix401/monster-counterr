@@ -75,7 +75,11 @@ src/
 │   │   ├── StatusTableData.tsx
 │   │   ├── ConditionsTableData.tsx
 │   │   └── QuickActionsTableData.tsx
+│   ├── map/             # Map tab (DM side)
+│   │   ├── MapTab.tsx   # Toolbar, drop zone, player view
+│   │   └── MapCanvas.tsx # Canvas layers, fog painting, wall drawing/erasing
 │   └── ui/              # Generic UI components
+│       ├── TabBar.tsx   # Route-based tabs (used by the DM app and the client view)
 │       ├── BinarySettingsRow.tsx
 │       ├── LanguageSelectionRow.tsx
 │       ├── DropdownInput.tsx
@@ -104,6 +108,16 @@ src/
 │       │   └── dataHelpers.ts          # Import/export & serialization
 │       └── localization/
 │           └── localizationHelpers.ts  # Language loading & term resolution
+├── map/                 # Map & fog of war (browser-only, no backend)
+│   ├── detectWalls.ts   # Straight-wall detection on a grayscale image
+│   ├── analyze.ts       # Wall rasterizing + room labelling; `Analyzer` keeps the last detection
+│   ├── analysis.worker.ts / analyzerClient.ts # Runs the analysis in a Web Worker (inline fallback in tests)
+│   ├── mapStore.ts      # Zustand store for the current map, edits and fog (separate from the monster store)
+│   ├── mapStorage.ts    # IndexedDB persistence of the current map (too big for localStorage)
+│   ├── fogMapFile.ts    # `.fog_map` file format (compatible with the standalone Map Fog tool)
+│   ├── mapSync.ts       # Sends the fogged picture to connected players
+│   ├── mapMessage.ts    # Validation of map messages on the client
+│   └── render.ts        # Layer painting and the player picture
 ├── types/               # TypeScript type definitions
 │   ├── Monster.ts       # Monster entity
 │   ├── MonsterDetails.ts # Monster stat blocks
@@ -132,7 +146,8 @@ src/
   - Fully typed with comprehensive types in `store/types.ts`; `any` is disallowed by ESLint and existing violations are being cleaned up
   - Consistent custom hooks for optimized subscriptions (useMonsters, useSettings, useTerm, etc.), exported from `store/useMonsterStore.ts`
   - Pure utility functions in `store/helpers/*` for testability & composition
-- **Routing**: React Router with nested routes (popups overlay main view)
+- **Routing**: React Router with nested routes (popups overlay main view). Tabs are routes too: `/` (encounter) and `/map` in the DM app, `/client` and `/client/map` for players
+- **Map & fog**: the DM loads a battle map image or `.fog_map` file. Walls are detected, rooms derived, and rooms can be fogged. Players never receive walls or hidden rooms: when "Share with players" is on, the DM's browser renders a JPEG with fogged rooms painted over and sends it over the existing PeerJS connection (`map` / `map-clear` messages), debounced and resent on every change and when a player joins
 - **Data Persistence**: All data stored in browser localStorage via Zustand persist
 - **Localization**: Dynamic language loading from JSON files
 - **External API**: D&D 5e SRD API for official monster data

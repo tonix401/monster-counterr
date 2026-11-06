@@ -1,116 +1,66 @@
 import { describe, expect, it } from 'vitest'
 import { parseFogMap, serializeFogMap } from './fogMapFile'
 
-describe('fog_map files', () => {
-  const doc = {
-    name: 'Inn',
-    width: 100,
-    height: 80,
-    view: 'blueprint' as const,
-    walls: [
-      { type: 'wall' as const, x1: 1.04, y1: 2, x2: 30, y2: 2 },
-      {
-        type: 'erase' as const,
-        w: 10,
-        pts: [[5, 5] as [number, number], [6, 7] as [number, number]],
-      },
-    ],
-    fog: [[10, 12]] as [number, number][],
-    image: 'data:image/jpeg;base64,AAAA',
-  }
+const base = {
+  name: 'Inn',
+  width: 100,
+  height: 80,
+  view: 'blueprint' as const,
+  nodes: [
+    [1.04, 2],
+    [30, 2],
+    [30, 20],
+  ] as [number, number][],
+  edges: [
+    [0, 1],
+    [1, 2],
+  ] as [number, number][],
+  fog: [[10, 12]] as [number, number][],
+  image: 'data:image/jpeg;base64,AAAA',
+}
 
-  it('round-trips, rounding coordinates to a tenth', () => {
-    const back = parseFogMap(serializeFogMap(doc))!
+describe('fog_map files', () => {
+  it('round-trips the nodes, the lines between them and the fog', () => {
+    const back = parseFogMap(serializeFogMap(base))!
     expect(back.name).toBe('Inn')
     expect(back.view).toBe('blueprint')
-    expect(back.walls[0]).toEqual({ type: 'wall', x1: 1, y1: 2, x2: 30, y2: 2 })
-    expect(back.walls[1]).toEqual(doc.walls[1])
+    expect(back.nodes).toEqual(base.nodes)
+    expect(back.edges).toEqual(base.edges)
     expect(back.fog).toEqual([[10, 12]])
-    expect(back.image).toBe(doc.image)
+    expect(back.image).toBe(base.image)
   })
 
-  it('loads a polygon from an earlier file as one line per side, and drops ones with too few corners', () => {
-    const load = (walls: unknown[]) =>
-      parseFogMap(JSON.stringify({ format: 'fog_map', image: 'x', walls }))!.walls
-    expect(
-      load([
-        {
-          type: 'poly',
-          pts: [
-            [1, 2],
-            [30, 2],
-            [30, 20],
-          ],
-        },
-      ])
-    ).toEqual([
-      { type: 'wall', x1: 1, y1: 2, x2: 30, y2: 2 },
-      { type: 'wall', x1: 30, y1: 2, x2: 30, y2: 20 },
-      { type: 'wall', x1: 30, y1: 20, x2: 1, y2: 2 },
-    ])
-    expect(
-      load([
-        {
-          type: 'poly',
-          pts: [
-            [1, 2],
-            [3, 4],
-          ],
-        },
-      ])
-    ).toEqual([])
-  })
-
-  it('loads a triangle from an older file as three lines', () => {
-    const walls = parseFogMap(
-      JSON.stringify({
-        format: 'fog_map',
-        image: 'x',
-        walls: [{ type: 'shape', kind: 'tri', x1: 10, y1: 10, x2: 50, y2: 30 }],
-      })
-    )!.walls
-    expect(walls).toEqual([
-      { type: 'wall', x1: 30, y1: 10, x2: 50, y2: 30 },
-      { type: 'wall', x1: 50, y1: 30, x2: 10, y2: 30 },
-      { type: 'wall', x1: 10, y1: 30, x2: 30, y2: 10 },
-    ])
-  })
-
-  it('rejects anything that is not a fog_map', () => {
+  it('rejects anything that is not a version 2 fog_map', () => {
     expect(parseFogMap('not json')).toBeNull()
-    expect(parseFogMap('{"format":"other","image":"x"}')).toBeNull()
-    expect(parseFogMap('{"format":"fog_map"}')).toBeNull()
+    expect(parseFogMap('{"format":"other","version":2,"image":"x"}')).toBeNull()
+    expect(parseFogMap('{"format":"fog_map","version":2}')).toBeNull()
+    expect(parseFogMap('{"format":"fog_map","image":"x","walls":[]}')).toBeNull()
     expect(parseFogMap('null')).toBeNull()
   })
 
-  it('drops malformed walls and falls back to defaults', () => {
+  it('drops malformed nodes and lines and falls back to defaults', () => {
     const f = parseFogMap(
       JSON.stringify({
         format: 'fog_map',
+        version: 2,
         image: 'x',
         view: 'nope',
-        walls: [{ type: 'wall', x1: 'a' }, null, { type: 'erase', pts: [] }],
+        nodes: [[0, 0], 'x', [5, 5], [9, 9]],
+        edges: [[0, 2], [0, 1], [2, 2], [0, 7], [2.5, 0], 'x', null],
         fog: [[1], 'x'],
       })
     )!
-    expect(f.walls).toEqual([])
+    expect(f.edges).toEqual([[0, 2]]) // the others name a bad node, the same node twice or none
     expect(f.fog).toEqual([])
     expect(f.view).toBe('lines')
     expect(f.name).toBe('map')
   })
 
   it('keeps the fog style, and tolerates files without one', () => {
-    const base = {
-      name: 'm',
-      width: 10,
-      height: 10,
-      view: 'lines' as const,
-      walls: [],
-      fog: [],
-      image: 'x',
-    }
     expect(parseFogMap(serializeFogMap({ ...base, fogStyle: 'dark' }))!.fogStyle).toBe('dark')
     expect(parseFogMap(serializeFogMap(base))!.fogStyle).toBeUndefined()
-    expect(parseFogMap('{"format":"fog_map","image":"x","fogStyle":"x"}')!.fogStyle).toBeUndefined()
+    expect(
+      parseFogMap('{"format":"fog_map","version":2,"image":"x","fogStyle":"x"}')!.fogStyle
+    ).toBeUndefined()
   })
 })

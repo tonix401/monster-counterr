@@ -89,6 +89,8 @@ const MapTab: React.FC = () => {
   const [preview, setPreview] = useState(() => window.innerWidth >= 900)
   const [drag, setDrag] = useState(false)
   const [panel, setPanel] = useState(false)
+  // the detection panel shows the walls its settings would find
+  useEffect(() => useMapStore.getState().showPreview(panel), [panel])
 
   useEffect(() => {
     void useMapStore.getState().restore()
@@ -107,7 +109,7 @@ const MapTab: React.FC = () => {
         else if (e.key === '0') zoom(0)
         else if ((e.key === 'Delete' || e.key === 'Backspace') && st.selected !== null) {
           e.preventDefault()
-          st.removeOp(st.selected)
+          st.deleteSelected()
         } else if (e.key === 'Escape') st.select(null)
       }
       if (
@@ -279,14 +281,6 @@ const MapTab: React.FC = () => {
                 onClick={() => setPanel(false)}
               />
             </div>
-            <label className="map-check">
-              <input
-                type="checkbox"
-                checked={s.auto}
-                onChange={(e) => s.setAuto(e.target.checked)}
-              />
-              {t('mapFindWalls')}
-            </label>
             {SLIDERS.map((sl) => (
               <label key={sl.key} className="map-slider">
                 <span>
@@ -306,7 +300,7 @@ const MapTab: React.FC = () => {
             <button
               type="button"
               className="map-panel-action"
-              onClick={() => s.setAuto(s.auto)}
+              onClick={() => void s.applyDetection()}
               disabled={s.busy}
             >
               <RefreshIcon /> {t('mapRedetect')}
@@ -359,7 +353,7 @@ const MapTab: React.FC = () => {
                 tip="above"
                 danger
                 disabled={s.selected === null}
-                onClick={() => s.selected !== null && s.removeOp(s.selected)}
+                onClick={s.deleteSelected}
               />
               <IconButton
                 label={t('mapUndoEdit')}

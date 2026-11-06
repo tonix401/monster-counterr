@@ -1,20 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react'
+import {
+  addEllipse,
+  addPolyline,
+  addRect,
+  dropNode,
+  edgeEnds,
+  edgeSegments,
+  ellipsePoints,
+  hitEdge,
+  hitTest,
+  mergeTarget,
+  moveNode,
+  removeEdge,
+  snapPoint,
+  type Snap,
+} from '@/map/graph'
 import { useMapStore } from '@/map/mapStore'
 import { makeCanvas, paintBlueprint, paintFog, paintHover } from '@/map/render'
-import {
-  handles,
-  hitTest,
-  isDrawn,
-  moveHandle,
-  opSegments,
-  polygonWalls,
-  rotateHandle,
-  rotateTo,
-  squareTo,
-  translateOp,
-  type DrawnOp,
-} from '@/map/shapes'
-import type { ShapeKind, ShapeOp, WallSegment } from '@/map/types'
+import type { Graph, MapMode, WallSegment } from '@/map/types'
 
 interface Layers {
   fog: HTMLCanvasElement
@@ -30,22 +33,13 @@ interface View {
 export const MIN_ZOOM = 1
 export const MAX_ZOOM = 12
 
-/** A shape or line being dragged out, before it becomes part of the map */
-type Draft = { op: DrawnOp; sx: number; sy: number }
+/** A line, rectangle or circle being dragged out, before it becomes part of the map */
+type Draft = { mode: MapMode; sx: number; sy: number; box: WallSegment }
 type Drag =
-  | { kind: 'move'; id: number; sx: number; sy: number; orig: DrawnOp }
-  | { kind: 'handle'; id: number; index: number; orig: DrawnOp }
-  | { kind: 'rotate'; id: number; orig: ShapeOp }
+  | { kind: 'node'; id: number; g0: Graph }
+  | { kind: 'edge'; id: number; sx: number; sy: number; g0: Graph; ends: WallSegment }
   | { kind: 'erase' }
   | { kind: 'pan'; cx: number; cy: number; view: View }
-
-/** How far the rotate handle sits beyond a shape's top side, in screen pixels */
-const ROTATE_OFFSET = 24
-
-/** `handleAt` index of the rotate handle (the corners are 0 to 3) */
-const ROTATE = 4
-
-const SHAPES: ShapeKind[] = ['rect', 'circle']
 
 /** The map with its fog. In `player` mode it shows exactly what connected players see. */
 const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
@@ -61,7 +55,10 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
   const painting = useRef<boolean | null>(null)
   const lastPainted = useRef(0)
   const hover = useRef(0)
-  const hoverItem = useRef<WallSegment[] | null>(null)
+  /** What the pointer is over: a wall to outline, or a node to ring */
+  const hoverItem = useRef<{ segs?: WallSegment[]; node?: [number, number] } | null>(null)
+  /** Where a new line would attach, shown while drawing */
+  const snapHint = useRef<Snap | null>(null)
   const pointers = useRef(new Map<number, { x: number; y: number }>())
   const pinch = useRef<{ dist: number; view: View } | null>(null)
   const space = useRef(false)
@@ -76,7 +73,8 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
   const fogStyle = useMapStore((s) => s.fogStyle)
   const mapView = useMapStore((s) => s.view)
   const mode = useMapStore((s) => s.mode)
-  const ops = useMapStore((s) => s.ops)
+  const graph = useMapStore((s) => s.graph)
+  const preview = useMapStore((s) => s.preview)
   const selected = useMapStore((s) => s.selected)
 
   /** Canvas pixels per CSS pixel on screen, so overlay strokes keep their size at any zoom */
@@ -110,44 +108,60 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       }
       ctx.stroke()
     }
-    if (hoverItem.current) {
+    const hv = hoverItem.current
+    if (hv?.segs) {
       ctx.strokeStyle = s.mode === 'erase' ? 'rgba(255,70,70,.9)' : 'rgba(80,170,255,.7)'
       ctx.lineWidth = 4 * k
-      trace(hoverItem.current)
+      trace(hv.segs)
     }
-    const sel = s.mode === 'select' ? s.ops.find((o) => o.id === s.selected) : undefined
-    if (sel && isDrawn(sel)) {
+    if (hv?.node) {
+      ctx.strokeStyle = 'rgba(80,170,255,.9)'
+      ctx.lineWidth = 2 * k
+      ctx.beginPath()
+      ctx.arc(hv.node[0], hv.node[1], 7 * k, 0, Math.PI * 2)
+      ctx.stroke()
+    }
+    const sel = s.mode === 'select' ? s.selected : null
+    if (sel) {
       ctx.strokeStyle = '#3aa0ff'
       ctx.lineWidth = 2 * k
-      ctx.setLineDash([6 * k, 4 * k])
-      trace(opSegments(sel))
-      ctx.setLineDash([])
-      ctx.fillStyle = '#fff'
-      const hs = 4.5 * k
-      for (const [x, y] of handles(sel)) {
-        ctx.beginPath()
-        ctx.rect(x - hs, y - hs, hs * 2, hs * 2)
-        ctx.fill()
-        ctx.stroke()
+      if (sel.kind === 'edge') {
+        const e = edgeEnds(s.graph, sel.id)
+        ctx.setLineDash([6 * k, 4 * k])
+        if (e) trace([e])
+        ctx.setLineDash([])
+      } else {
+        const n = s.graph.nodes.find((o) => o.id === sel.id)
+        if (n) {
+          ctx.fillStyle = '#fff'
+          ctx.beginPath()
+          ctx.arc(n.x, n.y, 6 * k, 0, Math.PI * 2)
+          ctx.fill()
+          ctx.stroke()
+        }
       }
-      if (sel.type === 'shape') {
-        const [rx, ry] = rotateHandle(sel, ROTATE_OFFSET * k)
-        const [tx, ty] = rotateHandle(sel, 0)
-        ctx.beginPath()
-        ctx.moveTo(tx, ty)
-        ctx.lineTo(rx, ry)
-        ctx.stroke()
-        ctx.beginPath()
-        ctx.arc(rx, ry, hs, 0, Math.PI * 2)
-        ctx.fill()
-        ctx.stroke()
-      }
+    }
+    const hint = snapHint.current
+    if (hint && hint.kind !== 'free') {
+      ctx.strokeStyle = '#ff9a3c'
+      ctx.lineWidth = 2 * k
+      ctx.beginPath()
+      ctx.arc(hint.x, hint.y, (hint.kind === 'node' ? 7 : 4) * k, 0, Math.PI * 2)
+      ctx.stroke()
     }
     const cur = draft.current
     if (cur) {
       ctx.strokeStyle = '#ff9a3c'
       ctx.lineWidth = 2.5 * k + 1
-      trace(opSegments(cur.op))
+      const pts = draftPoints(cur.mode, cur.box, Math.max(s.width, s.height))
+      trace(
+        pts
+          .map((p, i) => {
+            const q = pts[(i + 1) % pts.length]
+            return { x1: p[0], y1: p[1], x2: q[0], y2: q[1] }
+          })
+          .slice(0, cur.mode === 'wall' ? 1 : pts.length)
+      )
     }
     const pts = poly.current
     if (pts.length) {
@@ -189,8 +203,8 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     g.setTransform(1, 0, 0, 1, 0, 0)
     g.clearRect(0, 0, w, h)
     const s = useMapStore.getState()
-    const show =
-      !player && s.analysis && (s.view !== 'map' || (s.mode !== 'fog' && s.mode !== 'pan'))
+    const editing = s.mode !== 'fog' && s.mode !== 'pan'
+    const show = !player && s.analysis && (s.view !== 'map' || editing)
     if (!show) return
     const br = b.getBoundingClientRect()
     const cr = cv.getBoundingClientRect()
@@ -199,14 +213,39 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     g.lineWidth = (s.view === 'blueprint' ? 2 : 3) * (dpr / sc)
     g.lineCap = 'square'
     g.strokeStyle = s.view === 'blueprint' ? '#e8f4ff' : '#28beff'
+    if (s.preview) {
+      // walls the detection panel would put on the map, dimmed
+      g.save()
+      g.globalAlpha = 0.55
+      g.strokeStyle = '#ff9a3c'
+      g.setLineDash([8 * (dpr / sc), 5 * (dpr / sc)])
+      g.beginPath()
+      for (const m of s.preview) {
+        g.moveTo(m.x1, m.y1)
+        g.lineTo(m.x2, m.y2)
+      }
+      g.stroke()
+      g.restore()
+    }
     g.beginPath()
-    const add = (m: WallSegment): void => {
+    for (const m of edgeSegments(s.graph)) {
       g.moveTo(m.x1, m.y1)
       g.lineTo(m.x2, m.y2)
     }
-    for (const a of s.analysis!.auto) add(a)
-    for (const o of s.ops) if (isDrawn(o)) for (const m of opSegments(o)) add(m)
     g.stroke()
+    if (editing) {
+      // the nodes the walls hang on: where new lines attach and what can be dragged
+      const rr = 3.5 * (dpr / sc)
+      g.fillStyle = s.view === 'blueprint' ? '#28beff' : '#fff'
+      g.strokeStyle = s.view === 'blueprint' ? '#e8f4ff' : '#0a6e99'
+      g.lineWidth = 1.5 * (dpr / sc)
+      for (const n of s.graph.nodes) {
+        g.beginPath()
+        g.arc(n.x, n.y, rr, 0, Math.PI * 2)
+        g.fill()
+        g.stroke()
+      }
+    }
   }
 
   // the wall layers only change when the walls do
@@ -235,12 +274,12 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     hoverItem.current = null
     draw()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fog, fogStyle, player, mapView, mode, width, height, ops, selected, view.scale])
+  }, [fog, fogStyle, player, mapView, mode, width, height, graph, selected, view.scale])
 
   useEffect(() => {
     drawVectors()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [analysis, ops, mapView, mode, player, view, width, height])
+  }, [analysis, graph, preview, mapView, mode, player, view, width, height])
 
   useEffect(() => {
     const b = box.current
@@ -370,42 +409,42 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
 
   const tol = (): number => 10 * unit()
 
-  const pick = (x: number, y: number) => {
-    const s = useMapStore.getState()
-    return hitTest(x, y, tol(), s.ops, s.analysis?.auto ?? [])
-  }
-
-  const updateHoverItem = (x: number, y: number): void => {
-    const h = pick(x, y)
-    const next = h ? (h.src === 'op' ? opSegments(h.op) : [h.seg]) : null
-    const key = (g: WallSegment[] | null): string =>
-      g ? `${g.length}:${g[0].x1},${g[0].y1},${g[0].x2},${g[0].y2}` : ''
+  const hoverAt = (x: number, y: number, edgesOnly: boolean): void => {
+    const g = useMapStore.getState().graph
+    const t = tol()
+    let next: { segs?: WallSegment[]; node?: [number, number] } | null = null
+    const hit = edgesOnly ? null : hitTest(g, x, y, t)
+    if (hit?.kind === 'node') next = { node: [hit.node.x, hit.node.y] }
+    else {
+      const e = hit?.kind === 'edge' ? hit.edge : hitEdge(g, x, y, t)
+      const ends = e && edgeEnds(g, e.id)
+      if (ends) next = { segs: [ends] }
+    }
+    const key = (h: typeof next): string =>
+      h
+        ? h.node
+          ? `n${h.node}`
+          : `e${h.segs![0].x1},${h.segs![0].y1},${h.segs![0].x2},${h.segs![0].y2}`
+        : ''
     const same = key(next) === key(hoverItem.current)
     hoverItem.current = next
     if (!same) draw()
   }
 
+  const updateHoverItem = (x: number, y: number): void =>
+    hoverAt(x, y, useMapStore.getState().mode === 'erase')
+
   const eraseAt = (x: number, y: number): void => {
-    const h = pick(x, y)
-    if (!h) return
     const s = useMapStore.getState()
-    if (h.src === 'op') s.removeOp(h.op.id as number)
-    else s.cutAuto(h.seg)
+    const e = hitEdge(s.graph, x, y, tol())
+    if (!e) return
+    s.setGraph(removeEdge(s.graph, e.id))
     hoverItem.current = null
   }
 
-  const handleAt = (x: number, y: number): { id: number; index: number; orig: DrawnOp } | null => {
-    const s = useMapStore.getState()
-    const sel = s.ops.find((o) => o.id === s.selected)
-    if (!sel || !isDrawn(sel)) return null
-    const r = 9 * unit()
-    if (sel.type === 'shape') {
-      const [rx, ry] = rotateHandle(sel, ROTATE_OFFSET * unit())
-      if (Math.hypot(rx - x, ry - y) <= r) return { id: sel.id as number, index: ROTATE, orig: sel }
-    }
-    const i = handles(sel).findIndex(([hx, hy]) => Math.hypot(hx - x, hy - y) <= r)
-    return i < 0 ? null : { id: sel.id as number, index: i, orig: sel }
-  }
+  /** Where a point lands when the pointer is over it: on a node or wall nearby unless Shift is held */
+  const snapTo = (x: number, y: number, shift: boolean, g = useMapStore.getState().graph): Snap =>
+    shift ? { kind: 'free', x, y } : snapPoint(g, x, y, tol())
 
   const startPan = (e: React.PointerEvent): void => {
     drag.current = { kind: 'pan', cx: e.clientX, cy: e.clientY, view: viewRef.current }
@@ -443,48 +482,39 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       lastPainted.current = id
       toggleRoom(id, painting.current)
     } else if (s.mode === 'select') {
-      const hd = handleAt(x, y)
-      if (hd) {
-        s.beginGesture()
-        drag.current =
-          hd.index === ROTATE && hd.orig.type === 'shape'
-            ? { kind: 'rotate', id: hd.id, orig: hd.orig }
-            : { kind: 'handle', ...hd }
-        return
-      }
-      const h = pick(x, y)
-      if (!h) return s.select(null)
+      const hit = hitTest(s.graph, x, y, tol())
+      if (!hit) return s.select(null)
       s.beginGesture()
-      let op = h.src === 'op' ? h.op : null
-      if (h.src === 'auto') {
-        const id = s.adoptAuto(h.seg)
-        op = useMapStore.getState().ops.find((o) => o.id === id) as DrawnOp
+      if (hit.kind === 'node') {
+        s.select({ kind: 'node', id: hit.node.id })
+        drag.current = { kind: 'node', id: hit.node.id, g0: s.graph }
+      } else {
+        const ends = edgeEnds(s.graph, hit.edge.id)!
+        s.select({ kind: 'edge', id: hit.edge.id })
+        drag.current = { kind: 'edge', id: hit.edge.id, sx: x, sy: y, g0: s.graph, ends }
       }
-      s.select(op!.id as number)
-      drag.current = { kind: 'move', id: op!.id as number, sx: x, sy: y, orig: op! }
     } else if (s.mode === 'erase') {
       s.beginGesture()
       drag.current = { kind: 'erase' }
       eraseAt(x, y)
     } else if (s.mode === 'poly') {
       const pts = poly.current
-      const r = 10 * unit()
-      if (pts.length >= 3 && Math.hypot(x - pts[0][0], y - pts[0][1]) <= r) return finishPoly(true)
-      const near = e.shiftKey
-        ? null
-        : nearestOnWalls(x, y, Math.max(8, Math.max(s.width, s.height) * 0.012))
-      const [px, py] = near ?? [x, y]
+      if (pts.length >= 3 && Math.hypot(x - pts[0][0], y - pts[0][1]) <= tol())
+        return finishPoly(true)
+      const near = snapTo(x, y, e.shiftKey)
       const last = pts[pts.length - 1]
       // the second click of a double click lands on the same spot
-      if (last && Math.hypot(px - last[0], py - last[1]) < 3 * unit()) return
-      pts.push([px, py])
-      polyAt.current = [px, py]
+      if (last && Math.hypot(near.x - last[0], near.y - last[1]) < 3 * unit()) return
+      pts.push([near.x, near.y])
+      polyAt.current = [near.x, near.y]
       draw()
     } else {
+      const start = s.mode === 'wall' ? snapTo(x, y, e.shiftKey) : { x, y }
       draft.current = {
-        op: shapeFor(s.mode, x, y, x, y, e.shiftKey, s.width, s.height),
-        sx: x,
-        sy: y,
+        mode: s.mode,
+        sx: start.x,
+        sy: start.y,
+        box: boxFor(s.mode, start.x, start.y, x, y, e.shiftKey, s.graph, tol()),
       }
       draw()
     }
@@ -496,11 +526,8 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     poly.current = []
     polyAt.current = null
     if (pts.length >= 2) {
-      // every side becomes its own line, all within one undo step
       const s = useMapStore.getState()
-      s.beginGesture()
-      for (const w of polygonWalls(pts, closed)) s.addOp(w)
-      s.endGesture()
+      s.setGraph(addPolyline(s.graph, pts, closed))
     }
     draw()
   }
@@ -535,25 +562,42 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     if (!analysis) return
     const [x, y] = toWork(e)
     const s = useMapStore.getState()
-    if (s.mode === 'poly' && poly.current.length) {
-      polyAt.current = [x, y]
-      draw()
-      return
+    const drawing = ['wall', 'rect', 'circle', 'poly'].includes(s.mode)
+    if (drawing) {
+      const h = snapTo(x, y, e.shiftKey)
+      const had = snapHint.current
+      snapHint.current = h
+      if (s.mode === 'poly' && poly.current.length) polyAt.current = [h.x, h.y]
+      if (s.mode === 'poly' || (!draft.current && (had?.kind !== h.kind || had.x !== h.x))) draw()
+      if (s.mode === 'poly') return
     }
     const cur = draft.current
     if (cur) {
       draft.current = {
         ...cur,
-        op: shapeFor(s.mode, cur.sx, cur.sy, x, y, e.shiftKey, s.width, s.height),
+        box: boxFor(cur.mode, cur.sx, cur.sy, x, y, e.shiftKey, s.graph, tol()),
       }
       draw()
       return
     }
-    if (dg?.kind === 'move') s.updateOp(dg.id, translateOp(dg.orig, x - dg.sx, y - dg.sy))
-    else if (dg?.kind === 'rotate')
-      s.updateOp(dg.id, rotateTo(dg.orig, x, y, e.shiftKey ? Math.PI / 12 : 0))
-    else if (dg?.kind === 'handle') s.updateOp(dg.id, moveHandle(dg.orig, dg.index, x, y))
-    else if (dg?.kind === 'erase') {
+    if (dg?.kind === 'node') {
+      // joins a node close by (Shift: stays free); the lines on it follow
+      const t = e.shiftKey ? null : nearestOther(dg.g0, dg.id, x, y, tol())
+      s.setGraph(moveNode(dg.g0, dg.id, t ? t.x : x, t ? t.y : y), true)
+    } else if (dg?.kind === 'edge') {
+      const dx = x - dg.sx
+      const dy = y - dg.sy
+      const a = dg.g0.edges.find((o) => o.id === dg.id)!
+      s.setGraph(
+        moveNode(
+          moveNode(dg.g0, a.a, dg.ends.x1 + dx, dg.ends.y1 + dy),
+          a.b,
+          dg.ends.x2 + dx,
+          dg.ends.y2 + dy
+        ),
+        true
+      )
+    } else if (dg?.kind === 'erase') {
       eraseAt(x, y)
       updateHoverItem(x, y)
     } else if (painting.current !== null) {
@@ -571,13 +615,43 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     lastPainted.current = 0
     const dg = drag.current
     drag.current = null
-    if (dg && dg.kind !== 'pan') useMapStore.getState().endGesture()
+    const s = useMapStore.getState()
+    if (dg && (dg.kind === 'node' || dg.kind === 'edge')) {
+      // a moved node that was let go on another one joins it, within the same undo step
+      const ids =
+        dg.kind === 'node'
+          ? [dg.id]
+          : s.graph.edges.filter((o) => o.id === dg.id).flatMap((o) => [o.a, o.b])
+      let g = s.graph
+      let sel = s.selected
+      for (const id of ids) {
+        if (!mergeTarget(g, id, 1)) continue
+        const out = dropNode(g, id, 1)
+        g = out.g
+        if (dg.kind === 'node') sel = { kind: 'node', id: out.id }
+      }
+      if (g !== s.graph) {
+        s.setGraph(g)
+        s.select(sel)
+      }
+    }
+    if (dg && dg.kind !== 'pan') s.endGesture()
     const c = draft.current
     if (!c) return
     draft.current = null
-    const big = Math.max(Math.abs(c.op.x2 - c.op.x1), Math.abs(c.op.y2 - c.op.y1))
-    if (big < 6) return draw()
-    useMapStore.getState().addOp(c.op)
+    const b = c.box
+    if (Math.max(Math.abs(b.x2 - b.x1), Math.abs(b.y2 - b.y1)) < 6) return draw()
+    const M = Math.max(s.width, s.height)
+    const r = tol()
+    if (c.mode === 'wall')
+      s.setGraph(
+        addPolyline(s.graph, [
+          [b.x1, b.y1],
+          [b.x2, b.y2],
+        ])
+      )
+    else if (c.mode === 'rect') s.setGraph(addRect(s.graph, b.x1, b.y1, b.x2, b.y2, r))
+    else s.setGraph(addEllipse(s.graph, b.x1, b.y1, b.x2, b.y2, M, r))
   }
 
   const cursor =
@@ -620,66 +694,78 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
   )
 }
 
-function nearestOnWalls(x: number, y: number, r: number): [number, number] | null {
-  const s = useMapStore.getState()
-  const walls = (s.analysis?.auto ?? []).concat(...s.ops.filter(isDrawn).map((o) => opSegments(o)))
-  let best: [number, number] | null = null
-  let bd = r * r
-  for (const w of walls) {
-    const dx = w.x2 - w.x1
-    const dy = w.y2 - w.y1
-    const len = dx * dx + dy * dy
-    const t = len ? Math.max(0, Math.min(1, ((x - w.x1) * dx + (y - w.y1) * dy) / len)) : 0
-    const px = w.x1 + t * dx
-    const py = w.y1 + t * dy
-    const d = (px - x) ** 2 + (py - y) ** 2
-    if (d < bd) {
-      bd = d
-      best = [px, py]
+/** The node, other than `id`, nearest to the point within `r` */
+function nearestOther(g: Graph, id: number, x: number, y: number, r: number) {
+  let best = r
+  let hit: { x: number; y: number } | null = null
+  for (const n of g.nodes) {
+    const d = Math.hypot(n.x - x, n.y - y)
+    if (n.id !== id && d <= best) {
+      best = d
+      hit = n
     }
   }
-  return best
+  return hit
+}
+
+/** A square box with the same first corner as the one dragged, for Shift */
+function squareTo(x1: number, y1: number, x2: number, y2: number): [number, number] {
+  const d = Math.max(Math.abs(x2 - x1), Math.abs(y2 - y1))
+  return [x1 + Math.sign(x2 - x1 || 1) * d, y1 + Math.sign(y2 - y1 || 1) * d]
 }
 
 /**
- * The item being dragged out. Lines snap straight and to nearby walls; Shift turns that off for lines
- * and makes rectangles square. A circle is centred on the first point.
+ * The box being dragged out. A line snaps to nearby nodes and walls and, unless Shift is held, to
+ * straight; Shift makes a rectangle square. A circle grows out from where the drag began.
  */
-function shapeFor(
-  mode: string,
+function boxFor(
+  mode: MapMode,
   x1: number,
   y1: number,
   x2: number,
   y2: number,
   shift: boolean,
-  w: number,
-  h: number
-): DrawnOp {
+  g: Graph,
+  r: number
+): WallSegment {
   if (mode === 'circle') {
-    // a circle grows out from where the drag began
-    const r = Math.hypot(x2 - x1, y2 - y1)
-    return { type: 'shape', kind: 'circle', x1: x1 - r, y1: y1 - r, x2: x1 + r, y2: y1 + r }
+    const rad = Math.hypot(x2 - x1, y2 - y1)
+    return { x1: x1 - rad, y1: y1 - rad, x2: x1 + rad, y2: y1 + rad }
   }
-  if ((SHAPES as string[]).includes(mode)) {
+  if (mode === 'rect') {
     if (shift) [x2, y2] = squareTo(x1, y1, x2, y2)
-    return { type: 'shape', kind: mode as ShapeKind, x1, y1, x2, y2 }
+    return { x1, y1, x2, y2 }
   }
-  const r = Math.max(8, Math.max(w, h) * 0.012)
   if (!shift) {
-    const s = nearestOnWalls(x1, y1, r)
-    if (s) [x1, y1] = s
     const ang = Math.abs((Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI)
     const lock = ang < 12 || ang > 168 ? 'h' : Math.abs(ang - 90) < 12 ? 'v' : null
     if (lock === 'h') y2 = y1
     if (lock === 'v') x2 = x1
-    const e = nearestOnWalls(x2, y2, r)
-    if (e) {
-      ;[x2, y2] = e
+    const e = snapPoint(g, x2, y2, r)
+    if (e.kind !== 'free') {
+      ;[x2, y2] = [e.x, e.y]
       if (lock === 'h') y2 = y1
       if (lock === 'v') x2 = x1
     }
   }
-  return { type: 'wall', x1, y1, x2, y2 }
+  return { x1, y1, x2, y2 }
+}
+
+/** The corners of the outline for a box: the two ends of a line, four corners, or the circle's ring */
+function draftPoints(mode: MapMode, b: WallSegment, M: number): [number, number][] {
+  if (mode === 'wall')
+    return [
+      [b.x1, b.y1],
+      [b.x2, b.y2],
+    ]
+  if (mode === 'rect')
+    return [
+      [b.x1, b.y1],
+      [b.x2, b.y1],
+      [b.x2, b.y2],
+      [b.x1, b.y2],
+    ]
+  return ellipsePoints(b.x1, b.y1, b.x2, b.y2, M)
 }
 
 export default MapCanvas

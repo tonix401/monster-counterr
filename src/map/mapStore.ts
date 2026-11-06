@@ -2,15 +2,24 @@ import { create } from 'zustand'
 import { createAnalyzerClient, type AnalyzerClient } from './analyzerClient'
 import { parseFogMap, serializeFogMap, type FogMapFile } from './fogMapFile'
 import { loadMapText, saveMapText } from './mapStorage'
-import { bakeErasures, scaleOp } from './shapes'
+import {
+  edgeSegments,
+  emptyGraph,
+  graphFromLists,
+  graphFromSegments,
+  graphLists,
+  removeEdge,
+  removeNode,
+} from './graph'
 import { makeCanvas } from './render'
 import {
   MAP_MAX_DIM,
   type Analysis,
   type FogStyle,
+  type Graph,
   type MapMode,
-  type MapOp,
   type MapView,
+  type Selection,
   type WallSegment,
 } from './types'
 
@@ -21,15 +30,6 @@ export interface MapParams {
   minLen: number
   gap: number
   minRoom: number
-}
-
-/** What one undo step brings back: the drawn items and the automatic wall detection settings */
-export interface Snapshot {
-  ops: MapOp[]
-  auto: boolean
-  sens: number
-  minLen: number
-  gap: number
 }
 
 /** The parameters that decide which walls detection finds; the smallest room only filters rooms */
@@ -50,15 +50,18 @@ interface MapState {
   fog: Set<number>
   /** How players see the fogged rooms */
   fogStyle: FogStyle
-  /** Everything drawn on top of the detected walls, loaded walls included */
-  ops: MapOp[]
-  /** The state before each edit, newest last: drawn items and wall detection settings alike */
-  history: Snapshot[]
-  /** The state a map was opened with; "clear edits" returns to it */
-  baseline: Snapshot
-  selected: number | null
-  auto: boolean
+  /** The walls: nodes, and lines between them */
+  graph: Graph
+  /** The walls before each edit, newest last */
+  history: Graph[]
+  /** The walls a map was opened with; "clear edits" returns to them */
+  baseline: Graph
+  selected: Selection | null
   params: MapParams
+  /** Whether the walls found with the current settings are being shown (the detection panel is open) */
+  previewing: boolean
+  /** Walls found with the current settings, not yet part of the map */
+  preview: WallSegment[] | null
   view: MapView
   mode: MapMode
   busy: boolean
@@ -71,21 +74,19 @@ interface MapState {
   closeMap: () => void
   toText: () => string | null
   setParam: <K extends keyof MapParams>(key: K, value: number) => void
-  setAuto: (on: boolean) => void
+  showPreview: (on: boolean) => void
+  /** Replaces the walls with the ones found in the picture */
+  applyDetection: () => Promise<void>
   setView: (view: MapView) => void
   setMode: (mode: MapMode) => void
   setShared: (on: boolean) => void
   /** Edits between begin and end (a drag) become one undo step */
   beginGesture: () => void
   endGesture: () => void
-  addOp: (op: MapOp) => number
-  updateOp: (id: number, op: MapOp) => void
-  removeOp: (id: number) => void
-  /** Hides a detected wall */
-  cutAuto: (seg: WallSegment) => void
-  /** Turns a detected wall into a drawn one so it can be moved; returns the new id */
-  adoptAuto: (seg: WallSegment) => number
-  select: (id: number | null) => void
+  /** Replaces the walls; `live` is for drags, which redo the rooms while they go on */
+  setGraph: (graph: Graph, live?: boolean) => void
+  select: (selection: Selection | null) => void
+  deleteSelected: () => void
   undoEdit: () => void
   clearEdits: () => void
   setFog: (id: number, on: boolean) => boolean
@@ -95,57 +96,27 @@ interface MapState {
 }
 
 export const DEFAULT_PARAMS: MapParams = { sens: 70, minLen: 6, gap: 6.5, minRoom: 0.2 }
-const detectOf = (p: MapParams): Pick<Snapshot, 'sens' | 'minLen' | 'gap'> => ({
-  sens: p.sens,
-  minLen: p.minLen,
-  gap: p.gap,
+const detectParams = (p: MapParams) => ({
+  sensitivity: 40 - p.sens * 0.32,
+  minLen: p.minLen / 100,
+  gap: p.gap / 100,
 })
 
 let client: AnalyzerClient | null = null
 let seq = 0
 let timer: ReturnType<typeof setTimeout> | undefined
-let needDetect = false
+let previewTimer: ReturnType<typeof setTimeout> | undefined
+let previewSeq = 0
 let saveTimer: ReturnType<typeof setTimeout> | undefined
 /** Fog from a loaded file, applied once the first analysis exists */
 let pendingFog: number[] = []
-let nextId = 1
 let gesture = false
 let gestureFresh = false
 let pending = false
 let inflight = false
 let dirty = false
-/** A slider drag fires many changes; they share one undo step while they follow each other closely */
-const SLIDER_STEP_MS = 800
-let lastSlider: { key: keyof MapParams; at: number } | null = null
-const withId = (op: MapOp): MapOp => (op.type === 'erase' ? op : { ...op, id: nextId++ })
 
 export const useMapStore = create<MapState>()((set, get) => {
-  const snapshot = (s: MapState = get(), ops: MapOp[] = s.ops): Snapshot => ({
-    ops,
-    auto: s.auto,
-    sens: s.params.sens,
-    minLen: s.params.minLen,
-    gap: s.params.gap,
-  })
-
-  /** Puts a snapshot's items and detection settings back; returns whether detection must rerun */
-  function restoreSnapshot(snap: Snapshot): boolean {
-    const s = get()
-    const redetect =
-      snap.auto !== s.auto ||
-      snap.sens !== s.params.sens ||
-      snap.minLen !== s.params.minLen ||
-      snap.gap !== s.params.gap
-    lastSlider = null
-    set({
-      ops: snap.ops,
-      auto: snap.auto,
-      params: { ...s.params, sens: snap.sens, minLen: snap.minLen, gap: snap.gap },
-      selected: null,
-    })
-    return redetect
-  }
-
   const analyzer = (): AnalyzerClient => (client ??= createAnalyzerClient())
 
   function scheduleSave(): void {
@@ -154,8 +125,7 @@ export const useMapStore = create<MapState>()((set, get) => {
   }
 
   /** `throttle` is for drags: keep one run going and queue another instead of restarting the timer */
-  function analyze(detect: boolean, delay: number, throttle = false): void {
-    needDetect ||= detect
+  function analyze(delay: number, throttle = false): void {
     if (throttle && (pending || inflight)) {
       dirty = true
       return
@@ -168,25 +138,14 @@ export const useMapStore = create<MapState>()((set, get) => {
       inflight = true
       const mine = ++seq
       const s = get()
-      const doDetect = needDetect
-      needDetect = false
       const res = await analyzer().run({
-        detect: !s.auto
-          ? null
-          : doDetect
-            ? {
-                sensitivity: 40 - s.params.sens * 0.32,
-                minLen: s.params.minLen / 100,
-                gap: s.params.gap / 100,
-              }
-            : undefined,
-        ops: s.ops,
+        segments: edgeSegments(s.graph),
         minRoom: s.params.minRoom,
       })
       inflight = false
       if (dirty) {
         dirty = false
-        analyze(false, 0, true)
+        analyze(0, true)
       }
       if (mine !== seq) return
 
@@ -214,7 +173,7 @@ export const useMapStore = create<MapState>()((set, get) => {
         set({ error: 'mapLoadFailed' })
         resolve()
       }
-      img.onload = () => {
+      img.onload = async () => {
         const sc = Math.min(1, MAP_MAX_DIM / Math.max(img.naturalWidth, img.naturalHeight))
         const W = Math.max(1, Math.round(img.naturalWidth * sc))
         const H = Math.max(1, Math.round(img.naturalHeight * sc))
@@ -231,15 +190,18 @@ export const useMapStore = create<MapState>()((set, get) => {
 
         const fx = saved?.width ? W / saved.width : 1
         const fy = saved?.height ? H / saved.height : 1
-        const ops: MapOp[] = bakeErasures(saved?.walls ?? []).map((op) =>
-          withId(scaleOp(op, fx, fy))
-        )
         pendingFog = (saved?.fog ?? [])
           .map(([x, y]) => Math.round(y * fy) * W + Math.round(x * fx))
           .filter((i) => i >= 0 && i < W * H)
 
         analyzer().load(gray, W, H)
-        needDetect = false
+        const graph = saved
+          ? graphFromLists(
+              saved.nodes.map((p) => [p[0] * fx, p[1] * fy]),
+              saved.edges
+            )
+          : graphFromSegments(await analyzer().detect(detectParams(get().params)), Math.max(W, H))
+        previewSeq++
         set({
           loaded: true,
           name,
@@ -251,35 +213,46 @@ export const useMapStore = create<MapState>()((set, get) => {
           analysis: null,
           fog: new Set(),
           fogStyle: saved?.fogStyle ?? 'fog',
-          ops,
+          graph,
           history: [],
+          baseline: graph,
           selected: null,
-          auto: saved ? false : get().auto,
+          preview: null,
           view: saved ? saved.view : get().view,
           error: null,
         })
-        set({ baseline: snapshot() })
-        lastSlider = null
-        analyze(!saved, 40)
+        analyze(40)
         resolve()
       }
       img.src = url
     })
   }
 
-  function edit(ops: MapOp[], live = false): void {
+  function edit(graph: Graph, live = false): void {
     const s = get()
-    const history = gesture && !gestureFresh ? s.history : [...s.history, snapshot(s)]
+    const history = gesture && !gestureFresh ? s.history : [...s.history, s.graph]
     gestureFresh = false
-    lastSlider = null
-    set({ ops, history })
-    if (live) analyze(false, 30, true)
+    const sel = s.selected
+    const kept =
+      !sel || (sel.kind === 'node' ? graph.nodes : graph.edges).some((o) => o.id === sel.id)
+    set({ graph, history, selected: kept ? sel : null })
+    if (live) analyze(30, true)
     else rebuild()
   }
 
   function rebuild(): void {
-    analyze(false, 20)
+    analyze(20)
     scheduleSave()
+  }
+
+  /** Shows the walls the current settings would find */
+  function previewWalls(delay: number): void {
+    clearTimeout(previewTimer)
+    previewTimer = setTimeout(async () => {
+      const mine = ++previewSeq
+      const segs = await analyzer().detect(detectParams(get().params))
+      if (mine === previewSeq && get().previewing) set({ preview: segs })
+    }, delay)
   }
 
   return {
@@ -293,12 +266,13 @@ export const useMapStore = create<MapState>()((set, get) => {
     analysis: null,
     fog: new Set(),
     fogStyle: 'fog',
-    ops: [],
+    graph: emptyGraph(),
     history: [],
-    baseline: { ops: [], auto: true, ...detectOf(DEFAULT_PARAMS) },
+    baseline: emptyGraph(),
     selected: null,
-    auto: true,
     params: DEFAULT_PARAMS,
+    previewing: false,
+    preview: null,
     view: 'lines',
     mode: 'fog',
     busy: false,
@@ -347,15 +321,18 @@ export const useMapStore = create<MapState>()((set, get) => {
       clearTimeout(timer)
       seq++
       pendingFog = []
+      previewSeq++
       set({
         loaded: false,
         base: null,
         analysis: null,
         fog: new Set(),
-        ops: [],
+        graph: emptyGraph(),
         history: [],
-        baseline: snapshot(get(), []),
+        baseline: emptyGraph(),
         selected: null,
+        previewing: false,
+        preview: null,
         busy: false,
         shared: false,
         image: '',
@@ -367,13 +344,12 @@ export const useMapStore = create<MapState>()((set, get) => {
       const s = get()
       if (!s.loaded || !s.analysis) return null
       const rooms = s.analysis.rooms
-      const auto: MapOp[] = s.analysis.auto.map((w) => ({ type: 'wall', ...w }))
       return serializeFogMap({
         name: s.name,
         width: s.width,
         height: s.height,
         view: s.view,
-        walls: auto.concat(s.ops),
+        ...graphLists(s.graph),
         fogStyle: s.fogStyle,
         fog: [...s.fog]
           .map((id) => rooms[id]?.sample)
@@ -384,26 +360,21 @@ export const useMapStore = create<MapState>()((set, get) => {
     },
 
     setParam: (key, value) => {
-      const s = get()
-      const detects = DETECT_KEYS.includes(key)
-      const now = Date.now()
-      const continues = lastSlider?.key === key && now - lastSlider.at < SLIDER_STEP_MS
-      lastSlider = detects ? { key, at: now } : null
-      set({
-        params: { ...s.params, [key]: value },
-        history:
-          detects && !continues && value !== s.params[key]
-            ? [...s.history, snapshot(s)]
-            : s.history,
-      })
-      analyze(key !== 'minRoom', key === 'minRoom' ? 150 : 200)
+      set({ params: { ...get().params, [key]: value } })
+      if (key === 'minRoom') analyze(150)
+      else if (DETECT_KEYS.includes(key) && get().previewing) previewWalls(150)
     },
-    setAuto: (on) => {
+    showPreview: (previewing) => {
+      previewSeq++
+      set({ previewing, preview: null })
+      if (previewing) previewWalls(0)
+    },
+    applyDetection: async () => {
       const s = get()
-      lastSlider = null
-      // turning it on or off is an undo step; running it again with the same setting is not
-      set({ auto: on, history: on !== s.auto ? [...s.history, snapshot(s)] : s.history })
-      analyze(true, 20)
+      const segs = s.preview ?? (await analyzer().detect(detectParams(s.params)))
+      previewSeq++
+      set({ preview: null, selected: null })
+      edit(graphFromSegments(segs, Math.max(s.width, s.height)))
     },
     setView: (view) => {
       set({ view })
@@ -419,41 +390,24 @@ export const useMapStore = create<MapState>()((set, get) => {
     endGesture: () => {
       gesture = false
     },
-    addOp: (op) => {
-      const added = withId(op)
-      edit(get().ops.concat(added))
-      return (added as { id: number }).id
-    },
-    updateOp: (id, op) =>
-      edit(get().ops.map((o) => (o.id === id ? { ...op, id } : o)) as MapOp[], true),
-    removeOp: (id) => {
-      edit(get().ops.filter((o) => o.id !== id))
-      if (get().selected === id) set({ selected: null })
-    },
-    cutAuto: (seg) => edit(get().ops.concat(withId({ type: 'cut', ...seg }))),
-    adoptAuto: (seg) => {
-      const wall = withId({ type: 'wall', ...seg })
-      edit(get().ops.concat(withId({ type: 'cut', ...seg }), wall))
-      return (wall as { id: number }).id
-    },
+    setGraph: (graph, live) => edit(graph, live),
     select: (selected) => set({ selected }),
+    deleteSelected: () => {
+      const { graph, selected } = get()
+      if (!selected) return
+      edit(
+        selected.kind === 'node' ? removeNode(graph, selected.id) : removeEdge(graph, selected.id)
+      )
+    },
     undoEdit: () => {
       const { history } = get()
       if (!history.length) return
-      const redetect = restoreSnapshot(history[history.length - 1])
-      set({ history: history.slice(0, -1) })
-      if (redetect) {
-        analyze(true, 20)
-        scheduleSave()
-      } else rebuild()
+      set({ graph: history[history.length - 1], history: history.slice(0, -1), selected: null })
+      rebuild()
     },
     clearEdits: () => {
-      const redetect = restoreSnapshot(get().baseline)
-      set({ history: [] })
-      if (redetect) {
-        analyze(true, 20)
-        scheduleSave()
-      } else rebuild()
+      set({ graph: get().baseline, history: [], selected: null })
+      rebuild()
     },
 
     setFog: (id, on) => {

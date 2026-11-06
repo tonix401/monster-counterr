@@ -150,8 +150,13 @@ const ClientView: React.FC = () => {
       </div>
       <TabBar
         tabs={[
-          { to: { pathname: '/client', search }, label: t('enemies'), end: true },
-          { to: { pathname: '/client/map', search }, label: t('map') },
+          {
+            to: { pathname: '/client', search },
+            label: t('enemies'),
+            icon: 'encounter',
+            end: true,
+          },
+          { to: { pathname: '/client/map', search }, label: t('map'), icon: 'map' },
         ]}
       />
       {onMapTab ? (

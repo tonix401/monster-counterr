@@ -1,28 +1,93 @@
 .tab-bar {
   display: flex;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-2xl) 0;
+  gap: var(--spacing-xs);
+  padding: 0 var(--spacing-2xl);
   border-bottom: var(--borderwidth) solid var(--border);
 }
 
 .tab-link {
-  padding: var(--spacing-sm) var(--spacing-xl);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  min-height: 44px;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  margin-bottom: calc(var(--borderwidth) * -1);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   color: var(--text);
+  font-size: var(--font-base);
+  font-weight: 500;
   text-decoration: none;
-  opacity: 0.65;
-  border: var(--borderwidth) solid transparent;
-  border-bottom: 0;
-  transition: opacity var(--transition-base);
+  white-space: nowrap;
+  opacity: 0.6;
+  transition:
+    opacity var(--transition-base),
+    background var(--transition-base);
+}
+
+.tab-link::after {
+  content: '';
+  position: absolute;
+  left: var(--spacing-sm);
+  right: var(--spacing-sm);
+  bottom: 0;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--accent);
+  transform: scaleX(0);
+  transition: transform var(--transition-base);
 }
 
 .tab-link:hover {
   opacity: 1;
+  background: var(--overlay-medium);
+}
+
+.tab-link:focus-visible {
+  opacity: 1;
+  outline-offset: -3px;
+}
+
+.tab-link:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .tab-link.active {
   opacity: 1;
-  background: var(--overlay-accent);
-  border-color: var(--border);
   font-weight: 600;
+  background: var(--overlay-accent);
+}
+
+.tab-link.active::after {
+  transform: scaleX(1);
+}
+
+.tab-icon {
+  flex: none;
+  transition: color var(--transition-base);
+}
+
+.tab-link.active .tab-icon {
+  color: var(--accent);
+}
+
+@media (max-width: 600px) {
+  .tab-bar {
+    padding: 0 var(--spacing-md);
+    gap: 0;
+  }
+
+  .tab-link {
+    flex: 1;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-link,
+  .tab-link::after,
+  .tab-icon {
+    transition: none;
+  }
 }

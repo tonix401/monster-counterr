@@ -2,6 +2,7 @@ import type { Monster } from '@/types/Monster'
 import type { Settings } from '@/types/Settings'
 import type { SaveData } from '@/store/types'
 import { SAVE_FILE } from '@/constants'
+import type { SavedMap } from '@/map/mapLibrary'
 
 /**
  * Data import/export helpers - Pure functions for testability
@@ -17,6 +18,19 @@ export function isSaveData(data: unknown): data is Partial<SaveData> {
   return typeof d.schemaVersion === 'number'
 }
 
+/** A map entry that has what the library needs; anything else in the list is left out */
+function isSavedMap(m: unknown): m is SavedMap {
+  if (typeof m !== 'object' || m === null) return false
+  const o = m as Record<string, unknown>
+  return (
+    typeof o.id === 'string' &&
+    typeof o.name === 'string' &&
+    typeof o.data === 'string' &&
+    Number.isFinite(o.width) &&
+    Number.isFinite(o.height)
+  )
+}
+
 /**
  * Build save data object based on export settings
  */
@@ -26,13 +40,15 @@ export function buildSaveData(
   settings: Settings,
   includeSettings: boolean,
   includeXp: boolean,
-  includeMonsters: boolean
+  includeMonsters: boolean,
+  maps?: SavedMap[]
 ): Partial<SaveData> {
   const data: Partial<SaveData> = {
     schemaVersion: SAVE_FILE.SCHEMA_VERSION,
     ...(includeSettings ? { settings } : {}),
     ...(includeXp ? { currentXp: xp } : {}),
     ...(includeMonsters ? { monsters } : {}),
+    ...(maps?.length ? { maps } : {}),
   }
   return data
 }
@@ -64,14 +80,16 @@ export function processSaveData(data: Partial<SaveData>): {
   monsters?: Monster[]
   xp?: number
   settings?: Settings
+  maps?: SavedMap[]
 } {
-  const result: { monsters?: Monster[]; xp?: number; settings?: Settings } = {}
+  const result: { monsters?: Monster[]; xp?: number; settings?: Settings; maps?: SavedMap[] } = {}
 
   switch (data.schemaVersion) {
     case 1: {
       if ('monsters' in data) result.monsters = data.monsters
       if ('currentXp' in data) result.xp = data.currentXp
       if ('settings' in data) result.settings = data.settings
+      if (Array.isArray(data.maps)) result.maps = data.maps.filter(isSavedMap)
       break
     }
     default:

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Popup from './Popup'
 import { useGo } from '@/hooks/useGo'
 import { useTerm } from '@/store/useMonsterStore'
@@ -8,6 +8,8 @@ import ImportFileButton from '../ui/ImportFileButton'
 import BinarySettingsRow from '@/components/ui/BinarySettingsRow'
 import { useMonsterStore } from '@/store/useMonsterStore'
 import { SAVE_FILE } from '@/constants'
+import { useMapStore } from '@/map/mapStore'
+import type { SavedMap } from '@/map/mapLibrary'
 
 const ManageDataPopup: React.FC = () => {
   const navigate = useGo()
@@ -22,12 +24,31 @@ const ManageDataPopup: React.FC = () => {
   const exportSettings = useMonsterStore((state) => state.exportSettings)
   const setExportSetting = useMonsterStore((state) => state.setExportSetting)
 
+  // the maps are only read from the browser's storage while the option is ticked
+  const mapCount = useMapStore((state) => state.library.length)
+  const [maps, setMaps] = useState<SavedMap[]>([])
+  useEffect(() => {
+    void useMapStore.getState().refreshLibrary()
+  }, [])
+  useEffect(() => {
+    let live = true
+    if (exportSettings.includeMaps)
+      void useMapStore
+        .getState()
+        .exportMaps()
+        .then((m) => live && setMaps(m))
+    return () => {
+      live = false
+    }
+  }, [exportSettings.includeMaps, mapCount])
+
   // Estimate save file size (minimized JSON, same as export)
   const saveData = {
     schemaVersion: SAVE_FILE.SCHEMA_VERSION,
     ...(exportSettings.includeSettings ? { settings } : {}),
     ...(exportSettings.includeCurrentXp ? { currentXp: xp } : {}),
     ...(exportSettings.includeMonsters ? { monsters } : {}),
+    ...(exportSettings.includeMaps && maps.length ? { maps } : {}),
   }
   const saveJson = exportSettings.minimizeJson
     ? JSON.stringify(saveData)
@@ -54,6 +75,12 @@ const ManageDataPopup: React.FC = () => {
           label={t('includeCurrentXp')}
           value={exportSettings.includeCurrentXp}
           onChange={(_, checked) => setExportSetting('includeCurrentXp', checked)}
+        />
+        <BinarySettingsRow
+          settingKey="includeMaps"
+          label={`${t('includeMaps')} (${mapCount})`}
+          value={exportSettings.includeMaps ?? false}
+          onChange={(_, checked) => setExportSetting('includeMaps', checked)}
         />
         <BinarySettingsRow
           settingKey="minimizeJson"

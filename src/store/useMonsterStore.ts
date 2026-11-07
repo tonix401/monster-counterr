@@ -1,3 +1,4 @@
+import { useMapStore } from '@/map/mapStore'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import Peer, { type DataConnection } from 'peerjs'
@@ -219,6 +220,7 @@ export const useMonsterStore = create<StoreWithTemporal>()(
           connections: [],
           isConnecting: false,
           healthCheckInterval: null,
+            includeMaps: false,
           pingIntervalId: null,
 
           // ========== INITIALIZATION & LOADING ==========
@@ -451,7 +453,7 @@ export const useMonsterStore = create<StoreWithTemporal>()(
             }))
           },
 
-          exportData: () => {
+          exportData: async () => {
             const { monsters, xp, settings, exportSettings } = get()
             const data = dataHelpers.buildSaveData(
               monsters,
@@ -459,9 +461,13 @@ export const useMonsterStore = create<StoreWithTemporal>()(
               settings,
               exportSettings.includeSettings,
               exportSettings.includeCurrentXp,
-              exportSettings.includeMonsters
+              exportSettings.includeMonsters,
+              maps
             )
             const dataJson = dataHelpers.serializeSaveData(data, exportSettings.minimizeJson)
+            const maps = exportSettings.includeMaps
+              ? await useMapStore.getState().exportMaps()
+              : undefined
             dataHelpers.downloadFile(dataJson)
           },
 

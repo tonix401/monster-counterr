@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useSyncExternalStore } from 'react'
 import { useTerm } from '@/store/useMonsterStore'
 import { useGo } from '@/hooks/useGo'
 import { useMapStore, type MapParams } from '@/map/mapStore'
+import { getPublishedMap, subscribePublishedMap } from '@/map/mapSync'
 import type { MapMode, MapView } from '@/map/types'
 import MapCanvas from './MapCanvas'
 import {
@@ -15,8 +16,8 @@ import {
   FogAllIcon,
   FogIcon,
   IconButton,
-  LinesIcon,
   LibraryIcon,
+  LinesIcon,
   MapIcon,
   OpenIcon,
   PanIcon,
@@ -26,7 +27,7 @@ import {
   RevealAllIcon,
   SaveIcon,
   SelectIcon,
-  ShareIcon,
+  SidebarIcon,
   SlidersIcon,
   TrashIcon,
   UndoIcon,
@@ -82,8 +83,20 @@ const SLIDERS: { key: keyof MapParams; label: string; min: number; max: number; 
   { key: 'minRoom', label: 'mapSmallestRoom', min: 0.05, max: 2, step: 0.05 },
 ]
 
+/** The picture players have been sent, or the notice they get while no map is shared */
+const PlayerPreview: React.FC = () => {
+  const t = useTerm()
+  const shown = useSyncExternalStore(subscribePublishedMap, getPublishedMap)
+  return shown ? (
+    <img className="map-preview-img" src={shown.url} alt={shown.name} draggable={false} />
+  ) : (
+    <p className="map-preview-empty">{t('mapNotShared')}</p>
+  )
+}
+
 const MapTab: React.FC = () => {
   const t = useTerm()
+  const go = useGo()
   const s = useMapStore()
   const [preview, setPreview] = useState(() => window.innerWidth >= 900)
   const [drag, setDrag] = useState(false)
@@ -96,7 +109,6 @@ const MapTab: React.FC = () => {
   }, [])
 
   useEffect(() => {
-  const go = useGo()
     const onKey = (e: KeyboardEvent): void => {
       const el = e.target as HTMLElement | null
       const typing = !!el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))
@@ -172,6 +184,10 @@ const MapTab: React.FC = () => {
       <div className={`map-empty ${drag ? 'map-drag' : ''}`} {...dropProps}>
         <h3>{t('mapDropHint')}</h3>
         {fileButton}
+        <button type="button" className="map-link-button" onClick={() => go('/maps')}>
+          <LibraryIcon /> {t('mapLibrary')}
+          {s.library.length > 0 && ` (${s.library.length})`}
+        </button>
         {s.error && <p className="map-error">{t(s.error)}</p>}
       </div>
     )
@@ -184,10 +200,6 @@ const MapTab: React.FC = () => {
         <div className={`map-stage ${drag ? 'map-drag' : ''}`} {...dropProps}>
           <MapCanvas player={false} />
         </div>
-        <button type="button" className="map-link-button" onClick={() => go('/maps')}>
-          <LibraryIcon /> {t('mapLibrary')}
-          {s.library.length > 0 && ` (${s.library.length})`}
-        </button>
 
         <div className="map-topbar">
           <div className="map-group" role="group" aria-label={t('mapGroupFile')}>
@@ -207,6 +219,11 @@ const MapTab: React.FC = () => {
                 }}
               />
             </label>
+            <IconButton
+              label={t('mapLibrary')}
+              icon={<LibraryIcon />}
+              onClick={() => go('/maps')}
+            />
             <IconButton label={t('mapSave')} icon={<SaveIcon />} onClick={save} />
             <IconButton label={t('mapClose')} icon={<CloseIcon />} danger onClick={s.closeMap} />
           </div>
@@ -219,11 +236,6 @@ const MapTab: React.FC = () => {
                 icon={v.icon}
                 active={s.view === v.view}
                 pressed={s.view === v.view}
-            <IconButton
-              label={t('mapLibrary')}
-              icon={<LibraryIcon />}
-              onClick={() => go('/maps')}
-            />
                 onClick={() => s.setView(v.view)}
               />
             ))}
@@ -232,7 +244,7 @@ const MapTab: React.FC = () => {
           <div className="map-group map-group-end">
             <IconButton
               label={t('mapShare')}
-              icon={<ShareIcon />}
+              icon={<PlayerIcon />}
               active={s.shared}
               pressed={s.shared}
               onClick={() => s.setShared(!s.shared)}
@@ -240,7 +252,7 @@ const MapTab: React.FC = () => {
             <IconButton
               label={t('mapPlayerView')}
               shortcut="P"
-              icon={<PlayerIcon />}
+              icon={<SidebarIcon />}
               active={preview}
               pressed={preview}
               disabled={!s.analysis}
@@ -303,6 +315,14 @@ const MapTab: React.FC = () => {
               </label>
             ))}
             <p className="map-hint">{t('mapDetectionHint')}</p>
+            <label className="map-check">
+              <input
+                type="checkbox"
+                checked={s.autoDetect}
+                onChange={(e) => s.setAutoDetect(e.target.checked)}
+              />
+              {t('mapAutoDetect')}
+            </label>
             <button
               type="button"
               className="map-panel-action"
@@ -315,14 +335,6 @@ const MapTab: React.FC = () => {
         )}
 
         <div className="map-bottom">
-            <label className="map-check">
-              <input
-                type="checkbox"
-                checked={s.autoDetect}
-                onChange={(e) => s.setAutoDetect(e.target.checked)}
-              />
-              {t('mapAutoDetect')}
-            </label>
           <div className="map-bottom-row">
             <div className="map-group" role="group" aria-label={t('mapGroupFog')}>
               <IconButton
@@ -419,7 +431,7 @@ const MapTab: React.FC = () => {
         <aside className="map-preview" aria-label={t('mapPlayerView')}>
           <h4>{t('mapPlayerView')}</h4>
           <div className="map-preview-stage">
-            <MapCanvas player />
+            <PlayerPreview />
           </div>
         </aside>
       )}

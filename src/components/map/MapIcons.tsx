@@ -106,12 +106,10 @@ export const SaveIcon = icon(
   </>
 )
 export const CloseIcon = icon(<path d="M18 6 6 18M6 6l12 12" />)
-export const ShareIcon = icon(
+export const SidebarIcon = icon(
   <>
-    <circle cx="6" cy="12" r="2.5" />
-    <circle cx="18" cy="6" r="2.5" />
-    <circle cx="18" cy="18" r="2.5" />
-    <path d="m8.2 10.8 7.6-3.6M8.2 13.2l7.6 3.6" />
+    <rect x="3" y="4" width="18" height="16" rx="2" />
+    <path d="M15 4v16" />
   </>
 )
 export const PlayerIcon = icon(
@@ -150,12 +148,12 @@ export const TrashIcon = icon(
   <>
     <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
     <path d="M10 11v6M14 11v6" />
+  </>
+)
 export const CopyIcon = icon(
   <>
     <rect x="9" y="9" width="11" height="11" rx="2" />
     <path d="M5 15V6a2 2 0 0 1 2-2h8" />
-  </>
-)
   </>
 )
 export const RefreshIcon = icon(

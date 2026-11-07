@@ -630,7 +630,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     monsters,
     ranges,
     grid,
-    layers,
+    shownLayers,
   ])
 
   useEffect(() => {

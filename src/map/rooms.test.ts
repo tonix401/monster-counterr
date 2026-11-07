@@ -28,6 +28,20 @@ const house = (): Graph =>
 const inner = (a: ReturnType<typeof analyzeGraph>) => a.rooms.filter((r) => r && r.alive && !r.ext)
 
 describe('analyzeGraph', () => {
+  it('keeps the rooms either side of a translucent wall apart', () => {
+    const g = addPolyline(
+      rect(emptyGraph(), 40, 40, 360, 260),
+      [
+        [200, 40],
+        [200, 260],
+      ],
+      false,
+      0,
+      true
+    )
+    expect(inner(analyzeGraph(g, W, H, 0.2))).toHaveLength(2)
+  })
+
   it('finds one room per enclosed area and treats the outside as exterior', () => {
     const a = analyzeGraph(house(), W, H, 0.2)
     expect(inner(a)).toHaveLength(2)

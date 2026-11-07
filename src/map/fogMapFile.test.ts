@@ -61,6 +61,19 @@ describe('fog_map files', () => {
     expect(f.name).toBe('map')
   })
 
+  it('keeps ranges and the grid, and drops bad ones', () => {
+    const ok = { ranges: { 'light:a': 20 }, grid: { on: true, cell: 40 } }
+    const back = parseFogMap(serializeFogMap({ ...base, ...ok }))!
+    expect(back.ranges).toEqual(ok.ranges)
+    expect(back.grid).toEqual(ok.grid)
+    const bad = JSON.parse(serializeFogMap(base))
+    bad.ranges = { a: -1, b: 'x', c: 30 }
+    bad.grid = { on: true, cell: 1 }
+    const f = parseFogMap(JSON.stringify(bad))!
+    expect(f.ranges).toEqual({ c: 30 })
+    expect(f.grid).toBeUndefined()
+  })
+
   it('keeps the fog style, and tolerates files without one', () => {
     expect(parseFogMap(serializeFogMap({ ...base, fogStyle: 'dark' }))!.fogStyle).toBe('dark')
     expect(parseFogMap(serializeFogMap(base))!.fogStyle).toBeUndefined()

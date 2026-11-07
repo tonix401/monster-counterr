@@ -1,5 +1,11 @@
-import type { MonsterStatus } from '@/types/Monster'
-import { letterSize, RING_FRACTION, RING_WIDTH, STATUS_COLOR } from './tokens'
+import {
+  FLAME_PATH,
+  letterSize,
+  RING_FRACTION,
+  RING_WIDTH,
+  STATUS_COLOR,
+  type TokenStatus,
+} from './tokens'
 
 /**
  * Draws one token on a canvas: a dark disc with the monster's letters, ringed by a grey track and
@@ -12,7 +18,7 @@ export function drawToken(
   y: number,
   r: number,
   initials: string,
-  status: MonsterStatus,
+  status: TokenStatus,
   faint = false
 ): void {
   const ring = Math.max(2, r * RING_WIDTH)
@@ -44,5 +50,25 @@ export function drawToken(
     g.arc(x, y, r - ring / 2, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * f)
     g.stroke()
   }
+  g.restore()
+}
+
+/** A fire on a canvas: the flame on a dark disc, the size of a token */
+export function drawFire(g: CanvasRenderingContext2D, x: number, y: number, r: number): void {
+  g.save()
+  g.beginPath()
+  g.arc(x, y, r, 0, Math.PI * 2)
+  g.fillStyle = '#1c1f2b'
+  g.fill()
+  g.lineWidth = Math.max(2, r * 0.12)
+  g.strokeStyle = '#ff9d2e'
+  g.stroke()
+  // the flame spans about x 7..17 and y 2..17.5 of its 24 box, so its middle is (12, 9.75)
+  const k = (r * 1.5) / 24
+  g.translate(x - 12 * k, y - 9.75 * k)
+  g.scale(k, k)
+  const flame = new Path2D(FLAME_PATH)
+  g.fillStyle = '#ffb347'
+  g.fill(flame)
   g.restore()
 }

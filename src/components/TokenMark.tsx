@@ -1,5 +1,4 @@
 import React from 'react'
-import type { MonsterStatus } from '@/types/Monster'
 import {
   letterSize,
   RING_FRACTION,
@@ -7,6 +6,7 @@ import {
   STATUS_COLOR,
   tokenRadius,
   type PlayerToken,
+  type TokenStatus,
 } from '@/map/tokens'
 
 interface TokenMarkProps {
@@ -14,7 +14,7 @@ interface TokenMarkProps {
   cy: number
   r: number
   initials: string
-  status: MonsterStatus
+  status: TokenStatus
   /** Dimmed, for monsters the players can't see */
   faint?: boolean
 }

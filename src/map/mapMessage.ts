@@ -32,7 +32,7 @@ export interface TokensMessage {
 }
 
 const MAX_TOKENS = 200
-const STATUSES = ['healthy', 'injured', 'badly-injured', 'down']
+const STATUSES = ['player', 'healthy', 'injured', 'badly-injured', 'down']
 
 /** Checks a host message that claims to carry tokens; malformed entries are dropped, not trusted. */
 export function parseTokensMessage(data: unknown): TokensMessage | null {

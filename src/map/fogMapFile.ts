@@ -11,12 +11,18 @@ export interface FogMapFile {
   height: number
   /** Corners and ends of walls, as [x, y] */
   nodes: [number, number][]
-  /** Walls, as pairs of indices into `nodes` */
-  edges: [number, number][]
+  /** Walls, as pairs of indices into `nodes`; a third 1 marks a translucent wall */
+  edges: ([number, number] | [number, number, 1])[]
   fog: [number, number][]
   fogStyle?: FogStyle
   /** Placed monsters by monster id, in map pixels; missing in files made before tokens existed */
   tokens?: Tokens
+  /** The last name of each player who has a token, by player id */
+  players?: Record<string, string>
+  /** How far each fire and player reaches, in feet, by token id; missing ones use the defaults */
+  ranges?: Record<string, number>
+  /** The square grid: shown or not, and the side of one square (5 ft) in map pixels */
+  grid?: { on: boolean; cell: number }
   image: string
 }
 
@@ -47,7 +53,9 @@ export function parseFogMap(text: string): FogMapFile | null {
         isPair(e) && Number.isInteger(e[0]) && Number.isInteger(e[1]) && e[0] !== e[1]
     )
     .filter(([i, j]) => isPair(nodes[i]) && isPair(nodes[j]))
-    .map(([i, j]): [number, number] => [i, j])
+    .map((e): [number, number] | [number, number, 1] =>
+      (e as number[])[2] === 1 ? [e[0], e[1], 1] : [e[0], e[1]]
+    )
   const fog = (Array.isArray(data.fog) ? data.fog : [])
     .filter(isPair)
     .map((p): [number, number] => [p[0], p[1]])
@@ -61,6 +69,23 @@ export function parseFogMap(text: string): FogMapFile | null {
     }
   }
 
+  const players: Record<string, string> = {}
+  if (data.players && typeof data.players === 'object' && !Array.isArray(data.players)) {
+    for (const [id, n] of Object.entries(data.players))
+      if (typeof n === 'string' && n.length <= 50) players[id] = n
+  }
+
+  const ranges: Record<string, number> = {}
+  if (data.ranges && typeof data.ranges === 'object' && !Array.isArray(data.ranges)) {
+    for (const [id, ft] of Object.entries(data.ranges))
+      if (typeof ft === 'number' && ft > 0 && ft <= 1000) ranges[id] = ft
+  }
+  const g = data.grid as { on?: unknown; cell?: unknown } | undefined
+  const grid =
+    g && typeof g === 'object' && Number.isFinite(g.cell) && (g.cell as number) >= 4
+      ? { on: g.on === true, cell: g.cell as number }
+      : undefined
+
   return {
     format: 'fog_map',
     version: 2,
@@ -73,6 +98,9 @@ export function parseFogMap(text: string): FogMapFile | null {
     fog,
     ...(data.fogStyle === 'dark' ? { fogStyle: 'dark' as const } : {}),
     ...(Object.keys(tokens).length ? { tokens } : {}),
+    ...(Object.keys(players).length ? { players } : {}),
+    ...(Object.keys(ranges).length ? { ranges } : {}),
+    ...(grid ? { grid } : {}),
     image: data.image,
   }
 }

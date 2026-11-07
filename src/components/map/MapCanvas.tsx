@@ -222,6 +222,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     const cr = cv.getBoundingClientRect()
     const sc = (cr.width / cv.width) * dpr
     g.setTransform(sc, 0, 0, sc, (cr.left - br.left) * dpr, (cr.top - br.top) * dpr)
+    g.globalAlpha = 1 // a previous draw may have left it dimmed for the detection preview
     g.lineWidth = (s.view === 'blueprint' ? 2 : 3) * (dpr / sc)
     g.lineCap = 'square'
     g.strokeStyle = s.view === 'blueprint' ? '#e8f4ff' : '#28beff'

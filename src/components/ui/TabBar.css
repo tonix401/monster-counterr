@@ -127,6 +127,7 @@
     padding: 0 0 env(safe-area-inset-bottom);
   }
 }
+
 /* Tilted phone: the bottom menu becomes a column on the right edge */
 @media (orientation: landscape) and (max-height: 600px) {
   .tab-bar.tab-bar-bottom {
@@ -157,7 +158,6 @@
     transform: scaleY(1);
   }
 }
-
 
 @media (prefers-reduced-motion: reduce) {
   .tab-link,

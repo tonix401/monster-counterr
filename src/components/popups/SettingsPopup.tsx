@@ -4,7 +4,7 @@ import BinarySettingsRow from '@/components/ui/BinarySettingsRow'
 import type { Settings } from '@/types/Settings'
 import { useMonsterStore } from '@/store/useMonsterStore'
 import { useTerm } from '@/store/useMonsterStore'
-import { useNavigate } from 'react-router'
+import { useGo } from '@/hooks/useGo'
 import LanguageSelectionRow from '../ui/LanguageSelectionRow'
 
 const SettingsPopup: React.FC = () => {
@@ -15,7 +15,7 @@ const SettingsPopup: React.FC = () => {
   const handleSettingChange = (key: keyof Settings, value: boolean) => {
     setSetting(key, value)
   }
-  const navigate = useNavigate()
+  const navigate = useGo()
 
   return (
     <Popup onClose={() => navigate('/menu')} width={500}>

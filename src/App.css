@@ -1,11 +1,18 @@
+/* Both tabs use the whole width, straight on the page background */
 .app {
   width: 100%;
-  max-width: 1200px;
-  background: var(--card);
-  border-left: var(--borderwidth) solid var(--border);
-  border-right: var(--borderwidth) solid var(--border);
-  box-shadow: var(--shadow-xl);
   overflow: hidden;
+}
+
+/* The map also takes the screen's height, split between header, tabs and the map */
+.app.app-wide {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+}
+
+.app.app-wide > :not(.map-tab) {
+  flex-shrink: 0;
 }
 
 /* Loading Skeleton Styles */

@@ -1,10 +1,11 @@
 import React from 'react'
 import Popup from '@/components/popups/Popup'
-import { useNavigate, useParams } from 'react-router'
+import { useParams } from 'react-router'
+import { useGo } from '@/hooks/useGo'
 import './MonsterInfoPopup.css'
 
 const MonsterInfoPopup: React.FC = () => {
-  const navigate = useNavigate()
+  const navigate = useGo()
   const monsterId = useParams().monsterId
 
   return (

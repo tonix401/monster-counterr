@@ -4,6 +4,7 @@ import { useTerm } from '@/store/useMonsterStore'
 
 const ImportFileButton = () => {
   const importData = useMonsterStore((state) => state.importData)
+  const notify = useNotify()
   const t = useTerm()
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,7 +18,6 @@ const ImportFileButton = () => {
         importData(data)
       } catch (error) {
         console.error('Failed to load save file:', error)
-        const notify = useNotify()
         notify({
           type: NotificationType.ERROR,
           message: t('failedToLoadSaveFile'),

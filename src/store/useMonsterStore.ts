@@ -4,11 +4,14 @@ import Peer, { type DataConnection } from 'peerjs'
 import type { Monster } from '@/types/Monster'
 import type { Settings } from '@/types/Settings'
 import { SETTING_SCHEMA } from '@/types/Settings'
-import { CONDITIONS } from '@/constants'
-import { type Notification, type ClientConnection, NotificationType } from '@/store/types'
-import type { MonsterCounterStore } from '@/store/types'
+import { CONDITIONS, STORAGE_KEYS, ANIMATION_DURATION, BASE_URL, CONNECTION } from '@/constants'
+import {
+  type Notification,
+  type ClientConnection,
+  NotificationType,
+  type MonsterCounterStore,
+} from '@/store/types'
 import { temporal, type TemporalState, type TemporalActions } from '@/store/middleware/temporal'
-import { STORAGE_KEYS, ANIMATION_DURATION, BASE_URL, CONNECTION } from '@/constants'
 import * as monsterHelpers from '@/store/helpers/monsters/monsterHelpers'
 import * as connectionHelpers from '@/store/helpers/connections/connectionHelpers'
 import * as dataHelpers from '@/store/helpers/data/dataHelpers'
@@ -23,29 +26,11 @@ type StoreWithTemporal = MonsterCounterStore & TemporalState<MonsterCounterStore
 export const useMonsterStore = create<StoreWithTemporal>()(
   persist(
     temporal(
-      (set, get, _api) => {
+      (set, get) => {
+        // Timeout id for the pending highlight reset (see highlightMonster)
+        let highlightTimeoutId: number | null = null
+
         // ==================== CONNECTION HANDLERS ====================
-
-        const validateIncomingMessage = (
-          data: unknown
-        ): data is connectionHelpers.IncomingMessage => {
-          return connectionHelpers.validateIncomingMessage(data)
-        }
-
-        const checkMessageSize = (data: unknown): boolean => {
-          return connectionHelpers.checkMessageSize(data)
-        }
-
-        const checkRateLimit = (connection: ClientConnection): boolean => {
-          return connectionHelpers.checkRateLimit(connection)
-        }
-
-        const sendToConnection = (
-          conn: DataConnection,
-          message: connectionHelpers.OutgoingMessage
-        ): boolean => {
-          return connectionHelpers.sendToConnection(conn, message)
-        }
 
         const startPingInterval = (): void => {
           const state = get()
@@ -56,7 +41,7 @@ export const useMonsterStore = create<StoreWithTemporal>()(
           const intervalId = window.setInterval(() => {
             const connections = get().connections
             connections.forEach(({ conn }) => {
-              sendToConnection(conn, { type: 'pong' })
+              connectionHelpers.sendToConnection(conn, { type: 'pong' })
             })
           }, CONNECTION.PING_INTERVAL_MS)
 
@@ -64,6 +49,11 @@ export const useMonsterStore = create<StoreWithTemporal>()(
         }
 
         const startHealthCheck = (): void => {
+          const existingInterval = get().healthCheckInterval
+          if (existingInterval) {
+            window.clearInterval(existingInterval)
+          }
+
           const healthInterval = window.setInterval(() => {
             set((state) => ({
               connections: connectionHelpers.filterActiveConnections(state.connections),
@@ -101,13 +91,13 @@ export const useMonsterStore = create<StoreWithTemporal>()(
             const now = Date.now()
 
             // Validate message size
-            if (!checkMessageSize(data)) {
+            if (!connectionHelpers.checkMessageSize(data)) {
               console.error('Message too large from client:', conn.peer)
               return
             }
 
             // Validate message structure
-            if (!validateIncomingMessage(data)) {
+            if (!connectionHelpers.validateIncomingMessage(data)) {
               console.error('Invalid message from client:', conn.peer)
               return
             }
@@ -142,7 +132,7 @@ export const useMonsterStore = create<StoreWithTemporal>()(
             const connection = get().connections.find((c) => c.conn.peer === conn.peer)
             if (!connection) return
 
-            if (!checkRateLimit(connection)) {
+            if (!connectionHelpers.checkRateLimit(connection)) {
               console.warn('Rate limit exceeded for client:', connection.name)
               return
             }
@@ -157,7 +147,7 @@ export const useMonsterStore = create<StoreWithTemporal>()(
             if (data.type === 'attack') {
               get().highlightMonster(data.monsterId)
             } else if (data.type === 'ping') {
-              sendToConnection(conn, { type: 'pong' })
+              connectionHelpers.sendToConnection(conn, { type: 'pong' })
             }
           })
 
@@ -305,6 +295,9 @@ export const useMonsterStore = create<StoreWithTemporal>()(
 
           reorderMonsters: (fromIndex: number, toIndex: number) => {
             set((state) => {
+              const maxIndex = state.monsters.length - 1
+              const inRange = (i: number): boolean => Number.isInteger(i) && i >= 0 && i <= maxIndex
+              if (!inRange(fromIndex) || !inRange(toIndex)) return {}
               const monsters = [...state.monsters]
               const [removed] = monsters.splice(fromIndex, 1)
               monsters.splice(toIndex, 0, removed)
@@ -338,7 +331,13 @@ export const useMonsterStore = create<StoreWithTemporal>()(
 
           highlightMonster: (monsterId: string) => {
             set({ highlightedMonsterId: monsterId })
-            setTimeout(() => set({ highlightedMonsterId: null }), 2000)
+            if (highlightTimeoutId !== null) {
+              window.clearTimeout(highlightTimeoutId)
+            }
+            highlightTimeoutId = window.setTimeout(() => {
+              highlightTimeoutId = null
+              set({ highlightedMonsterId: null })
+            }, 2000)
           },
 
           toggleHideMonster: (monsterId: string, message?: string) => {
@@ -420,9 +419,9 @@ export const useMonsterStore = create<StoreWithTemporal>()(
           // ========== NOTIFICATIONS ==========
 
           notify: (notification: Notification) => {
-            notification.id = crypto.randomUUID()
+            const withId = { ...notification, id: crypto.randomUUID() }
             set((state) => ({
-              queue: [...state.queue, notification],
+              queue: [...state.queue, withId],
             }))
           },
 
@@ -636,8 +635,10 @@ export const useSource = (): string | 'all' => useMonsterStore((state) => state.
 export const useSetSource = (): ((src: string) => void) =>
   useMonsterStore((state) => state.setSource)
 export const useNotifications = (): Notification[] => useMonsterStore((state) => state.queue)
-export const useNotify = () => useMonsterStore((state) => state.notify)
-export const useRemoveNotification = () => useMonsterStore((state) => state.removeNotification)
+export const useNotify = (): MonsterCounterStore['notify'] =>
+  useMonsterStore((state) => state.notify)
+export const useRemoveNotification = (): MonsterCounterStore['removeNotification'] =>
+  useMonsterStore((state) => state.removeNotification)
 export const usePeerId = (): string | null => useMonsterStore((state) => state.peerId)
 export const useConnections = (): ClientConnection[] =>
   useMonsterStore((state) => state.connections)

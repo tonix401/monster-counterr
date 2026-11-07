@@ -1,12 +1,12 @@
 import React from 'react'
-import { useNavigate } from 'react-router'
+import { useGo } from '@/hooks/useGo'
 import Popup from './Popup'
 import { useTerm } from '@/store/useMonsterStore'
 import { ASSETS } from '@/constants'
 import './MenuPopup.css'
 
 const MenuPopup: React.FC = () => {
-  const navigate = useNavigate()
+  const navigate = useGo()
   const t = useTerm()
 
   return (

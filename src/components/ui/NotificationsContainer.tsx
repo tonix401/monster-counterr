@@ -9,10 +9,11 @@ const Notification: React.FC<{ notification: Notification }> = ({ notification }
   const removeNotification = useRemoveNotification()
 
   useEffect(() => {
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       removeNotification(notification.id!)
     }, notification.duration ?? TIMING.DEFAULT_NOTIFICATION_DURATION)
-  }, [])
+    return () => clearTimeout(timeoutId)
+  }, [notification.id, notification.duration, removeNotification])
 
   return (
     <div className={`notification notification-${notification.type}`}>{notification.message}</div>

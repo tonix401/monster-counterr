@@ -135,7 +135,7 @@ describe('connectionHelpers', () => {
     })
 
     it('should handle circular reference gracefully', () => {
-      const circular: any = { type: 'ping' }
+      const circular: { type: string; self?: unknown } = { type: 'ping' }
       circular.self = circular
       expect(checkMessageSize(circular)).toBe(false)
     })
@@ -241,7 +241,7 @@ describe('connectionHelpers', () => {
       const mockConn = {
         open: true,
         send: vi.fn(),
-      } as any as DataConnection
+      } as unknown as DataConnection
 
       const message: PongMessage = { type: 'pong' }
       const result = sendToConnection(mockConn, message)
@@ -254,7 +254,7 @@ describe('connectionHelpers', () => {
       const mockConn = {
         open: false,
         send: vi.fn(),
-      } as any as DataConnection
+      } as unknown as DataConnection
 
       const message: PongMessage = { type: 'pong' }
       const result = sendToConnection(mockConn, message)
@@ -269,7 +269,7 @@ describe('connectionHelpers', () => {
         send: vi.fn().mockImplementation(() => {
           throw new Error('Send failed')
         }),
-      } as any as DataConnection
+      } as unknown as DataConnection
 
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       const message: PongMessage = { type: 'pong' }
@@ -292,8 +292,8 @@ describe('connectionHelpers', () => {
     })
 
     it('should keep active connections', () => {
-      const mockConn1 = { close: vi.fn() } as any as DataConnection
-      const mockConn2 = { close: vi.fn() } as any as DataConnection
+      const mockConn1 = { close: vi.fn() } as unknown as DataConnection
+      const mockConn2 = { close: vi.fn() } as unknown as DataConnection
 
       const connections: ClientConnection[] = [
         {
@@ -320,8 +320,8 @@ describe('connectionHelpers', () => {
     })
 
     it('should remove inactive connections', () => {
-      const mockConn1 = { close: vi.fn() } as any as DataConnection
-      const mockConn2 = { close: vi.fn() } as any as DataConnection
+      const mockConn1 = { close: vi.fn() } as unknown as DataConnection
+      const mockConn2 = { close: vi.fn() } as unknown as DataConnection
 
       const now = Date.now()
 
@@ -351,7 +351,7 @@ describe('connectionHelpers', () => {
     })
 
     it('should use custom timeout', () => {
-      const mockConn = { close: vi.fn() } as any as DataConnection
+      const mockConn = { close: vi.fn() } as unknown as DataConnection
       const customTimeout = 5000
       const now = Date.now()
 
@@ -600,8 +600,8 @@ describe('connectionHelpers', () => {
 
   describe('broadcastToConnections', () => {
     it('should broadcast to all open connections', () => {
-      const mockConn1 = { open: true, send: vi.fn() } as any as DataConnection
-      const mockConn2 = { open: true, send: vi.fn() } as any as DataConnection
+      const mockConn1 = { open: true, send: vi.fn() } as unknown as DataConnection
+      const mockConn2 = { open: true, send: vi.fn() } as unknown as DataConnection
 
       const connections: ClientConnection[] = [
         {
@@ -628,8 +628,8 @@ describe('connectionHelpers', () => {
     })
 
     it('should skip closed connections', () => {
-      const mockConn1 = { open: true, send: vi.fn() } as any as DataConnection
-      const mockConn2 = { open: false, send: vi.fn() } as any as DataConnection
+      const mockConn1 = { open: true, send: vi.fn() } as unknown as DataConnection
+      const mockConn2 = { open: false, send: vi.fn() } as unknown as DataConnection
 
       const connections: ClientConnection[] = [
         {
@@ -656,13 +656,13 @@ describe('connectionHelpers', () => {
     })
 
     it('should handle send errors gracefully', () => {
-      const mockConn1 = { open: true, send: vi.fn() } as any as DataConnection
+      const mockConn1 = { open: true, send: vi.fn() } as unknown as DataConnection
       const mockConn2 = {
         open: true,
         send: vi.fn().mockImplementation(() => {
           throw new Error('Send failed')
         }),
-      } as any as DataConnection
+      } as unknown as DataConnection
 
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
@@ -699,9 +699,9 @@ describe('connectionHelpers', () => {
     })
 
     it('should broadcast to each connection independently', () => {
-      const mockConn1 = { open: true, send: vi.fn() } as any as DataConnection
-      const mockConn2 = { open: true, send: vi.fn() } as any as DataConnection
-      const mockConn3 = { open: true, send: vi.fn() } as any as DataConnection
+      const mockConn1 = { open: true, send: vi.fn() } as unknown as DataConnection
+      const mockConn2 = { open: true, send: vi.fn() } as unknown as DataConnection
+      const mockConn3 = { open: true, send: vi.fn() } as unknown as DataConnection
 
       const connections: ClientConnection[] = [
         {

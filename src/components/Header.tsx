@@ -1,5 +1,5 @@
 import React from 'react'
-import { useNavigate } from 'react-router'
+import { useGo } from '@/hooks/useGo'
 import { useMonsterStore, useCanUndo, useCanRedo, useXp } from '@/store/useMonsterStore'
 import { useUndoRedoShortcuts } from '@/hooks/useKeyboardShortcut'
 import { useTerm } from '@/store/useMonsterStore'
@@ -7,7 +7,7 @@ import { ASSETS } from '@/constants'
 import './Header.css'
 
 const Header: React.FC = () => {
-  const navigate = useNavigate()
+  const navigate = useGo()
   const settings = useMonsterStore((state) => state.settings)
   const clearMonsters = useMonsterStore((state) => state.clearMonsters)
   const killAllMonsters = useMonsterStore((state) => state.killAllMonsters)
@@ -26,7 +26,7 @@ const Header: React.FC = () => {
   return (
     <header>
       <div>
-        <button className="green-button" onClick={() => navigate('menu')} title={t('openMenu')}>
+        <button className="green-button" onClick={() => navigate('/menu')} title={t('openMenu')}>
           {t('menu')}
         </button>
         <button

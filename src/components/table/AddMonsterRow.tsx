@@ -1,10 +1,10 @@
 import { ASSETS } from '@/constants'
 import { useMonsterStore, useTerm } from '@/store/useMonsterStore'
-import { useNavigate } from 'react-router'
+import { useGo } from '@/hooks/useGo'
 import './AddMonsterRow.css'
 
 export const AddMonsterRow = () => {
-  const navigate = useNavigate()
+  const navigate = useGo()
   const t = useTerm()
   const { showQuickActions, showConditions, showStatus, showHealth, showChangeHp } =
     useMonsterStore((state) => state.settings)
@@ -22,7 +22,7 @@ export const AddMonsterRow = () => {
     <tr>
       <td colSpan={cols} style={{ textAlign: 'center' }}>
         <button
-          onClick={() => navigate('add')}
+          onClick={() => navigate('/add')}
           className="icon-button green-button add-monster-row-button"
           title={t('addNewMonsters')}
         >

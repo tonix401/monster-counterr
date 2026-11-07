@@ -248,3 +248,49 @@
   transform-origin: 0 0;
   will-change: transform;
 }
+
+.client-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Phone tilted on its side: the tab menu moves to the right edge, the content goes horizontal */
+@media (orientation: landscape) and (max-height: 600px) {
+  .client-view-container.client-view-wide {
+    flex-direction: row;
+    padding: var(--spacing-sm) 0 var(--spacing-sm) var(--spacing-sm);
+    padding-left: max(var(--spacing-sm), env(safe-area-inset-left));
+  }
+
+  .client-view-wide .tab-bar {
+    margin: calc(var(--spacing-sm) * -1) 0;
+  }
+
+  .client-view-body {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 var(--spacing-sm) 0 0;
+  }
+
+  .client-settings {
+    flex-direction: row;
+    align-items: flex-start;
+    max-width: none;
+  }
+
+  .client-view-grid {
+    flex-direction: row;
+    align-items: flex-start;
+    max-width: none;
+    margin: 0;
+    overflow-x: auto;
+    padding-bottom: var(--spacing-sm);
+  }
+
+  .client-enemy-row {
+    flex: 0 0 min(320px, 46%);
+  }
+}

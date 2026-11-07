@@ -140,20 +140,22 @@ const ClientView: React.FC = () => {
         {onSettingsTab ? (
           <div className="client-settings">
             <NameSetting />
-            <label htmlFor="client-language">{t('language')}</label>
-            <select
-              id="client-language"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              disabled={isLoading}
-              className="client-language-select"
-            >
-              {availableLanguages.map((lang) => (
-                <option key={lang.key} value={lang.key}>
-                  {lang.name}
-                </option>
-              ))}
-            </select>
+            <div className="client-field">
+              <label htmlFor="client-language">{t('language')}</label>
+              <select
+                id="client-language"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                disabled={isLoading}
+                className="client-language-select"
+              >
+                {availableLanguages.map((lang) => (
+                  <option key={lang.key} value={lang.key}>
+                    {lang.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         ) : onMapTab ? (
           map ? (

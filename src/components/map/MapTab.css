@@ -1,5 +1,5 @@
 .map-tab {
-  --map-glass: color-mix(in srgb, var(--card) 72%, transparent);
+  --map-glass: color-mix(in srgb, var(--card) 92%, transparent);
   --map-gap: var(--spacing-sm);
   display: flex;
   /* fills what the header and tabs leave of the screen (see .app-wide), however tall they are */
@@ -7,7 +7,7 @@
   min-height: 0;
   margin: var(--spacing-xs) 0 0;
   overflow: hidden;
-  background: var(--overlay-medium);
+  background: color-mix(in srgb, var(--overlay-medium) 80%, transparent);
 }
 
 .map-main {

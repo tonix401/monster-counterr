@@ -1,6 +1,6 @@
 header {
   padding: var(--spacing-xl) var(--spacing-2xl);
-  background: linear-gradient(135deg, rgba(124, 77, 255, 0.18), var(--overlay-accent-light));
+  background: linear-gradient(135deg, var(--overlay-accent-strong), var(--overlay-accent-light));
   border-bottom: var(--borderwidth) solid var(--border);
   display: flex;
   align-items: center;

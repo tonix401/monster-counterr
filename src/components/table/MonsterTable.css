@@ -4,7 +4,7 @@ table {
   table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
-  background: rgba(255, 255, 255, 0.01);
+  background: color-mix(in srgb, var(--overlay-light) 80%, transparent);
 }
 
 th,
@@ -37,7 +37,7 @@ th > span {
 }
 
 tr:not(.drop-zone) td {
-  background: var(--overlay-light);
+  background: color-mix(in srgb, var(--overlay-light) 80%, transparent);
 }
 
 tr:not(.drop-zone) {

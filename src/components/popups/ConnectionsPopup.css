@@ -23,7 +23,7 @@
 }
 
 .peer-id-code {
-  background: rgba(0, 0, 0, 0.2);
+  background: color-mix(in srgb, black 20%, var(--card));
   padding: 0.3rem 0.6rem;
   border-radius: var(--radius-sm);
 }

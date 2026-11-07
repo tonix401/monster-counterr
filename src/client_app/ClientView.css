@@ -233,7 +233,7 @@
   min-height: 0;
   width: 100%;
   overflow: hidden;
-  background: var(--overlay-medium);
+  background: color-mix(in srgb, var(--overlay-medium) 80%, transparent);
   border-radius: var(--radius-lg);
   touch-action: none;
   user-select: none;

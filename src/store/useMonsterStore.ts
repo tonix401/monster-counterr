@@ -196,6 +196,7 @@ export const useMonsterStore = create<StoreWithTemporal>()(
 
           // Localization
           terms: {},
+            showTokens: SETTING_SCHEMA.showTokens.default,
           language: 'en',
           availableLanguages: [{ key: 'en', name: 'English' }],
 

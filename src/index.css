@@ -261,3 +261,12 @@ a {
   color: var(--text);
   text-decoration: underline;
 }
+
+/* Tokens drawn over a map picture: same size as the picture, never in the way of the pointer */
+.token-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}

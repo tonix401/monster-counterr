@@ -60,7 +60,7 @@ src/
 │   │   ├── MenuPopup.tsx           # Main menu popup (Settings, Manage Data, Custom Monsters)
 │   │   ├── CustomMonstersPopup.tsx # Custom monsters management popup
 │   │   ├── ConnectionsPopup.tsx
-│   │   ├── ManageDataPopup.tsx
+│   │   ├── ManageDataPopup.tsx     # Export/import of the save file; maps in the library can be included (off by default)
 │   │   ├── MapLibraryPopup.tsx     # The maps kept in this browser: open, rename, duplicate, delete, import (route `maps`)
 │   │   └── SettingsPopup.tsx
 │   ├── table/           # Monster table components
@@ -77,7 +77,8 @@ src/
 │   │   ├── ConditionsTableData.tsx
 │   │   └── QuickActionsTableData.tsx
 │   ├── map/             # Map tab (DM side)
-│   │   ├── MapTab.tsx   # Floating icon overlays over the map (file, view, tool palette, fog actions, zoom, detection popover), drop zone, live player-view pane beside the map
+│   │   ├── MapTab.tsx   # Floating icon overlays over the map (file, tool palette, fog actions, zoom, detection popover), drop zone, live player-view pane beside the map
+│   │   ├── TokenMark.tsx # Vector token (letters, health ring) and the `TokenLayer` laid over a map picture; also used by `MonsterAvatar.tsx` in the encounter table and the map's monster list
 │   │   ├── MapIcons.tsx # Inline SVG icons and the IconButton (tooltip + aria-label) used by the map overlays
 │   │   └── MapCanvas.tsx # Canvas layers (picture, fog, room highlight) plus a screen-resolution canvas for vector walls, fog painting, node and line select/move, drawing that snaps to nodes and walls, line eraser, zoom and pan
 │   └── ui/              # Generic UI components
@@ -123,8 +124,10 @@ src/
 │   ├── mapStorage.ts    # IndexedDB library of maps (records in `maps`, file text in `data`, the open map's id in `kv`; too big for localStorage)
 │   ├── mapLibrary.ts    # Library record type, ids and unique names
 │   ├── fogMapFile.ts    # `.fog_map` file format, version 2 (nodes and index pairs; no support for older files)
-│   ├── mapSync.ts       # Sends the fogged picture to connected players
-│   ├── mapMessage.ts    # Validation of map messages on the client
+│   ├── mapSync.ts       # Sends the fogged picture and, separately, the visible monster tokens to connected players; drops tokens of removed monsters
+│   ├── mapMessage.ts    # Validation of map and `map-tokens` messages on the client
+│   ├── tokens.ts        # Placed monsters: ring steps and colours, initials, hit test, what players may see (pure functions)
+│   ├── tokenArt.ts      # Draws a token on a canvas (the DM's map); `components/TokenMark.tsx` draws the same as SVG
 │   ├── fogShade.ts      # Cloudy fog edges (blur and noise on plain arrays) and the darkness colour
 │   └── render.ts        # Layer painting and the player picture (grey fog or darkness)
 ├── types/               # TypeScript type definitions
@@ -156,7 +159,7 @@ src/
   - Consistent custom hooks for optimized subscriptions (useMonsters, useSettings, useTerm, etc.), exported from `store/useMonsterStore.ts`
   - Pure utility functions in `store/helpers/*` for testability & composition
 - **Routing**: React Router with nested routes (popups overlay main view). Tabs are routes too: `/` (encounter) and `/map` in the DM app, `/client`, `/client/map` and `/client/settings` (bottom tab menu) for players
-- **Map & fog**: the DM loads a battle map image or `.fog_map` file. Maps are kept in the browser's IndexedDB library (added when opened, autosaved, chosen from the "My maps" popup); a new image gets walls only when detection is run, unless "find walls automatically" is ticked. Walls are nodes and the lines between them: detection is a one-shot import that joins line ends into shared nodes, and from then on the walls are ordinary nodes and lines. Moving a node moves every line on it, and new lines snap to nodes. An invisible, permanent border runs around the whole map (`border` nodes and lines; fixed, undeletable, never drawn, still snapped to), so the outdoors is a room that connecting a building to the border splits into sections. Rooms are the faces of that graph (`rooms.ts`, a few ms, no pixel tracing), and rooms can be fogged. Players never receive walls or hidden rooms: when "Share with players" is on, the DM's browser renders a JPEG with fogged rooms painted over and sends it over the existing PeerJS connection (`map` / `map-clear` messages), debounced and resent on every change and when a player joins
+- **Map & fog**: the DM loads a battle map image or `.fog_map` file. Maps are kept in the browser's IndexedDB library (added when opened, autosaved, chosen from the "My maps" popup); a new image gets walls only when detection is run, unless "find walls automatically" is ticked. Walls are nodes and the lines between them: detection is a one-shot import that joins line ends into shared nodes, and from then on the walls are ordinary nodes and lines. Moving a node moves every line on it, and new lines snap to nodes. An invisible, permanent border runs around the whole map (`border` nodes and lines; fixed, undeletable, never drawn, still snapped to), so the outdoors is a room that connecting a building to the border splits into sections. Rooms are the faces of that graph (`rooms.ts`, a few ms, no pixel tracing), and rooms can be fogged. Encounter monsters can be dragged from the map sidebar onto the map as tokens (the first letters of the name inside a health ring; positions are saved in the map file under `tokens`, version stays 2). Players get the tokens of revealed monsters in unfogged rooms as a separate `map-tokens` message (position, letters, health step; no names) and draw them as SVG over the picture, so tokens stay sharp at any zoom, and the DM's player preview draws the same message. Players never receive walls or hidden rooms: when "Share with players" is on, the DM's browser renders a JPEG with fogged rooms painted over and sends it over the existing PeerJS connection (`map` / `map-clear` messages), debounced and resent on every change and when a player joins
 - **Data Persistence**: All data stored in browser localStorage via Zustand persist
 - **Localization**: Dynamic language loading from JSON files
 - **External API**: D&D 5e SRD API for official monster data

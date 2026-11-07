@@ -16,42 +16,6 @@ export function makeThumb(base: HTMLCanvasElement, width = 160): string {
   return c.toDataURL('image/jpeg', 0.7)
 }
 
-export function paintBlueprint(canvas: HTMLCanvasElement, a: Analysis): void {
-  const { W, H, own, rooms } = a
-  const M = Math.max(W, H)
-  const g = canvas.getContext('2d')!
-  g.fillStyle = '#123a63'
-  g.fillRect(0, 0, W, H)
-  const step = Math.max(16, Math.round(M / 50))
-  g.lineWidth = 1
-  for (let k = 0; k * step <= M; k++) {
-    g.strokeStyle = k % 5 === 0 ? 'rgba(170,210,255,.22)' : 'rgba(170,210,255,.09)'
-    const v = k * step + 0.5
-    g.beginPath()
-    g.moveTo(v, 0)
-    g.lineTo(v, H)
-    g.moveTo(0, v)
-    g.lineTo(W, v)
-    g.stroke()
-  }
-  // faint room fills so the layout reads at a glance; the walls themselves are vector strokes drawn over the map
-  const layer = makeCanvas(W, H)
-  const lg = layer.getContext('2d')!
-  const im = lg.createImageData(W, H)
-  const b = im.data
-  for (let i = 0, p = 0; i < own.length; i++, p += 4) {
-    const R = rooms[own[i]]
-    if (R && !R.ext) {
-      b[p] = 150
-      b[p + 1] = 200
-      b[p + 2] = 255
-      b[p + 3] = 22
-    }
-  }
-  lg.putImageData(im, 0, 0)
-  g.drawImage(layer, 0, 0)
-}
-
 /**
  * `solid` is what players see: cloudy grey fog, or solid darkness. The DM's own fog is
  * translucent and hatched, in a deeper shade for darkness.

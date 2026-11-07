@@ -16,13 +16,15 @@ import {
   type Snap,
 } from '@/map/graph'
 import { useMapStore } from '@/map/mapStore'
-import { makeCanvas, paintBlueprint, paintFog, paintHover } from '@/map/render'
+import { useMonsters, useMonsterStore, useTerm } from '@/store/useMonsterStore'
+import { drawToken } from '@/map/tokenArt'
+import { hitToken, monsterInitials, monsterLabel, monsterStatus, tokenRadius } from '@/map/tokens'
+import { makeCanvas, paintFog, paintHover } from '@/map/render'
 import type { Graph, MapMode, WallSegment } from '@/map/types'
 
 interface Layers {
   fog: HTMLCanvasElement
   hover: HTMLCanvasElement
-  blueprint: HTMLCanvasElement
 }
 
 interface View {
@@ -30,6 +32,8 @@ interface View {
   x: number
   y: number
 }
+/** The drag type a monster carries from the list onto the map */
+export const MONSTER_DRAG = 'application/x-monster-id'
 export const MIN_ZOOM = 1
 export const MAX_ZOOM = 12
 
@@ -74,6 +78,10 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
   const pointers = useRef(new Map<number, { x: number; y: number }>())
   const pinch = useRef<{ dist: number; view: View } | null>(null)
   const space = useRef(false)
+  /** A token being dragged: the monster and where the pointer has taken it */
+  const tokenDrag = useRef<{ id: string; x: number; y: number; moved: boolean } | null>(null)
+  /** The name of the monster under the pointer, shown to the DM only */
+  const [tip, setTip] = useState<{ id: string; x: number; y: number } | null>(null)
   const [view, setView] = useState<View>({ scale: 1, x: 0, y: 0 })
   const viewRef = useRef(view)
   viewRef.current = view
@@ -83,11 +91,15 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
   const analysis = useMapStore((s) => s.analysis)
   const fog = useMapStore((s) => s.fog)
   const fogStyle = useMapStore((s) => s.fogStyle)
-  const mapView = useMapStore((s) => s.view)
   const mode = useMapStore((s) => s.mode)
   const graph = useMapStore((s) => s.graph)
   const preview = useMapStore((s) => s.preview)
   const selected = useMapStore((s) => s.selected)
+  const tokens = useMapStore((s) => s.tokens)
+  const monsters = useMonsters()
+  const t = useTerm()
+  // looked up each render, so the numbers follow the monster while the pointer rests on it
+  const tipMonster = tip ? monsters.find((m) => m.id === tip.id) : undefined
 
   /** Canvas pixels per CSS pixel on screen, so overlay strokes keep their size at any zoom */
   const unit = (): number => {
@@ -101,9 +113,8 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     if (!cv || !s.base) return
     const ctx = cv.getContext('2d')!
     const L = layers.current
-    const v = player ? 'map' : s.view
     ctx.clearRect(0, 0, cv.width, cv.height)
-    ctx.drawImage(v === 'blueprint' && L ? L.blueprint : s.base, 0, 0)
+    ctx.drawImage(s.base, 0, 0)
     if (!L) return
     ctx.drawImage(L.fog, 0, 0)
     if (player) return
@@ -215,17 +226,27 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     g.setTransform(1, 0, 0, 1, 0, 0)
     g.clearRect(0, 0, w, h)
     const s = useMapStore.getState()
-    const editing = s.mode !== 'fog' && s.mode !== 'pan'
-    const show = !player && s.analysis && (s.view !== 'map' || editing)
-    if (!show) return
+    if (player || !s.analysis) return
     const br = b.getBoundingClientRect()
     const cr = cv.getBoundingClientRect()
     const sc = (cr.width / cv.width) * dpr
     g.setTransform(sc, 0, 0, sc, (cr.left - br.left) * dpr, (cr.top - br.top) * dpr)
     g.globalAlpha = 1 // a previous draw may have left it dimmed for the detection preview
-    g.lineWidth = (s.view === 'blueprint' ? 2 : 3) * (dpr / sc)
+    drawWalls(g, s, dpr, sc)
+    drawTokens(g, s)
+  }
+
+  /** The walls, preview and nodes, in map pixels (the context is already transformed) */
+  const drawWalls = (
+    g: CanvasRenderingContext2D,
+    s: ReturnType<typeof useMapStore.getState>,
+    dpr: number,
+    sc: number
+  ): void => {
+    const editing = s.mode !== 'fog' && s.mode !== 'pan'
+    g.lineWidth = 3 * (dpr / sc)
     g.lineCap = 'square'
-    g.strokeStyle = s.view === 'blueprint' ? '#e8f4ff' : '#28beff'
+    g.strokeStyle = '#28beff'
     // while the detection preview is open the current walls step back and the preview stands out
     g.save()
     if (s.preview) g.globalAlpha = 0.35
@@ -254,8 +275,8 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       // the nodes the walls hang on: where new lines attach and what can be dragged
       const rr = 3.5 * (dpr / sc)
       if (s.preview) g.globalAlpha = 0.35
-      g.fillStyle = s.view === 'blueprint' ? '#28beff' : '#fff'
-      g.strokeStyle = s.view === 'blueprint' ? '#e8f4ff' : '#0a6e99'
+      g.fillStyle = '#fff'
+      g.strokeStyle = '#0a6e99'
       g.lineWidth = 1.5 * (dpr / sc)
       // the border itself is invisible: only the nodes walls hang on show
       const hung = new Set(s.graph.edges.filter((e) => !e.border).flatMap((e) => [e.a, e.b]))
@@ -266,6 +287,18 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
         g.fill()
         g.stroke()
       }
+    }
+  }
+
+  /** The placed monsters, on top of everything */
+  const drawTokens = (
+    g: CanvasRenderingContext2D,
+    s: ReturnType<typeof useMapStore.getState>
+  ): void => {
+    const r = tokenRadius(s.width, s.height)
+    for (const m of useMonsterStore.getState().monsters) {
+      const t = tokenDrag.current?.id === m.id ? tokenDrag.current : s.tokens[m.id]
+      if (t) drawToken(g, t.x, t.y, r, monsterInitials(m), monsterStatus(m), m.isHidden)
     }
   }
 
@@ -280,9 +313,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     const L: Layers = {
       fog: makeCanvas(W, H),
       hover: makeCanvas(W, H),
-      blueprint: makeCanvas(W, H),
     }
-    paintBlueprint(L.blueprint, analysis)
     layers.current = L
     hover.current = 0
     paintFog(L.fog, analysis, useMapStore.getState().fog, useMapStore.getState().fogStyle, player)
@@ -295,12 +326,12 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     hoverItem.current = null
     draw()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fog, fogStyle, player, mapView, mode, width, height, graph, selected, view.scale])
+  }, [fog, fogStyle, player, mode, width, height, graph, selected, view.scale, tokens, monsters])
 
   useEffect(() => {
     drawVectors()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [analysis, graph, preview, mapView, mode, player, view, width, height])
+  }, [analysis, graph, preview, mode, player, view, width, height, tokens, monsters])
 
   useEffect(() => {
     const b = box.current
@@ -497,6 +528,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     draft.current = null
     drag.current = null
     painting.current = null
+    tokenDrag.current = null
     useMapStore.getState().endGesture()
   }
 
@@ -535,6 +567,18 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     }
     if (e.button > 0) return
     const [x, y] = toWork(e)
+    const onToken = pending.current ? null : hitToken(s.tokens, x, y, tokenRadius(width, height))
+    if (onToken) {
+      // a monster under the pointer: drag it, whatever the tool
+      tokenDrag.current = {
+        id: onToken,
+        x: s.tokens[onToken].x,
+        y: s.tokens[onToken].y,
+        moved: false,
+      }
+      setTip(null)
+      return
+    }
     if (pending.current && draft.current && s.mode === 'wall') {
       // the second click of a line: it ends here
       const c = draft.current
@@ -649,6 +693,18 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     if (!analysis) return
     const [x, y] = toWork(e)
     const s = useMapStore.getState()
+    const td = tokenDrag.current
+    if (td) {
+      if (!td.moved && Math.hypot(x - td.x, y - td.y) < 4 * unit()) return
+      td.moved = true
+      td.x = x
+      td.y = y
+      return drawVectors()
+    }
+    const over = hitToken(s.tokens, x, y, tokenRadius(width, height))
+    const mon = over ? monsters.find((m) => m.id === over) : undefined
+    const at = box.current?.getBoundingClientRect()
+    setTip(mon && at ? { id: mon.id, x: e.clientX - at.left, y: e.clientY - at.top } : null)
     const drawing = !dg && ['wall', 'rect', 'circle', 'poly'].includes(s.mode)
     if (drawing) {
       const h = snapTo(x, y, e.shiftKey)
@@ -703,6 +759,18 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     pointers.current.delete(e.pointerId)
     if (pointers.current.size < 2) pinch.current = null
     if (pointers.current.size > 0) return
+    const td = tokenDrag.current
+    if (td) {
+      tokenDrag.current = null
+      if (td.moved) {
+        // let go over the monster list: the monster leaves the map
+        const target = document.elementFromPoint(e.clientX, e.clientY)
+        const store = useMapStore.getState()
+        if (target?.closest('.map-monsters')) store.removeToken(td.id)
+        else store.placeToken(td.id, { x: td.x, y: td.y })
+      }
+      return drawVectors()
+    }
     painting.current = null
     lastPainted.current = 0
     const dg = drag.current
@@ -797,9 +865,25 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
           s.setMode('wall')
         }}
         onPointerCancel={endPointer}
+        onDragOver={(e) => {
+          if (!e.dataTransfer.types.includes(MONSTER_DRAG)) return
+          e.preventDefault()
+          e.stopPropagation()
+          e.dataTransfer.dropEffect = 'copy'
+        }}
+        onDrop={(e) => {
+          const id = e.dataTransfer.getData(MONSTER_DRAG)
+          if (!id) return
+          e.preventDefault()
+          e.stopPropagation()
+          const [x, y] = toWork(e)
+          useMapStore.getState().placeToken(id, { x, y })
+        }}
         onContextMenu={(e) => e.preventDefault()}
         onPointerLeave={() => {
-          if (drag.current || draft.current || painting.current !== null) return
+          setTip(null)
+          if (tokenDrag.current || drag.current || draft.current || painting.current !== null)
+            return
           setHover(0)
           if (hoverItem.current) {
             hoverItem.current = null
@@ -808,6 +892,19 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
         }}
       />
       <canvas ref={vec} className="map-vector" aria-hidden="true" />
+      {tip && tipMonster && (
+        <div className="map-token-tip" style={{ left: tip.x, top: tip.y }}>
+          <strong>{monsterLabel(tipMonster)}</strong>
+          <span>
+            {t('hp')}: {tipMonster.hp} / {tipMonster.maxhp}
+          </span>
+          {tipMonster.conditions.length > 0 && (
+            <span>
+              {t('conditions')}: {tipMonster.conditions.map((c) => t(c)).join(', ')}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   )
 }

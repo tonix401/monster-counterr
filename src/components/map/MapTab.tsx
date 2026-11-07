@@ -1,24 +1,27 @@
 import React, { useEffect, useState, useSyncExternalStore } from 'react'
 import { useTerm } from '@/store/useMonsterStore'
+import { useNavigate } from 'react-router'
 import { useGo } from '@/hooks/useGo'
 import { useMapStore, type MapParams } from '@/map/mapStore'
-import { getPublishedMap, subscribePublishedMap } from '@/map/mapSync'
-import type { MapMode, MapView } from '@/map/types'
-import MapCanvas from './MapCanvas'
+import { getPublishedMap, getPublishedTokens, subscribePublishedMap } from '@/map/mapSync'
+import { TokenLayer } from '@/components/TokenMark'
+import type { MapMode } from '@/map/types'
+import MapCanvas, { MONSTER_DRAG } from './MapCanvas'
+import MonsterAvatar from '@/components/MonsterAvatar'
+import { useMonsters, useMonsterStore } from '@/store/useMonsterStore'
+import { monsterLabel } from '@/map/tokens'
 import {
-  BlueprintIcon,
   CircleIcon,
   PolygonIcon,
   CloseIcon,
   EraserIcon,
   FitIcon,
+  HiddenIcon,
   DarkIcon,
   FogAllIcon,
   FogIcon,
   IconButton,
   LibraryIcon,
-  LinesIcon,
-  MapIcon,
   OpenIcon,
   PanIcon,
   PlayerIcon,
@@ -71,11 +74,6 @@ const TOOL_GROUPS: Tool[][] = [
 const MODES = TOOL_GROUPS.flat()
 const zoom = (factor: number): boolean =>
   window.dispatchEvent(new CustomEvent('map-zoom', { detail: factor }))
-const VIEWS: { view: MapView; label: string; icon: React.ReactNode }[] = [
-  { view: 'map', label: 'mapViewMap', icon: <MapIcon /> },
-  { view: 'lines', label: 'mapViewLines', icon: <LinesIcon /> },
-  { view: 'blueprint', label: 'mapViewBlueprint', icon: <BlueprintIcon /> },
-]
 const SLIDERS: { key: keyof MapParams; label: string; min: number; max: number; step: number }[] = [
   { key: 'sens', label: 'mapSensitivity', min: 0, max: 100, step: 1 },
   { key: 'minLen', label: 'mapShortestWall', min: 3, max: 15, step: 0.5 },
@@ -87,10 +85,64 @@ const SLIDERS: { key: keyof MapParams; label: string; min: number; max: number; 
 const PlayerPreview: React.FC = () => {
   const t = useTerm()
   const shown = useSyncExternalStore(subscribePublishedMap, getPublishedMap)
+  const tokens = useSyncExternalStore(subscribePublishedMap, getPublishedTokens)
   return shown ? (
-    <img className="map-preview-img" src={shown.url} alt={shown.name} draggable={false} />
+    <div className="map-preview-layer">
+      <img className="map-preview-img" src={shown.url} alt={shown.name} draggable={false} />
+      {tokens && <TokenLayer width={tokens.width} height={tokens.height} tokens={tokens.tokens} />}
+    </div>
   ) : (
     <p className="map-preview-empty">{t('mapNotShared')}</p>
+  )
+}
+
+/** The encounter's monsters: drag one onto the map to place it, or back here to take it off */
+const MonsterList: React.FC = () => {
+  const t = useTerm()
+  const navigate = useNavigate()
+  const monsters = useMonsters()
+  const tokens = useMapStore((s) => s.tokens)
+  const toggleHide = useMonsterStore((s) => s.toggleHideMonster)
+  const highlight = useMonsterStore((s) => s.highlightMonster)
+  return (
+    <section className="map-monsters" aria-label={t('mapMonsters')}>
+      <h4>{t('mapMonsters')}</h4>
+      {monsters.length === 0 ? (
+        <p className="map-monsters-empty">{t('mapMonstersEmpty')}</p>
+      ) : (
+        <ul>
+          {monsters.map((m) => (
+            <li
+              key={m.id}
+              className={tokens[m.id] ? 'map-monster-placed' : ''}
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData(MONSTER_DRAG, m.id)
+                e.dataTransfer.effectAllowed = 'copy'
+              }}
+              title={t('mapMonsterDrag')}
+              onClick={() => {
+                // a click opens the encounter list with this monster highlighted
+                highlight(m.id)
+                navigate('/')
+              }}
+            >
+              <MonsterAvatar monster={m} size={32} faint={m.isHidden} />
+              <span className="map-monster-name">{monsterLabel(m)}</span>
+              <span onClick={(e) => e.stopPropagation()} draggable={false}>
+                <IconButton
+                  label={m.isHidden ? t('showMonster') : t('hideMonster')}
+                  icon={m.isHidden ? <HiddenIcon /> : <PlayerIcon />}
+                  active={!m.isHidden}
+                  tip="left"
+                  onClick={() => toggleHide(m.id)}
+                />
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   )
 }
 
@@ -226,19 +278,6 @@ const MapTab: React.FC = () => {
             />
             <IconButton label={t('mapSave')} icon={<SaveIcon />} onClick={save} />
             <IconButton label={t('mapClose')} icon={<CloseIcon />} danger onClick={s.closeMap} />
-          </div>
-
-          <div className="map-group" role="group" aria-label={t('mapGroupView')}>
-            {VIEWS.map((v) => (
-              <IconButton
-                key={v.view}
-                label={t(v.label)}
-                icon={v.icon}
-                active={s.view === v.view}
-                pressed={s.view === v.view}
-                onClick={() => s.setView(v.view)}
-              />
-            ))}
           </div>
 
           <div className="map-group map-group-end">
@@ -433,6 +472,7 @@ const MapTab: React.FC = () => {
           <div className="map-preview-stage">
             <PlayerPreview />
           </div>
+          <MonsterList />
         </aside>
       )}
     </div>

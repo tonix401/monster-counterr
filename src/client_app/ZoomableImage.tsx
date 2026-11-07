@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { TokenLayer } from '@/components/TokenMark'
+import type { TokensMessage } from '@/map/mapMessage'
 
 const MAX_ZOOM = 8
 
@@ -19,8 +21,19 @@ function clamp(v: View, w: number, h: number): View {
 }
 
 /** A picture players can zoom (wheel, pinch, double click) and drag around */
-export default function ZoomableImage({ src, alt }: { src: string; alt: string }) {
+export default function ZoomableImage({
+  src,
+  alt,
+  tokens,
+}: {
+  src: string
+  alt: string
+  /** Monsters to show on the picture, as the DM sent them */
+  tokens?: TokensMessage | null
+}) {
   const frame = useRef<HTMLDivElement>(null)
+  /** The frame's size, so the tokens can be drawn at the real zoom */
+  const [frameSize, setFrameSize] = useState({ w: 0, h: 0 })
   const [view, setView] = useState<View>({ scale: 1, x: 0, y: 0 })
   const viewRef = useRef(view)
   viewRef.current = view
@@ -38,6 +51,16 @@ export default function ZoomableImage({ src, alt }: { src: string; alt: string }
     const scale = Math.max(1, Math.min(MAX_ZOOM, from.scale * factor))
     const k = scale / from.scale
     setView(clamp({ scale, x: px - (px - from.x) * k, y: py - (py - from.y) * k }, w, h))
+  }, [])
+
+  useEffect(() => {
+    const el = frame.current
+    if (!el) return
+    const measure = (): void => setFrameSize({ w: el.clientWidth, h: el.clientHeight })
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
   }, [])
 
   useEffect(() => {
@@ -107,13 +130,20 @@ export default function ZoomableImage({ src, alt }: { src: string; alt: string }
       }}
       style={{ cursor: view.scale > 1 ? 'grab' : 'zoom-in' }}
     >
-      <img
-        className="client-map"
-        src={src}
-        alt={alt}
-        draggable={false}
+      <div
+        className="client-map-layer"
         style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}
-      />
+      >
+        <img className="client-map" src={src} alt={alt} draggable={false} />
+      </div>
+      {tokens && frameSize.w > 0 && (
+        <TokenLayer
+          width={tokens.width}
+          height={tokens.height}
+          tokens={tokens.tokens}
+          view={{ frameWidth: frameSize.w, frameHeight: frameSize.h, ...view }}
+        />
+      )}
     </div>
   )
 }

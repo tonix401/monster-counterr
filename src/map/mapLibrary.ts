@@ -10,6 +10,11 @@ export interface MapMeta {
   thumb: string
 }
 
+/** A map as it travels in a save file: its record and the `.fog_map` text with the picture */
+export interface SavedMap extends MapMeta {
+  data: string
+}
+
 export const newMapId = (): string =>
   globalThis.crypto?.randomUUID?.() ??
   `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`

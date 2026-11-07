@@ -11,7 +11,7 @@ A web application for D&D Dungeon Masters to track enemy health, conditions, and
 - **� WebRTC Broadcasting**: Host your encounter state and share it with players via QR code
 - **�🔧 Customizable Display**: Show or hide specific columns
 - **📄 Full Monster Sheets**: View complete stat blocks for any official D&D monster
-- **🗺️ Map & Fog of War**: Load a battle map, let it find the walls, fog and reveal rooms, and share the map with your players. They only ever get the picture with hidden rooms covered. Maps are saved in your browser or as `.fog_map` files
+- **🗺️ Map & Fog of War**: Load a battle map, let it find the walls, fog and reveal rooms, and drag your encounter's monsters onto it as tokens with a health ring, and share the map with your players. They only ever get the picture with hidden rooms covered, plus the tokens of monsters you've revealed. Maps are saved in your browser or as `.fog_map` files
 - **💾 Save System**: Import and export your encounter data to share
 - **🌐 No Backend Required**: Runs entirely in your browser - no server, no account, nothing to distract from the campaign!
 

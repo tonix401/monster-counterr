@@ -5,6 +5,26 @@ import { renderPlayerImage } from './render'
 /** What players receive. `image` is a JPEG with the fogged rooms already painted over. */
 export type MapMessage = { type: 'map'; name: string; image: ArrayBuffer } | { type: 'map-clear' }
 
+/** What players see right now: null while no map is shared. The DM's preview shows this very picture. */
+export interface PublishedMap {
+  name: string
+  url: string
+}
+let published: PublishedMap | null = null
+const listeners = new Set<() => void>()
+
+export const getPublishedMap = (): PublishedMap | null => published
+export function subscribePublishedMap(listener: () => void): () => void {
+  listeners.add(listener)
+  return () => listeners.delete(listener)
+}
+
+function setPublished(next: PublishedMap | null): void {
+  if (published) URL.revokeObjectURL(published.url)
+  published = next
+  listeners.forEach((l) => l())
+}
+
 const DEBOUNCE_MS = 300
 let timer: ReturnType<typeof setTimeout> | undefined
 let last: MapMessage = { type: 'map-clear' }
@@ -37,7 +57,11 @@ async function publish(): Promise<void> {
     )
       return
     last = { type: 'map', name: m.name, image: await blob.arrayBuffer() }
-  } else last = { type: 'map-clear' }
+    setPublished({ name: m.name, url: URL.createObjectURL(blob) })
+  } else {
+    last = { type: 'map-clear' }
+    setPublished(null)
+  }
 
   const conns = useMonsterStore.getState().connections
   for (const c of conns) served.delete(c.conn)

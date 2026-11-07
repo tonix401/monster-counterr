@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useClientTerm } from './store/ClientStore'
 
 const MAX_ZOOM = 8
 
@@ -19,9 +18,8 @@ function clamp(v: View, w: number, h: number): View {
   }
 }
 
-/** A picture players can zoom (wheel, pinch, buttons, double click) and drag around */
+/** A picture players can zoom (wheel, pinch, double click) and drag around */
 export default function ZoomableImage({ src, alt }: { src: string; alt: string }) {
-  const t = useClientTerm()
   const frame = useRef<HTMLDivElement>(null)
   const [view, setView] = useState<View>({ scale: 1, x: 0, y: 0 })
   const viewRef = useRef(view)
@@ -94,11 +92,6 @@ export default function ZoomableImage({ src, alt }: { src: string; alt: string }
     if (pointers.current.size < 2) gesture.current = null
   }
 
-  const step = (factor: number): void => {
-    const { w, h } = size()
-    zoomAt(factor, w / 2, h / 2)
-  }
-
   return (
     <div
       ref={frame}
@@ -121,32 +114,6 @@ export default function ZoomableImage({ src, alt }: { src: string; alt: string }
         draggable={false}
         style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}
       />
-      <div className="client-map-zoom" onPointerDown={(e) => e.stopPropagation()}>
-        <button
-          type="button"
-          onClick={() => step(1.5)}
-          title={t('mapZoomIn')}
-          aria-label={t('mapZoomIn')}
-        >
-          +
-        </button>
-        <button
-          type="button"
-          onClick={() => step(1 / 1.5)}
-          title={t('mapZoomOut')}
-          aria-label={t('mapZoomOut')}
-        >
-          −
-        </button>
-        <button
-          type="button"
-          onClick={() => setView({ scale: 1, x: 0, y: 0 })}
-          title={t('mapZoomFit')}
-          aria-label={t('mapZoomFit')}
-        >
-          ⤢
-        </button>
-      </div>
     </div>
   )
 }

@@ -37,6 +37,8 @@ export type ConnectionSlice = {
   clientName: string
   hostId: string | null
   setClientName: (name: string) => void
+  /** Changes the name and tells the host, which reconnects with it if the line is down */
+  renameClient: (name: string) => void
   setHostId: (hostId: string | null) => void
   connectToHost: () => void
   disconnect: () => void
@@ -385,6 +387,13 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
 
     setClientName: (name: string) => {
       set({ clientName: name })
+    },
+
+    renameClient: (name: string) => {
+      const trimmed = name.trim()
+      if (!trimmed) return
+      set({ clientName: trimmed })
+      sendMessage({ type: 'client-name', name: trimmed })
     },
 
     setHostId: (hostId: string | null) => {

@@ -1,5 +1,6 @@
 import React from 'react'
 import type { Monster } from '@/types/Monster'
+import TokenTableData from './TokenTableData'
 import NameTableData from '@/components/table/NameTableData'
 import StatusTableData from '@/components/table/StatusTableData'
 import HpTableData from '@/components/table/HpTableData'
@@ -56,6 +57,7 @@ const MonsterTableRow: React.FC<MonsterTableRowProps> = ({
       {settings.showQuickActions && (
         <QuickActionsTableData isHidden={monster.isHidden} monsterId={monster.id} />
       )}
+      {settings.showTokens && <TokenTableData monster={monster} />}
       <NameTableData monster={monster} />
       {settings.showConditions && <ConditionsTableData monster={monster} />}
       {settings.showStatus && <StatusTableData monster={monster} />}

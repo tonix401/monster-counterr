@@ -68,24 +68,6 @@ export const ZoomOutIcon = icon(
   </>
 )
 export const FitIcon = icon(<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />)
-export const MapIcon = icon(
-  <>
-    <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z" />
-    <path d="M9 4v14M15 6v14" />
-  </>
-)
-export const LinesIcon = icon(
-  <>
-    <rect x="3" y="3" width="18" height="18" rx="2" />
-    <path d="M3 12h9V3M12 12v9M12 16h9" />
-  </>
-)
-export const BlueprintIcon = icon(
-  <>
-    <rect x="3" y="3" width="18" height="18" rx="2" />
-    <path d="M3 9h18M9 21V9M15 9v12" strokeDasharray="2 2" />
-  </>
-)
 export const OpenIcon = icon(
   <>
     <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -116,6 +98,13 @@ export const PlayerIcon = icon(
   <>
     <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
     <circle cx="12" cy="12" r="3" />
+  </>
+)
+export const HiddenIcon = icon(
+  <>
+    <path d="M10.7 5.1A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-2.6 3.5M6.6 6.6A17 17 0 0 0 2 12s3.5 7 10 7a10 10 0 0 0 4.4-1" />
+    <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+    <path d="m3 3 18 18" />
   </>
 )
 export const SlidersIcon = icon(

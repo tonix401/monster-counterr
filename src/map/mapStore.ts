@@ -12,7 +12,7 @@ import {
   setCurrentId,
   takeLegacyMap,
 } from './mapStorage'
-import { newMapId, uniqueName, type MapMeta } from './mapLibrary'
+import { newMapId, uniqueName, type MapMeta, type SavedMap } from './mapLibrary'
 import {
   emptyGraph,
   ensureBorder,
@@ -23,13 +23,13 @@ import {
   removeNode,
 } from './graph'
 import { makeCanvas, makeThumb } from './render'
+import type { Token, Tokens } from './tokens'
 import {
   MAP_MAX_DIM,
   type Analysis,
   type FogStyle,
   type Graph,
   type MapMode,
-  type MapView,
   type Selection,
   type WallSegment,
 } from './types'
@@ -65,6 +65,8 @@ interface MapState {
   base: HTMLCanvasElement | null
   analysis: Analysis | null
   fog: Set<number>
+  /** Monsters placed on this map, by monster id */
+  tokens: Tokens
   /** How players see the fogged rooms */
   fogStyle: FogStyle
   /** The walls: nodes, and lines between them */
@@ -79,7 +81,6 @@ interface MapState {
   previewing: boolean
   /** Walls found with the current settings, not yet part of the map */
   preview: WallSegment[] | null
-  view: MapView
   mode: MapMode
   busy: boolean
   /** Whether players connected over PeerJS get to see the map */
@@ -94,13 +95,16 @@ interface MapState {
   openFromLibrary: (id: string) => Promise<void>
   renameMap: (id: string, name: string) => Promise<void>
   duplicateMap: (id: string) => Promise<void>
+  /** Every map in the library with its file text, the open one as it is right now */
+  exportMaps: () => Promise<SavedMap[]>
+  /** Adds maps from a save file; one whose id is taken comes in as a copy under a new name */
+  importMaps: (maps: SavedMap[]) => Promise<void>
   deleteMap: (id: string) => Promise<void>
   toText: () => string | null
   setParam: <K extends keyof MapParams>(key: K, value: number) => void
   showPreview: (on: boolean) => void
   /** Replaces the walls with the ones found in the picture */
   applyDetection: () => Promise<void>
-  setView: (view: MapView) => void
   setMode: (mode: MapMode) => void
   setShared: (on: boolean) => void
   /** Edits between begin and end (a drag) become one undo step */
@@ -116,6 +120,11 @@ interface MapState {
   setFogStyle: (style: FogStyle) => void
   fogAll: () => void
   revealAll: () => void
+  /** Puts a monster on the map, or moves it; saved with the map */
+  placeToken: (monsterId: string, at: Token) => void
+  removeToken: (monsterId: string) => void
+  /** Drops the tokens of monsters that left the encounter */
+  setTokens: (tokens: Tokens) => void
 }
 
 export const DEFAULT_PARAMS: MapParams = { sens: 70, minLen: 6, gap: 6.5, minRoom: 0.2 }
@@ -260,13 +269,20 @@ export const useMapStore = create<MapState>()((set, get) => {
           base,
           analysis: null,
           fog: new Set(),
+          tokens: saved?.tokens
+            ? Object.fromEntries(
+                Object.entries(saved.tokens).map(([k, t]) => [
+                  k,
+                  { x: Math.min(W - 1, t.x * fx), y: Math.min(H - 1, t.y * fy) },
+                ])
+              )
+            : {},
           fogStyle: saved?.fogStyle ?? 'fog',
           graph,
           history: [],
           baseline: graph,
           selected: null,
           preview: null,
-          view: saved ? saved.view : get().view,
           error: null,
         })
         analyze(40)
@@ -326,6 +342,7 @@ export const useMapStore = create<MapState>()((set, get) => {
     base: null,
     analysis: null,
     fog: new Set(),
+    tokens: {},
     fogStyle: 'fog',
     graph: emptyGraph(),
     history: [],
@@ -334,7 +351,6 @@ export const useMapStore = create<MapState>()((set, get) => {
     params: DEFAULT_PARAMS,
     previewing: false,
     preview: null,
-    view: 'lines',
     mode: 'fog',
     busy: false,
     shared: false,
@@ -406,6 +422,7 @@ export const useMapStore = create<MapState>()((set, get) => {
         base: null,
         analysis: null,
         fog: new Set(),
+        tokens: {},
         mapId: null,
         graph: emptyGraph(),
         history: [],
@@ -469,6 +486,35 @@ export const useMapStore = create<MapState>()((set, get) => {
       await get().refreshLibrary()
     },
 
+    exportMaps: async () => {
+      await saveNow() // so the open map is in the library as it is now
+      await get().refreshLibrary()
+      const out: SavedMap[] = []
+      for (const meta of get().library) {
+        const data = await loadMap(meta.id)
+        if (data) out.push({ ...meta, data })
+      }
+      return out
+    },
+
+    importMaps: async (maps) => {
+      await get().refreshLibrary()
+      const ids = new Set(get().library.map((m) => m.id))
+      const names = get().library.map((m) => m.name)
+      for (const m of maps) {
+        if (!parseFogMap(m.data)) continue
+        const taken = ids.has(m.id)
+        const name = taken ? uniqueName(m.name, names) : m.name
+        const id = taken ? newMapId() : m.id
+        const { data, ...meta } = m
+        if (await saveMap({ ...meta, id, name }, data)) {
+          ids.add(id)
+          names.push(name)
+        }
+      }
+      await get().refreshLibrary()
+    },
+
     deleteMap: async (id) => {
       if (id === get().mapId) {
         set({ mapId: null }) // so closing does not write the map back after deleting it
@@ -487,9 +533,9 @@ export const useMapStore = create<MapState>()((set, get) => {
         name: s.name,
         width: s.width,
         height: s.height,
-        view: s.view,
         ...graphLists(s.graph),
         fogStyle: s.fogStyle,
+        ...(Object.keys(s.tokens).length ? { tokens: s.tokens } : {}),
         fog: [...s.fog]
           .map((id) => rooms[id]?.sample)
           .filter((v): v is number => v !== undefined)
@@ -514,10 +560,6 @@ export const useMapStore = create<MapState>()((set, get) => {
       previewSeq++
       set({ preview: null, selected: null })
       edit(ensureBorder(graphFromSegments(segs, Math.max(s.width, s.height)), s.width, s.height))
-    },
-    setView: (view) => {
-      set({ view })
-      scheduleSave()
     },
     setMode: (mode) => set({ mode }),
     setShared: (shared) => set({ shared }),
@@ -571,6 +613,28 @@ export const useMapStore = create<MapState>()((set, get) => {
       })
       scheduleSave()
     },
+    placeToken: (monsterId, at) => {
+      const { width, height } = get()
+      const x = Math.max(0, Math.min(width - 1, at.x))
+      const y = Math.max(0, Math.min(height - 1, at.y))
+      set({ tokens: { ...get().tokens, [monsterId]: { x, y } } })
+      scheduleSave()
+    },
+
+    removeToken: (monsterId) => {
+      if (!(monsterId in get().tokens)) return
+      set({
+        tokens: Object.fromEntries(Object.entries(get().tokens).filter(([id]) => id !== monsterId)),
+      })
+      scheduleSave()
+    },
+
+    setTokens: (tokens) => {
+      if (tokens === get().tokens) return
+      set({ tokens })
+      scheduleSave()
+    },
+
     revealAll: () => {
       set({ fog: new Set() })
       scheduleSave()

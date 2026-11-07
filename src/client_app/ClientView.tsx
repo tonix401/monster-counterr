@@ -23,6 +23,7 @@ import {
   useClientDisconnect,
   useClientSendAttack,
   useClientMap,
+  useClientMapTokens,
 } from './store/ClientStore'
 
 const ClientView: React.FC = () => {
@@ -45,6 +46,7 @@ const ClientView: React.FC = () => {
   const disconnect = useClientDisconnect()
   const sendAttack = useClientSendAttack()
   const map = useClientMap()
+  const mapTokens = useClientMapTokens()
   const { search } = useLocation()
   const onMapTab = useMatch('/client/map') !== null
   const onSettingsTab = useMatch('/client/settings') !== null
@@ -159,7 +161,7 @@ const ClientView: React.FC = () => {
           </div>
         ) : onMapTab ? (
           map ? (
-            <ZoomableImage src={map.url} alt={map.name} />
+            <ZoomableImage src={map.url} alt={map.name} tokens={mapTokens} />
           ) : (
             <p>{t('mapNotShared')}</p>
           )

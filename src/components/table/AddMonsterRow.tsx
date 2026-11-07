@@ -6,11 +6,12 @@ import './AddMonsterRow.css'
 export const AddMonsterRow = () => {
   const navigate = useGo()
   const t = useTerm()
-  const { showQuickActions, showConditions, showStatus, showHealth, showChangeHp } =
+  const { showQuickActions, showTokens, showConditions, showStatus, showHealth, showChangeHp } =
     useMonsterStore((state) => state.settings)
   const cols = [
     true,
     showQuickActions,
+    showTokens,
     true,
     showConditions,
     showStatus,

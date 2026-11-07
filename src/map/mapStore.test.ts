@@ -80,3 +80,21 @@ describe('undo of wall edits', () => {
     expect(useMapStore.getState().params).toMatchObject({ minRoom: 1, sens: 20 })
   })
 })
+
+describe('placed monsters', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    useMapStore.setState({ tokens: {}, width: 100, height: 80, loaded: true })
+  })
+  afterEach(() => vi.useRealTimers())
+
+  it('places, moves, keeps inside the map and removes a token', () => {
+    const s = useMapStore.getState()
+    s.placeToken('a', { x: 10, y: 20 })
+    expect(useMapStore.getState().tokens).toEqual({ a: { x: 10, y: 20 } })
+    s.placeToken('a', { x: 500, y: -5 })
+    expect(useMapStore.getState().tokens.a).toEqual({ x: 99, y: 0 })
+    s.removeToken('a')
+    expect(useMapStore.getState().tokens).toEqual({})
+  })
+})

@@ -35,7 +35,6 @@ export type Selection = { kind: 'node' | 'edge'; id: number }
 
 /** How a fogged room looks to players: grey fog, or no light at all */
 export type FogStyle = 'fog' | 'dark'
-export type MapView = 'map' | 'lines' | 'blueprint'
 export type MapMode = 'fog' | 'select' | 'wall' | 'rect' | 'circle' | 'poly' | 'erase' | 'pan'
 
 export interface DetectParams {

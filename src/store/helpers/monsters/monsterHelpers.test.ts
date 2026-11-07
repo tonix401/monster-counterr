@@ -199,6 +199,7 @@ describe('monsterHelpers', () => {
       autoRemoveDead: false,
       showXpCounter: true,
       showQuickActions: true,
+      showTokens: false,
     }
 
     it('should increase monster health', () => {

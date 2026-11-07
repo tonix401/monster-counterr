@@ -60,6 +60,15 @@ tr:not(.drop-zone) {
   width: 170px;
 }
 
+#col-token {
+  width: 64px;
+}
+
+.token-cell svg {
+  display: block;
+  margin: 0 auto;
+}
+
 #col-conditions {
   width: 160px;
 }

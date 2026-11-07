@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { CONNECTION } from '@/constants'
-import { parseMapMessage } from './mapMessage'
+import { parseMapMessage, parseTokensMessage } from './mapMessage'
 
 describe('parseMapMessage', () => {
   it('accepts a map with an ArrayBuffer or Uint8Array picture', () => {
@@ -35,5 +35,30 @@ describe('parseMapMessage', () => {
     expect(parseMapMessage({ enemies: [] })).toBeNull()
     expect(parseMapMessage(null)).toBeNull()
     expect(parseMapMessage('map')).toBeNull()
+  })
+})
+
+describe('parseTokensMessage', () => {
+  const good = { x: 5, y: 6, initials: 'AR', status: 'injured' }
+
+  it('accepts tokens and drops malformed entries', () => {
+    const out = parseTokensMessage({
+      type: 'map-tokens',
+      width: 100,
+      height: 80,
+      tokens: [
+        good,
+        { x: 'a', y: 1, initials: 'X', status: 'healthy' },
+        { ...good, status: 'dead' },
+        null,
+      ],
+    })
+    expect(out?.tokens).toEqual([good])
+  })
+
+  it('rejects other messages and missing sizes', () => {
+    expect(parseTokensMessage({ type: 'map-clear' })).toBeNull()
+    expect(parseTokensMessage({ type: 'map-tokens', width: 0, height: 5, tokens: [] })).toBeNull()
+    expect(parseTokensMessage({ type: 'map-tokens', width: 5, height: 5 })).toBeNull()
   })
 })

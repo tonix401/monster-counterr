@@ -5,7 +5,7 @@ import type { MonsterStatus } from '@/types/Monster'
 import type { ClientToHostMessage } from '@/types/Protocol'
 import { checkMessageSize } from '@/store/helpers/connections/connectionHelpers'
 import { CONNECTION } from '@/constants'
-import { parseMapMessage } from '@/map/mapMessage'
+import { parseMapMessage, parseTokensMessage, type TokensMessage } from '@/map/mapMessage'
 
 export interface Enemy {
   id: string
@@ -34,6 +34,8 @@ export type ConnectionSlice = {
   error: string | null
   data: EncounterData | null
   map: SharedMap | null
+  /** The monsters the DM lets players see on the map, in the pixels of its picture */
+  mapTokens: TokensMessage | null
   clientName: string
   hostId: string | null
   setClientName: (name: string) => void
@@ -323,6 +325,12 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
           }
         }
 
+        const tokensMessage = parseTokensMessage(receivedData)
+        if (tokensMessage) {
+          set({ mapTokens: tokensMessage })
+          return
+        }
+
         const mapMessage = parseMapMessage(receivedData)
         if (mapMessage) {
           const previous = get().map
@@ -337,6 +345,7 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
                     ),
                   }
                 : null,
+            ...(mapMessage.type === 'map-clear' ? { mapTokens: null } : {}),
           })
           return
         }
@@ -382,6 +391,7 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
     error: null,
     data: null,
     map: null,
+    mapTokens: null,
     clientName: '',
     hostId: null,
 
@@ -419,7 +429,12 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
       const map = get().map
       if (map) URL.revokeObjectURL(map.url)
       const nameEntered = Boolean(get().clientName.trim())
-      set({ connectionStatus: nameEntered ? 'disconnected' : 'name-entry', error: null, map: null })
+      set({
+        connectionStatus: nameEntered ? 'disconnected' : 'name-entry',
+        error: null,
+        map: null,
+        mapTokens: null,
+      })
     },
 
     sendAttack: (monsterId: string) => {

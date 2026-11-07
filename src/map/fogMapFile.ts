@@ -1,4 +1,5 @@
-import type { FogStyle, MapView } from './types'
+import type { FogStyle } from './types'
+import type { Tokens } from './tokens'
 
 /** The `.fog_map` file: the picture, the walls as nodes and the lines between them, and the fog. */
 export interface FogMapFile {
@@ -8,17 +9,17 @@ export interface FogMapFile {
   name: string
   width: number
   height: number
-  view: MapView
   /** Corners and ends of walls, as [x, y] */
   nodes: [number, number][]
   /** Walls, as pairs of indices into `nodes` */
   edges: [number, number][]
   fog: [number, number][]
   fogStyle?: FogStyle
+  /** Placed monsters by monster id, in map pixels; missing in files made before tokens existed */
+  tokens?: Tokens
   image: string
 }
 
-const VIEWS: MapView[] = ['map', 'lines', 'blueprint']
 const isPair = (p: unknown): p is [number, number] =>
   Array.isArray(p) && p.length >= 2 && Number.isFinite(p[0]) && Number.isFinite(p[1])
 
@@ -51,6 +52,15 @@ export function parseFogMap(text: string): FogMapFile | null {
     .filter(isPair)
     .map((p): [number, number] => [p[0], p[1]])
 
+  const tokens: Tokens = {}
+  if (data.tokens && typeof data.tokens === 'object' && !Array.isArray(data.tokens)) {
+    for (const [id, t] of Object.entries(data.tokens)) {
+      const p = t as { x?: unknown; y?: unknown } | null
+      if (p && Number.isFinite(p.x) && Number.isFinite(p.y))
+        tokens[id] = { x: p.x as number, y: p.y as number }
+    }
+  }
+
   return {
     format: 'fog_map',
     version: 2,
@@ -58,11 +68,11 @@ export function parseFogMap(text: string): FogMapFile | null {
     name: typeof data.name === 'string' ? data.name : 'map',
     width: Number(data.width) || 0,
     height: Number(data.height) || 0,
-    view: VIEWS.includes(data.view as MapView) ? (data.view as MapView) : 'lines',
     nodes,
     edges,
     fog,
     ...(data.fogStyle === 'dark' ? { fogStyle: 'dark' as const } : {}),
+    ...(Object.keys(tokens).length ? { tokens } : {}),
     image: data.image,
   }
 }

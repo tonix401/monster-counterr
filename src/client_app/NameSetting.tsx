@@ -14,7 +14,7 @@ export default function NameSetting() {
   }
 
   return (
-    <>
+    <div className="client-field">
       <label htmlFor="client-name">{t('yourName')}</label>
       <input
         id="client-name"
@@ -26,6 +26,6 @@ export default function NameSetting() {
         onBlur={commit}
         onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
       />
-    </>
+    </div>
   )
 }

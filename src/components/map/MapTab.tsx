@@ -2,14 +2,16 @@ import React, { useEffect, useState, useSyncExternalStore } from 'react'
 import { useTerm } from '@/store/useMonsterStore'
 import { useNavigate } from 'react-router'
 import { useGo } from '@/hooks/useGo'
-import { useMapStore, type MapParams } from '@/map/mapStore'
+import { useMapStore, type MapLayers, type MapParams } from '@/map/mapStore'
 import { getPublishedMap, getPublishedTokens, subscribePublishedMap } from '@/map/mapSync'
 import { TokenLayer } from '@/components/TokenMark'
 import type { MapMode } from '@/map/types'
 import MapCanvas, { MONSTER_DRAG } from './MapCanvas'
 import MonsterAvatar from '@/components/MonsterAvatar'
 import { useMonsters, useMonsterStore } from '@/store/useMonsterStore'
-import { monsterLabel } from '@/map/tokens'
+import PlayerAvatar from '@/components/PlayerAvatar'
+import { setEdgeClear } from '@/map/graph'
+import { FT_PER_CELL, NEW_LIGHT, isPlayerTokenId, monsterLabel, playerTokenId } from '@/map/tokens'
 import {
   CircleIcon,
   PolygonIcon,
@@ -31,8 +33,14 @@ import {
   SaveIcon,
   SelectIcon,
   SidebarIcon,
+  FireIcon,
+  PeopleIcon,
+  SkullIcon,
+  WindowIcon,
+  GridIcon,
   SlidersIcon,
   TrashIcon,
+  RedoIcon,
   UndoIcon,
   WallIcon,
   ZoomInIcon,
@@ -72,6 +80,13 @@ const TOOL_GROUPS: Tool[][] = [
   [{ mode: 'erase', label: 'mapModeErase', key: 'e', icon: <EraserIcon /> }],
 ]
 const MODES = TOOL_GROUPS.flat()
+/** What the DM can hide on the map; pressed means shown */
+const LAYERS: { key: keyof MapLayers; label: string; icon: React.ReactNode }[] = [
+  { key: 'lights', label: 'mapLayerLights', icon: <FireIcon /> },
+  { key: 'players', label: 'mapLayerPlayers', icon: <PeopleIcon /> },
+  { key: 'monsters', label: 'mapLayerMonsters', icon: <SkullIcon /> },
+  { key: 'walls', label: 'mapLayerWalls', icon: <WallIcon /> },
+]
 const zoom = (factor: number): boolean =>
   window.dispatchEvent(new CustomEvent('map-zoom', { detail: factor }))
 const SLIDERS: { key: keyof MapParams; label: string; min: number; max: number; step: number }[] = [
@@ -146,6 +161,63 @@ const MonsterList: React.FC = () => {
   )
 }
 
+/** The connected players, and any who were placed and have left: drag them like the monsters */
+const PlayerList: React.FC = () => {
+  const t = useTerm()
+  const connections = useMonsterStore((s) => s.connections)
+  const tokens = useMapStore((s) => s.tokens)
+  const names = useMapStore((s) => s.players)
+  const online = new Map(connections.map((c) => [c.playerId, c.name]))
+  const ids = [
+    ...new Set([
+      ...online.keys(),
+      ...Object.keys(tokens)
+        .filter(isPlayerTokenId)
+        .map((id) => id.slice('player:'.length)),
+    ]),
+  ]
+  return (
+    <section className="map-monsters map-players" aria-label={t('mapPlayers')}>
+      <h4>{t('mapPlayers')}</h4>
+      {ids.length === 0 ? (
+        <p className="map-monsters-empty">{t('mapPlayersEmpty')}</p>
+      ) : (
+        <ul>
+          {ids.map((id) => {
+            const name = online.get(id) ?? names[id] ?? '?'
+            return (
+              <li
+                key={id}
+                className={tokens[playerTokenId(id)] ? 'map-monster-placed' : ''}
+                draggable
+                onDragStart={(e) => {
+                  e.dataTransfer.setData(MONSTER_DRAG, playerTokenId(id))
+                  e.dataTransfer.effectAllowed = 'copy'
+                }}
+                title={t('mapMonsterDrag')}
+              >
+                <PlayerAvatar name={name} size={32} faint={!online.has(id)} />
+                <span className="map-monster-name">{name}</span>
+                {!online.has(id) && (
+                  <span onClick={(e) => e.stopPropagation()} draggable={false}>
+                    <IconButton
+                      label={t('mapForgetPlayer')}
+                      icon={<TrashIcon />}
+                      danger
+                      tip="left"
+                      onClick={() => useMapStore.getState().forgetPlayer(id)}
+                    />
+                  </span>
+                )}
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </section>
+  )
+}
+
 const MapTab: React.FC = () => {
   const t = useTerm()
   const go = useGo()
@@ -176,14 +248,16 @@ const MapTab: React.FC = () => {
           st.deleteSelected()
         } else if (e.key === 'Escape') st.select(null)
       }
-      if (
-        (e.ctrlKey || e.metaKey) &&
-        e.key.toLowerCase() === 'z' &&
-        !typing &&
-        useMapStore.getState().history.length
-      ) {
-        e.preventDefault()
-        useMapStore.getState().undoEdit()
+      const key = e.key.toLowerCase()
+      if ((e.ctrlKey || e.metaKey) && !typing) {
+        const m = useMapStore.getState()
+        if (key === 'z' && !e.shiftKey && m.history.length) {
+          e.preventDefault()
+          m.undoEdit()
+        } else if ((key === 'y' || (key === 'z' && e.shiftKey)) && m.future.length) {
+          e.preventDefault()
+          m.redoEdit()
+        }
       }
     }
     document.addEventListener('keydown', onKey)
@@ -244,7 +318,9 @@ const MapTab: React.FC = () => {
       </div>
     )
 
-  const hasEdits = s.history.length > 0
+  const hasEdits = s.graph !== s.baseline
+  const selectedWall =
+    s.selected?.kind === 'edge' ? s.graph.edges.find((e) => e.id === s.selected!.id) : undefined
 
   return (
     <div className={`map-tab ${preview ? 'with-preview' : ''}`}>
@@ -254,40 +330,55 @@ const MapTab: React.FC = () => {
         </div>
 
         <div className="map-topbar">
-          <div className="map-group" role="group" aria-label={t('mapGroupFile')}>
-            <label
-              className="map-icon-btn"
-              aria-label={t('mapOpen')}
-              data-tip={t('mapOpen')}
-              data-tip-side="below"
-            >
-              <OpenIcon />
-              <input
-                type="file"
-                accept="image/*,.fog_map,.json"
-                onChange={(e) => {
-                  open(e.target.files?.[0])
-                  e.target.value = ''
-                }}
+          <div className="map-right">
+            <div className="map-group map-files" role="group" aria-label={t('mapGroupFile')}>
+              <label
+                className="map-icon-btn"
+                aria-label={t('mapOpen')}
+                data-tip={t('mapOpen')}
+                data-tip-side="left"
+              >
+                <OpenIcon />
+                <input
+                  type="file"
+                  accept="image/*,.fog_map,.json"
+                  onChange={(e) => {
+                    open(e.target.files?.[0])
+                    e.target.value = ''
+                  }}
+                />
+              </label>
+              <IconButton
+                label={t('mapLibrary')}
+                icon={<LibraryIcon />}
+                tip="left"
+                onClick={() => go('/maps')}
               />
-            </label>
-            <IconButton
-              label={t('mapLibrary')}
-              icon={<LibraryIcon />}
-              onClick={() => go('/maps')}
-            />
-            <IconButton label={t('mapSave')} icon={<SaveIcon />} onClick={save} />
-            <IconButton label={t('mapClose')} icon={<CloseIcon />} danger onClick={s.closeMap} />
+              <IconButton label={t('mapSave')} icon={<SaveIcon />} tip="left" onClick={save} />
+              <IconButton
+                label={t('mapClose')}
+                icon={<CloseIcon />}
+                danger
+                tip="left"
+                onClick={s.closeMap}
+              />
+            </div>
+            <div className="map-group map-layers" role="group" aria-label={t('mapGroupLayers')}>
+              {LAYERS.map((l) => (
+                <IconButton
+                  key={l.key}
+                  label={t(l.label)}
+                  icon={l.icon}
+                  tip="left"
+                  active={s.layers[l.key]}
+                  pressed={s.layers[l.key]}
+                  onClick={() => s.setLayer(l.key, !s.layers[l.key])}
+                />
+              ))}
+            </div>
           </div>
 
           <div className="map-group map-group-end">
-            <IconButton
-              label={t('mapShare')}
-              icon={<PlayerIcon />}
-              active={s.shared}
-              pressed={s.shared}
-              onClick={() => s.setShared(!s.shared)}
-            />
             <IconButton
               label={t('mapPlayerView')}
               shortcut="P"
@@ -297,33 +388,71 @@ const MapTab: React.FC = () => {
               disabled={!s.analysis}
               onClick={() => setPreview(!preview)}
             />
-            <span className="map-divider" />
-            <IconButton
-              label={t('mapWallDetection')}
-              icon={<SlidersIcon />}
-              active={panel}
-              pressed={panel}
-              onClick={() => setPanel(!panel)}
-            />
           </div>
-          <div className="map-group map-tools" role="group" aria-label={t('mapGroupTools')}>
-            {TOOL_GROUPS.map((group, gi) => (
-              <React.Fragment key={gi}>
-                {gi > 0 && <span className="map-divider" />}
-                {group.map((m) => (
-                  <IconButton
-                    key={m.mode}
-                    label={t(m.label)}
-                    shortcut={m.key.toUpperCase()}
-                    icon={m.icon}
-                    active={s.mode === m.mode}
-                    pressed={s.mode === m.mode}
-                    tip="right"
-                    onClick={() => s.setMode(m.mode)}
+          <div className="map-left">
+            <div className="map-group map-tools" role="group" aria-label={t('mapGroupTools')}>
+              {TOOL_GROUPS.map((group, gi) => (
+                <React.Fragment key={gi}>
+                  {gi > 0 && <span className="map-divider" />}
+                  {group.map((m) => (
+                    <IconButton
+                      key={m.mode}
+                      label={t(m.label)}
+                      shortcut={m.key.toUpperCase()}
+                      icon={m.icon}
+                      active={s.mode === m.mode}
+                      pressed={s.mode === m.mode}
+                      tip="right"
+                      onClick={() => s.setMode(m.mode)}
+                    />
+                  ))}
+                </React.Fragment>
+              ))}
+              <span className="map-divider" />
+              <IconButton
+                label={t('mapTranslucent')}
+                icon={<WindowIcon />}
+                tip="right"
+                active={s.drawClear}
+                pressed={s.drawClear}
+                onClick={() => s.setDrawClear(!s.drawClear)}
+              />
+            </div>
+            <div className="map-group map-light" role="group" aria-label={t('mapGroupLight')}>
+              <IconButton
+                label={t('mapLightFire')}
+                icon={<FireIcon />}
+                tip="right"
+                onDragStart={(e) => {
+                  e.dataTransfer.setData(MONSTER_DRAG, NEW_LIGHT)
+                  e.dataTransfer.effectAllowed = 'copy'
+                }}
+                onClick={() => s.addLight({ x: s.width / 2, y: s.height / 2 })}
+              />
+              <IconButton
+                label={t('mapGrid')}
+                icon={<GridIcon />}
+                tip="right"
+                active={s.grid.on}
+                pressed={s.grid.on}
+                onClick={() => s.setGrid({ on: !s.grid.on })}
+              />
+              {s.grid.on && (
+                <label className="map-grid-size">
+                  <span>
+                    {t('mapGridSize')} <output>{FT_PER_CELL} ft</output>
+                  </span>
+                  <input
+                    type="range"
+                    min={8}
+                    max={Math.max(8, Math.round(Math.max(s.width, s.height) / 4))}
+                    step={1}
+                    value={s.grid.cell}
+                    onChange={(e) => s.setGrid({ cell: +e.target.value })}
                   />
-                ))}
-              </React.Fragment>
-            ))}
+                </label>
+              )}
+            </div>
           </div>
         </div>
 
@@ -377,23 +506,6 @@ const MapTab: React.FC = () => {
           <div className="map-bottom-row">
             <div className="map-group" role="group" aria-label={t('mapGroupFog')}>
               <IconButton
-                label={t('mapStyleFog')}
-                icon={<FogIcon />}
-                tip="above"
-                active={s.fogStyle === 'fog'}
-                pressed={s.fogStyle === 'fog'}
-                onClick={() => s.setFogStyle('fog')}
-              />
-              <IconButton
-                label={t('mapStyleDark')}
-                icon={<DarkIcon />}
-                tip="above"
-                active={s.fogStyle === 'dark'}
-                pressed={s.fogStyle === 'dark'}
-                onClick={() => s.setFogStyle('dark')}
-              />
-              <span className="map-divider" />
-              <IconButton
                 label={t('mapFogAll')}
                 icon={<FogAllIcon />}
                 tip="above"
@@ -407,6 +519,14 @@ const MapTab: React.FC = () => {
                 disabled={!s.analysis}
                 onClick={s.revealAll}
               />
+              <IconButton
+                label={t('mapWallDetection')}
+                icon={<SlidersIcon />}
+                tip="above"
+                active={panel}
+                pressed={panel}
+                onClick={() => setPanel(!panel)}
+              />
               <span className="map-divider" />
               <IconButton
                 label={t('mapDelete')}
@@ -418,12 +538,31 @@ const MapTab: React.FC = () => {
                 onClick={s.deleteSelected}
               />
               <IconButton
+                label={t('mapToggleTranslucent')}
+                icon={<WindowIcon />}
+                tip="above"
+                disabled={!selectedWall || selectedWall.border}
+                active={!!selectedWall?.clear}
+                onClick={() =>
+                  selectedWall &&
+                  s.setGraph(setEdgeClear(s.graph, selectedWall.id, !selectedWall.clear))
+                }
+              />
+              <IconButton
                 label={t('mapUndoEdit')}
                 shortcut="Ctrl+Z"
                 icon={<UndoIcon />}
                 tip="above"
-                disabled={!hasEdits}
+                disabled={s.history.length === 0}
                 onClick={s.undoEdit}
+              />
+              <IconButton
+                label={t('mapRedoEdit')}
+                shortcut="Ctrl+Y"
+                icon={<RedoIcon />}
+                tip="above"
+                disabled={s.future.length === 0}
+                onClick={s.redoEdit}
               />
               <IconButton
                 label={t('mapClearEdits')}
@@ -472,7 +611,39 @@ const MapTab: React.FC = () => {
           <div className="map-preview-stage">
             <PlayerPreview />
           </div>
+          <div
+            className="map-group map-preview-controls"
+            role="group"
+            aria-label={t('mapPlayerView')}
+          >
+            <IconButton
+              label={t('mapShare')}
+              icon={<PlayerIcon />}
+              tip="above"
+              active={s.shared}
+              pressed={s.shared}
+              onClick={() => s.setShared(!s.shared)}
+            />
+            <span className="map-divider" />
+            <IconButton
+              label={t('mapStyleFog')}
+              icon={<FogIcon />}
+              tip="above"
+              active={s.fogStyle === 'fog'}
+              pressed={s.fogStyle === 'fog'}
+              onClick={() => s.setFogStyle('fog')}
+            />
+            <IconButton
+              label={t('mapStyleDark')}
+              icon={<DarkIcon />}
+              tip="above"
+              active={s.fogStyle === 'dark'}
+              pressed={s.fogStyle === 'dark'}
+              onClick={() => s.setFogStyle('dark')}
+            />
+          </div>
           <MonsterList />
+          <PlayerList />
         </aside>
       )}
     </div>

@@ -15,6 +15,12 @@ describe('undo of wall edits', () => {
     useMapStore.setState({
       graph: emptyGraph(),
       history: [],
+      future: [],
+      tokens: {},
+      ranges: {},
+      players: {},
+      width: 800,
+      height: 600,
       baseline: emptyGraph(),
       selected: null,
       params: DEFAULT_PARAMS,
@@ -65,12 +71,50 @@ describe('undo of wall edits', () => {
     expect(useMapStore.getState().graph.edges).toHaveLength(1)
   })
 
+  it('deletes a selected token from the map: monster, player and fire', () => {
+    const s = useMapStore.getState()
+    s.placeToken('m1', { x: 5, y: 5 })
+    s.placeToken('player:abc', { x: 6, y: 6 })
+    const fire = s.addLight({ x: 7, y: 7 })
+    for (const id of ['m1', 'player:abc', fire]) {
+      useMapStore.getState().select({ kind: 'token', id })
+      useMapStore.getState().deleteSelected()
+      expect(useMapStore.getState().tokens[id]).toBeUndefined()
+      expect(useMapStore.getState().selected).toBeNull()
+    }
+    expect(useMapStore.getState().ranges[fire]).toBeUndefined()
+  })
+
   it('clearing edits returns the walls the map was opened with', () => {
     useMapStore.setState({ baseline: wall() })
     useMapStore.getState().setGraph(emptyGraph())
     useMapStore.getState().clearEdits()
-    expect(useMapStore.getState()).toMatchObject({ history: [] })
     expect(useMapStore.getState().graph.edges).toHaveLength(1)
+    useMapStore.getState().undoEdit()
+    expect(useMapStore.getState().graph.edges).toHaveLength(0)
+  })
+
+  it('undoes and redoes token moves, light changes and removals', () => {
+    const s = () => useMapStore.getState()
+    s().placeToken('m1', { x: 5, y: 5 })
+    s().placeToken('m1', { x: 50, y: 50 })
+    const fire = s().addLight({ x: 9, y: 9 })
+    s().setRange(fire, 40)
+    s().select({ kind: 'token', id: fire })
+    s().deleteSelected()
+    expect(s().tokens[fire]).toBeUndefined()
+    s().undoEdit()
+    expect(s().tokens[fire]).toEqual({ x: 9, y: 9 })
+    expect(s().ranges[fire]).toBe(40)
+    s().undoEdit()
+    expect(s().ranges[fire]).toBe(20)
+    s().undoEdit()
+    s().undoEdit()
+    expect(s().tokens.m1).toEqual({ x: 5, y: 5 })
+    s().redoEdit()
+    expect(s().tokens.m1).toEqual({ x: 50, y: 50 })
+    s().placeToken('m1', { x: 1, y: 1 })
+    expect(s().future).toHaveLength(0)
   })
 
   it('keeps the smallest-room setting out of the history', () => {
@@ -96,5 +140,29 @@ describe('placed monsters', () => {
     expect(useMapStore.getState().tokens.a).toEqual({ x: 99, y: 0 })
     s.removeToken('a')
     expect(useMapStore.getState().tokens).toEqual({})
+  })
+
+  it('hides and shows each kind of thing on its own', () => {
+    useMapStore.getState().setLayer('walls', false)
+    useMapStore.getState().setLayer('lights', false)
+    expect(useMapStore.getState().layers).toEqual({
+      lights: false,
+      players: true,
+      monsters: true,
+      walls: false,
+    })
+    useMapStore.getState().setLayer('walls', true)
+    expect(useMapStore.getState().layers.walls).toBe(true)
+    useMapStore.getState().setLayer('lights', true)
+  })
+
+  it('forgets a player: the token and the remembered name', () => {
+    useMapStore.setState({ players: { p1: 'Ana', p2: 'Bo' } })
+    const s = useMapStore.getState()
+    s.placeToken('player:p1', { x: 1, y: 1 })
+    s.placeToken('a', { x: 2, y: 2 })
+    s.forgetPlayer('p1')
+    expect(useMapStore.getState().tokens).toEqual({ a: { x: 2, y: 2 } })
+    expect(useMapStore.getState().players).toEqual({ p2: 'Bo' })
   })
 })

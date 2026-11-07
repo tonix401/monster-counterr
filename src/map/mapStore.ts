@@ -23,7 +23,7 @@ import {
   removeNode,
 } from './graph'
 import { makeCanvas, makeThumb } from './render'
-import type { Token, Tokens } from './tokens'
+import { DEFAULT_LIGHT_FT, newLightId, playerTokenId, type Token, type Tokens } from './tokens'
 import {
   MAP_MAX_DIM,
   type Analysis,
@@ -48,6 +48,14 @@ const DETECT_KEYS: (keyof MapParams)[] = ['sens', 'minLen', 'gap']
 
 export type MapError = 'mapInvalidFile' | 'mapLoadFailed' | null
 
+/** What undo restores: the walls and everything the DM has put on the map */
+interface Undo {
+  graph: Graph
+  tokens: Tokens
+  ranges: Record<string, number>
+  players: Record<string, string>
+}
+
 interface MapState {
   loaded: boolean
   restored: boolean
@@ -67,12 +75,20 @@ interface MapState {
   fog: Set<number>
   /** Monsters placed on this map, by monster id */
   tokens: Tokens
+  /** The last name of each player, by id, so a token keeps its letters while the player is away */
+  players: Record<string, string>
+  /** How far each fire and player reaches, in feet, by token id */
+  ranges: Record<string, number>
+  /** The square grid: one square is 5 ft and `cell` map pixels wide */
+  grid: { on: boolean; cell: number }
   /** How players see the fogged rooms */
   fogStyle: FogStyle
   /** The walls: nodes, and lines between them */
   graph: Graph
-  /** The walls before each edit, newest last */
-  history: Graph[]
+  /** The walls and tokens before each edit, newest last */
+  history: Undo[]
+  /** What undo took back, newest last, for redo */
+  future: Undo[]
   /** The walls a map was opened with; "clear edits" returns to them */
   baseline: Graph
   selected: Selection | null
@@ -106,6 +122,12 @@ interface MapState {
   /** Replaces the walls with the ones found in the picture */
   applyDetection: () => Promise<void>
   setMode: (mode: MapMode) => void
+  /** New walls from the drawing tools are translucent (windows) instead of solid */
+  drawClear: boolean
+  /** What the DM's map shows; the players' picture is not affected */
+  layers: MapLayers
+  setLayer: (layer: keyof MapLayers, on: boolean) => void
+  setDrawClear: (on: boolean) => void
   setShared: (on: boolean) => void
   /** Edits between begin and end (a drag) become one undo step */
   beginGesture: () => void
@@ -115,6 +137,7 @@ interface MapState {
   select: (selection: Selection | null) => void
   deleteSelected: () => void
   undoEdit: () => void
+  redoEdit: () => void
   clearEdits: () => void
   setFog: (id: number, on: boolean) => boolean
   setFogStyle: (style: FogStyle) => void
@@ -125,6 +148,24 @@ interface MapState {
   removeToken: (monsterId: string) => void
   /** Drops the tokens of monsters that left the encounter */
   setTokens: (tokens: Tokens) => void
+  setPlayerName: (id: string, name: string) => void
+  /** Puts a new fire on the map and returns its token id */
+  addLight: (at: Token) => string
+  setRange: (id: string, ft: number) => void
+  setGrid: (grid: Partial<{ on: boolean; cell: number }>) => void
+  /** Takes a player who has left off the map and out of the list */
+  forgetPlayer: (id: string) => void
+}
+
+/** About thirty squares across the longer side, so a fresh map has a usable grid */
+const defaultCell = (w: number, h: number): number => Math.max(8, Math.round(Math.max(w, h) / 30))
+
+/** The kinds of things the DM can hide on the map to cut the clutter */
+export interface MapLayers {
+  lights: boolean
+  players: boolean
+  monsters: boolean
+  walls: boolean
 }
 
 export const DEFAULT_PARAMS: MapParams = { sens: 70, minLen: 6, gap: 6.5, minRoom: 0.2 }
@@ -155,6 +196,10 @@ let thumb = ''
 let gesture = false
 let gestureFresh = false
 let pending = false
+
+/** The selection, unless it is the token that was just taken off the map */
+const gone = (sel: Selection | null, tokenId: string): Selection | null =>
+  sel?.kind === 'token' && sel.id === tokenId ? null : sel
 
 export const useMapStore = create<MapState>()((set, get) => {
   const analyzer = (): AnalyzerClient => (client ??= createAnalyzerClient())
@@ -277,9 +322,15 @@ export const useMapStore = create<MapState>()((set, get) => {
                 ])
               )
             : {},
+          players: saved?.players ?? {},
+          ranges: saved?.ranges ?? {},
+          grid: saved?.grid
+            ? { on: saved.grid.on, cell: saved.grid.cell * fx }
+            : { on: false, cell: defaultCell(W, H) },
           fogStyle: saved?.fogStyle ?? 'fog',
           graph,
           history: [],
+          future: [],
           baseline: graph,
           selected: null,
           preview: null,
@@ -292,15 +343,37 @@ export const useMapStore = create<MapState>()((set, get) => {
     })
   }
 
+  /** The history with the state before this change added (one step for a whole gesture) */
+  function remember(): Undo[] {
+    const s = get()
+    const joined = gesture && !gestureFresh
+    gestureFresh = false
+    return joined ? s.history : [...s.history, current()]
+  }
+
+  const current = (): Undo => {
+    const s = get()
+    return { graph: s.graph, tokens: s.tokens, ranges: s.ranges, players: s.players }
+  }
+
+  /** A change to the tokens, ranges or player names that undo can take back */
+  function change(
+    patch: Partial<Pick<MapState, 'tokens' | 'ranges' | 'players' | 'selected'>>
+  ): void {
+    set({ ...patch, history: remember(), future: [] })
+    scheduleSave()
+  }
+
   function edit(graph: Graph, live = false): void {
     const s = get()
     if (graph === s.graph) return // nothing changed, so there is nothing to undo
-    const history = gesture && !gestureFresh ? s.history : [...s.history, s.graph]
-    gestureFresh = false
+    const history = remember()
     const sel = s.selected
     const kept =
-      !sel || (sel.kind === 'node' ? graph.nodes : graph.edges).some((o) => o.id === sel.id)
-    set({ graph, history, selected: kept ? sel : null })
+      !sel ||
+      sel.kind === 'token' ||
+      (sel.kind === 'node' ? graph.nodes : graph.edges).some((o) => o.id === sel.id)
+    set({ graph, history, future: [], selected: kept ? sel : null })
     if (live) analyze(30, true)
     else rebuild()
   }
@@ -343,9 +416,15 @@ export const useMapStore = create<MapState>()((set, get) => {
     analysis: null,
     fog: new Set(),
     tokens: {},
+    players: {},
+    ranges: {},
+    drawClear: false,
+    layers: { lights: true, players: true, monsters: true, walls: true },
+    grid: { on: false, cell: 40 },
     fogStyle: 'fog',
     graph: emptyGraph(),
     history: [],
+    future: [],
     baseline: emptyGraph(),
     selected: null,
     params: DEFAULT_PARAMS,
@@ -423,9 +502,12 @@ export const useMapStore = create<MapState>()((set, get) => {
         analysis: null,
         fog: new Set(),
         tokens: {},
+        players: {},
+        ranges: {},
         mapId: null,
         graph: emptyGraph(),
         history: [],
+        future: [],
         baseline: emptyGraph(),
         selected: null,
         previewing: false,
@@ -536,6 +618,9 @@ export const useMapStore = create<MapState>()((set, get) => {
         ...graphLists(s.graph),
         fogStyle: s.fogStyle,
         ...(Object.keys(s.tokens).length ? { tokens: s.tokens } : {}),
+        ...(Object.keys(s.players).length ? { players: s.players } : {}),
+        ...(Object.keys(s.ranges).length ? { ranges: s.ranges } : {}),
+        grid: s.grid,
         fog: [...s.fog]
           .map((id) => rooms[id]?.sample)
           .filter((v): v is number => v !== undefined)
@@ -562,6 +647,8 @@ export const useMapStore = create<MapState>()((set, get) => {
       edit(ensureBorder(graphFromSegments(segs, Math.max(s.width, s.height)), s.width, s.height))
     },
     setMode: (mode) => set({ mode }),
+    setDrawClear: (drawClear) => set({ drawClear }),
+    setLayer: (layer, on) => set({ layers: { ...get().layers, [layer]: on } }),
     setShared: (shared) => set({ shared }),
 
     beginGesture: () => {
@@ -576,19 +663,42 @@ export const useMapStore = create<MapState>()((set, get) => {
     deleteSelected: () => {
       const { graph, selected } = get()
       if (!selected) return
+      if (selected.kind === 'token') {
+        // a monster only leaves the map; a fire or a player's spot goes the same way
+        get().removeToken(selected.id)
+        return
+      }
       edit(
         selected.kind === 'node' ? removeNode(graph, selected.id) : removeEdge(graph, selected.id)
       )
     },
     undoEdit: () => {
-      const { history } = get()
+      const { history, future } = get()
       if (!history.length) return
-      set({ graph: history[history.length - 1], history: history.slice(0, -1), selected: null })
+      set({
+        ...history[history.length - 1],
+        history: history.slice(0, -1),
+        future: [...future, current()],
+        selected: null,
+      })
       rebuild()
+      scheduleSave()
+    },
+    redoEdit: () => {
+      const { history, future } = get()
+      if (!future.length) return
+      set({
+        ...future[future.length - 1],
+        history: [...history, current()],
+        future: future.slice(0, -1),
+        selected: null,
+      })
+      rebuild()
+      scheduleSave()
     },
     clearEdits: () => {
-      set({ graph: get().baseline, history: [], selected: null })
-      rebuild()
+      gesture = false
+      edit(get().baseline)
     },
 
     setFog: (id, on) => {
@@ -617,15 +727,60 @@ export const useMapStore = create<MapState>()((set, get) => {
       const { width, height } = get()
       const x = Math.max(0, Math.min(width - 1, at.x))
       const y = Math.max(0, Math.min(height - 1, at.y))
-      set({ tokens: { ...get().tokens, [monsterId]: { x, y } } })
-      scheduleSave()
+      const was = get().tokens[monsterId]
+      if (was && was.x === x && was.y === y) return
+      change({ tokens: { ...get().tokens, [monsterId]: { x, y } } })
     },
 
     removeToken: (monsterId) => {
       if (!(monsterId in get().tokens)) return
-      set({
+      change({
         tokens: Object.fromEntries(Object.entries(get().tokens).filter(([id]) => id !== monsterId)),
+        ranges: Object.fromEntries(Object.entries(get().ranges).filter(([id]) => id !== monsterId)),
+        selected: gone(get().selected, monsterId),
       })
+    },
+
+    forgetPlayer: (id) => {
+      const key = playerTokenId(id)
+      const { tokens, players } = get()
+      change({
+        tokens: Object.fromEntries(Object.entries(tokens).filter(([k]) => k !== key)),
+        players: Object.fromEntries(Object.entries(players).filter(([k]) => k !== id)),
+        ranges: Object.fromEntries(Object.entries(get().ranges).filter(([k]) => k !== key)),
+        selected: gone(get().selected, key),
+      })
+    },
+
+    addLight: (at) => {
+      const id = newLightId()
+      const { width, height } = get()
+      const x = Math.max(0, Math.min(width - 1, at.x))
+      const y = Math.max(0, Math.min(height - 1, at.y))
+      change({
+        tokens: { ...get().tokens, [id]: { x, y } },
+        ranges: { ...get().ranges, [id]: DEFAULT_LIGHT_FT },
+      })
+      return id
+    },
+
+    setRange: (id, ft) => {
+      const next = Math.max(1, Math.min(300, Math.round(ft)))
+      if (get().ranges[id] === next) return
+      change({ ranges: { ...get().ranges, [id]: next } })
+    },
+
+    setGrid: (patch) => {
+      const g = { ...get().grid, ...patch }
+      const max = Math.max(get().width, get().height) / 4
+      g.cell = Math.max(8, Math.min(Math.max(8, max), g.cell))
+      set({ grid: g })
+      scheduleSave()
+    },
+
+    setPlayerName: (id, name) => {
+      if (get().players[id] === name) return
+      set({ players: { ...get().players, [id]: name } })
       scheduleSave()
     },
 

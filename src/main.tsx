@@ -8,6 +8,7 @@ import SettingsPopup from '@/components/popups/SettingsPopup'
 import MenuPopup from '@/components/popups/MenuPopup'
 import CustomMonstersPopup from '@/components/popups/CustomMonstersPopup'
 import ManageDataPopup from '@/components/popups/ManageDataPopup'
+import MapLibraryPopup from '@/components/popups/MapLibraryPopup'
 import ConnectionsPopup from '@/components/popups/ConnectionsPopup'
 import MonsterInfoPopup from '@/components/popups/MonsterInfoPopup'
 import ClientView from '@/client_app/ClientView'
@@ -22,6 +23,7 @@ const popupRoutes = [
   <Route key="menu" path="menu" element={<MenuPopup />} />,
   <Route key="connections" path="connections" element={<ConnectionsPopup />} />,
   <Route key="custom-monsters" path="custom-monsters" element={<CustomMonstersPopup />} />,
+  <Route key="maps" path="maps" element={<MapLibraryPopup />} />,
   <Route key="manage-data" path="manage-data" element={<ManageDataPopup />} />,
 ]
 

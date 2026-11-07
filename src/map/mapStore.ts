@@ -2,7 +2,17 @@ import { create } from 'zustand'
 import { analyzeGraph } from './rooms'
 import { createAnalyzerClient, type AnalyzerClient } from './analyzerClient'
 import { parseFogMap, serializeFogMap, type FogMapFile } from './fogMapFile'
-import { loadMapText, saveMapText } from './mapStorage'
+import {
+  getCurrentId,
+  listMaps,
+  loadMap,
+  removeMap,
+  saveMap,
+  saveMeta,
+  setCurrentId,
+  takeLegacyMap,
+} from './mapStorage'
+import { newMapId, uniqueName, type MapMeta } from './mapLibrary'
 import {
   emptyGraph,
   ensureBorder,
@@ -12,7 +22,7 @@ import {
   removeEdge,
   removeNode,
 } from './graph'
-import { makeCanvas } from './render'
+import { makeCanvas, makeThumb } from './render'
 import {
   MAP_MAX_DIM,
   type Analysis,
@@ -42,6 +52,12 @@ interface MapState {
   loaded: boolean
   restored: boolean
   name: string
+  /** The id the open map has in the library, null while no map is open */
+  mapId: string | null
+  /** The maps kept in this browser, newest first */
+  library: MapMeta[]
+  /** Whether a newly imported picture gets its walls found at once; off, they are found on request */
+  autoDetect: boolean
   /** The map as a data URL at working resolution; this is what gets saved */
   image: string
   width: number
@@ -73,6 +89,12 @@ interface MapState {
   openFile: (file: File) => Promise<void>
   restore: () => Promise<void>
   closeMap: () => void
+  setAutoDetect: (on: boolean) => void
+  refreshLibrary: () => Promise<void>
+  openFromLibrary: (id: string) => Promise<void>
+  renameMap: (id: string, name: string) => Promise<void>
+  duplicateMap: (id: string) => Promise<void>
+  deleteMap: (id: string) => Promise<void>
   toText: () => string | null
   setParam: <K extends keyof MapParams>(key: K, value: number) => void
   showPreview: (on: boolean) => void
@@ -111,6 +133,16 @@ let previewAgain = false
 let saveTimer: ReturnType<typeof setTimeout> | undefined
 /** Fog from a loaded file, applied once the first analysis exists */
 let pendingFog: number[] = []
+const AUTO_DETECT_KEY = 'monster-counterr-map-auto-detect'
+const readAutoDetect = (): boolean => {
+  try {
+    return localStorage.getItem(AUTO_DETECT_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+/** The open map's picture for the library list, made when it is opened */
+let thumb = ''
 let gesture = false
 let gestureFresh = false
 let pending = false
@@ -120,7 +152,24 @@ export const useMapStore = create<MapState>()((set, get) => {
 
   function scheduleSave(): void {
     clearTimeout(saveTimer)
-    saveTimer = setTimeout(() => void saveMapText(get().toText()), 800)
+    saveTimer = setTimeout(() => void saveNow(), 800)
+  }
+
+  /** Writes the open map to the library now; the text is made before anything is awaited */
+  async function saveNow(): Promise<void> {
+    clearTimeout(saveTimer)
+    const s = get()
+    const text = s.toText()
+    if (!s.mapId || !text) return
+    const meta: MapMeta = {
+      id: s.mapId,
+      name: s.name,
+      updatedAt: Date.now(),
+      width: s.width,
+      height: s.height,
+      thumb,
+    }
+    if (await saveMap(meta, text)) await get().refreshLibrary()
   }
 
   /** Finds the rooms between the walls. `throttle` is for drags: an update already waiting is enough. */
@@ -150,7 +199,14 @@ export const useMapStore = create<MapState>()((set, get) => {
     }, delay)
   }
 
-  function openImage(url: string, name: string, saved: FogMapFile | null): Promise<void> {
+  /** `id` and `savedThumb` are those of a map from the library; a new map gets a new id */
+  function openImage(
+    url: string,
+    name: string,
+    saved: FogMapFile | null,
+    id: string | null = null,
+    savedThumb: string | null = null
+  ): Promise<void> {
     return new Promise((resolve) => {
       const img = new Image()
       img.onerror = () => {
@@ -179,16 +235,23 @@ export const useMapStore = create<MapState>()((set, get) => {
           .filter((i) => i >= 0 && i < W * H)
 
         analyzer().load(gray, W, H)
+        // walls come from the file, from detection when that is automatic, or not at all
         const found = saved
           ? graphFromLists(
               saved.nodes.map((p) => [p[0] * fx, p[1] * fy]),
               saved.edges
             )
-          : graphFromSegments(await analyzer().detect(detectParams(get().params)), Math.max(W, H))
+          : get().autoDetect
+            ? graphFromSegments(await analyzer().detect(detectParams(get().params)), Math.max(W, H))
+            : emptyGraph()
         const graph = ensureBorder(found, W, H)
         previewSeq++
+        const mapId = id ?? newMapId()
+        thumb = savedThumb ?? makeThumb(base)
+        void setCurrentId(mapId)
         set({
           loaded: true,
+          mapId,
           name,
           // a fresh image is stored at working resolution so saves stay small
           image: saved ? url : base.toDataURL('image/jpeg', 0.88),
@@ -254,6 +317,9 @@ export const useMapStore = create<MapState>()((set, get) => {
     loaded: false,
     restored: false,
     name: 'map',
+    mapId: null,
+    library: [],
+    autoDetect: readAutoDetect(),
     image: '',
     width: 0,
     height: 0,
@@ -290,7 +356,10 @@ export const useMapStore = create<MapState>()((set, get) => {
           if (!isFog)
             return void openImage(
               reader.result as string,
-              file.name.replace(/\.[^.]+$/, ''),
+              uniqueName(
+                file.name.replace(/\.[^.]+$/, ''),
+                get().library.map((m) => m.name)
+              ),
               null
             ).then(resolve)
           const saved = parseFogMap(reader.result as string)
@@ -298,7 +367,14 @@ export const useMapStore = create<MapState>()((set, get) => {
             set({ error: 'mapInvalidFile' })
             return resolve()
           }
-          void openImage(saved.image, saved.name, saved).then(resolve)
+          void openImage(
+            saved.image,
+            uniqueName(
+              saved.name,
+              get().library.map((m) => m.name)
+            ),
+            saved
+          ).then(resolve)
         }
         if (isFog) reader.readAsText(file)
         else reader.readAsDataURL(file)
@@ -307,12 +383,21 @@ export const useMapStore = create<MapState>()((set, get) => {
     restore: async () => {
       if (get().restored) return
       set({ restored: true })
-      const text = await loadMapText()
+      await get().refreshLibrary()
+      const id = await getCurrentId()
+      const meta = id ? get().library.find((m) => m.id === id) : undefined
+      const text = meta ? await loadMap(meta.id) : null
       const saved = text ? parseFogMap(text) : null
-      if (saved && !get().loaded) await openImage(saved.image, saved.name, saved)
+      if (meta && saved && !get().loaded)
+        return openImage(saved.image, meta.name, saved, meta.id, meta.thumb)
+      // a map kept by an older version, in a single slot, joins the library
+      const old = await takeLegacyMap()
+      const legacy = old ? parseFogMap(old) : null
+      if (legacy && !get().loaded) await openImage(legacy.image, legacy.name, legacy)
     },
 
     closeMap: () => {
+      void saveNow() // the map stays in the library; only the open one is let go
       clearTimeout(timer)
       pendingFog = []
       previewSeq++
@@ -321,6 +406,7 @@ export const useMapStore = create<MapState>()((set, get) => {
         base: null,
         analysis: null,
         fog: new Set(),
+        mapId: null,
         graph: emptyGraph(),
         history: [],
         baseline: emptyGraph(),
@@ -331,7 +417,66 @@ export const useMapStore = create<MapState>()((set, get) => {
         shared: false,
         image: '',
       })
-      void saveMapText(null)
+      void setCurrentId(null)
+    },
+
+    setAutoDetect: (autoDetect) => {
+      set({ autoDetect })
+      try {
+        localStorage.setItem(AUTO_DETECT_KEY, autoDetect ? '1' : '0')
+      } catch {
+        // a browser that refuses storage just forgets the choice
+      }
+    },
+
+    refreshLibrary: async () => set({ library: await listMaps() }),
+
+    openFromLibrary: async (id) => {
+      if (id === get().mapId) return
+      await saveNow()
+      const meta = get().library.find((m) => m.id === id)
+      const text = meta ? await loadMap(id) : null
+      const saved = text ? parseFogMap(text) : null
+      if (!meta || !saved) return set({ error: 'mapLoadFailed' })
+      await openImage(saved.image, meta.name, saved, id, meta.thumb)
+    },
+
+    renameMap: async (id, name) => {
+      const meta = get().library.find((m) => m.id === id)
+      const next = name.trim()
+      if (!meta || !next || next === meta.name) return
+      const taken = get()
+        .library.filter((m) => m.id !== id)
+        .map((m) => m.name)
+      const unique = uniqueName(next, taken)
+      if (id === get().mapId) {
+        set({ name: unique })
+        await saveNow()
+      } else await saveMeta({ ...meta, name: unique })
+      await get().refreshLibrary()
+    },
+
+    duplicateMap: async (id) => {
+      if (id === get().mapId) await saveNow()
+      const meta = get().library.find((m) => m.id === id)
+      const text = meta ? await loadMap(id) : null
+      if (!meta || !text) return
+      const name = uniqueName(
+        meta.name,
+        get().library.map((m) => m.name)
+      )
+      await saveMap({ ...meta, id: newMapId(), name, updatedAt: Date.now() }, text)
+      await get().refreshLibrary()
+    },
+
+    deleteMap: async (id) => {
+      if (id === get().mapId) {
+        set({ mapId: null }) // so closing does not write the map back after deleting it
+        clearTimeout(saveTimer)
+        get().closeMap()
+      }
+      await removeMap(id)
+      await get().refreshLibrary()
     },
 
     toText: () => {

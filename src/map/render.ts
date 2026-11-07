@@ -8,6 +8,14 @@ export function makeCanvas(w: number, h: number): HTMLCanvasElement {
   return c
 }
 
+/** A small JPEG of the map for the library list */
+export function makeThumb(base: HTMLCanvasElement, width = 160): string {
+  const h = Math.max(1, Math.round((base.height / base.width) * width))
+  const c = makeCanvas(width, h)
+  c.getContext('2d')!.drawImage(base, 0, 0, width, h)
+  return c.toDataURL('image/jpeg', 0.7)
+}
+
 export function paintBlueprint(canvas: HTMLCanvasElement, a: Analysis): void {
   const { W, H, own, rooms } = a
   const M = Math.max(W, H)

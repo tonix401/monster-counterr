@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useTerm } from '@/store/useMonsterStore'
+import { useGo } from '@/hooks/useGo'
 import { useMapStore, type MapParams } from '@/map/mapStore'
 import type { MapMode, MapView } from '@/map/types'
 import MapCanvas from './MapCanvas'
@@ -15,6 +16,7 @@ import {
   FogIcon,
   IconButton,
   LinesIcon,
+  LibraryIcon,
   MapIcon,
   OpenIcon,
   PanIcon,
@@ -94,6 +96,7 @@ const MapTab: React.FC = () => {
   }, [])
 
   useEffect(() => {
+  const go = useGo()
     const onKey = (e: KeyboardEvent): void => {
       const el = e.target as HTMLElement | null
       const typing = !!el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))
@@ -181,6 +184,10 @@ const MapTab: React.FC = () => {
         <div className={`map-stage ${drag ? 'map-drag' : ''}`} {...dropProps}>
           <MapCanvas player={false} />
         </div>
+        <button type="button" className="map-link-button" onClick={() => go('/maps')}>
+          <LibraryIcon /> {t('mapLibrary')}
+          {s.library.length > 0 && ` (${s.library.length})`}
+        </button>
 
         <div className="map-topbar">
           <div className="map-group" role="group" aria-label={t('mapGroupFile')}>
@@ -212,6 +219,11 @@ const MapTab: React.FC = () => {
                 icon={v.icon}
                 active={s.view === v.view}
                 pressed={s.view === v.view}
+            <IconButton
+              label={t('mapLibrary')}
+              icon={<LibraryIcon />}
+              onClick={() => go('/maps')}
+            />
                 onClick={() => s.setView(v.view)}
               />
             ))}
@@ -303,6 +315,14 @@ const MapTab: React.FC = () => {
         )}
 
         <div className="map-bottom">
+            <label className="map-check">
+              <input
+                type="checkbox"
+                checked={s.autoDetect}
+                onChange={(e) => s.setAutoDetect(e.target.checked)}
+              />
+              {t('mapAutoDetect')}
+            </label>
           <div className="map-bottom-row">
             <div className="map-group" role="group" aria-label={t('mapGroupFog')}>
               <IconButton

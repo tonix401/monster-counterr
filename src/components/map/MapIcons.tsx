@@ -91,6 +91,14 @@ export const OpenIcon = icon(
     <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
   </>
 )
+export const LibraryIcon = icon(
+  <>
+    <rect x="3" y="3" width="7" height="7" rx="1" />
+    <rect x="14" y="3" width="7" height="7" rx="1" />
+    <rect x="3" y="14" width="7" height="7" rx="1" />
+    <rect x="14" y="14" width="7" height="7" rx="1" />
+  </>
+)
 export const SaveIcon = icon(
   <>
     <path d="M12 3v12m0 0-4-4m4 4 4-4" />
@@ -142,6 +150,12 @@ export const TrashIcon = icon(
   <>
     <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
     <path d="M10 11v6M14 11v6" />
+export const CopyIcon = icon(
+  <>
+    <rect x="9" y="9" width="11" height="11" rx="2" />
+    <path d="M5 15V6a2 2 0 0 1 2-2h8" />
+  </>
+)
   </>
 )
 export const RefreshIcon = icon(

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest'
 import { create } from 'zustand'
 import { DataConnection } from 'peerjs'
 import { createConnectionSlice, type ConnectionSlice } from './connectionSlice'
@@ -8,16 +8,16 @@ import { CONNECTION } from '@/constants'
 // Mock PeerJS
 vi.mock('peerjs', () => {
   const EventEmitter = class {
-    private handlers: Record<string, Function[]> = {}
+    private handlers: Record<string, Array<(...args: unknown[]) => void>> = {}
 
-    on(event: string, handler: Function) {
+    on(event: string, handler: (...args: unknown[]) => void) {
       if (!this.handlers[event]) {
         this.handlers[event] = []
       }
       this.handlers[event].push(handler)
     }
 
-    emit(event: string, ...args: any[]) {
+    emit(event: string, ...args: unknown[]) {
       const eventHandlers = this.handlers[event]
       if (eventHandlers) {
         eventHandlers.forEach((handler) => handler(...args))
@@ -41,6 +41,17 @@ vi.mock('peerjs', () => {
     DataConnection: MockConnection,
   }
 })
+
+// Narrow views of the mocked PeerJS objects used by these tests
+interface MockPeerHandle {
+  emit: (event: string, ...args: unknown[]) => void
+  connect: Mock
+}
+
+interface MockConnectionHandle {
+  emit: (event: string, ...args: unknown[]) => void
+  send: Mock
+}
 
 type TestStore = ConnectionSlice &
   TermSlice & {
@@ -246,7 +257,7 @@ describe('ConnectionSlice', () => {
       store.getState().setHostId('host-123')
       store.getState().connectToHost()
 
-      const peer = store.getState().peer as any
+      const peer = store.getState().peer as unknown as MockPeerHandle
 
       // Simulate peer open
       peer.emit('open', 'peer-id-123')
@@ -260,10 +271,10 @@ describe('ConnectionSlice', () => {
       store.getState().setHostId('host-123')
       store.getState().connectToHost()
 
-      const peer = store.getState().peer as any
+      const peer = store.getState().peer as unknown as MockPeerHandle
       peer.emit('open', 'peer-id-123')
 
-      const connection = store.getState().connection as any
+      const connection = store.getState().connection as unknown as MockConnectionHandle
 
       // Simulate connection open
       connection.emit('open')
@@ -280,10 +291,10 @@ describe('ConnectionSlice', () => {
       store.getState().setHostId('host-123')
       store.getState().connectToHost()
 
-      const peer = store.getState().peer as any
+      const peer = store.getState().peer as unknown as MockPeerHandle
       peer.emit('open', 'peer-id-123')
 
-      const connection = store.getState().connection as any
+      const connection = store.getState().connection as unknown as MockConnectionHandle
 
       const encounterData = {
         enemies: [{ id: '1', name: 'Goblin', status: 'healthy', conditions: [] }],
@@ -299,10 +310,10 @@ describe('ConnectionSlice', () => {
       store.getState().setHostId('host-123')
       store.getState().connectToHost()
 
-      const peer = store.getState().peer as any
+      const peer = store.getState().peer as unknown as MockPeerHandle
       peer.emit('open', 'peer-id-123')
 
-      const connection = store.getState().connection as any
+      const connection = store.getState().connection as unknown as MockConnectionHandle
 
       connection.emit('data', { type: 'pong' })
 
@@ -317,10 +328,10 @@ describe('ConnectionSlice', () => {
       store.getState().setHostId('host-123')
       store.getState().connectToHost()
 
-      const peer = store.getState().peer as any
+      const peer = store.getState().peer as unknown as MockPeerHandle
       peer.emit('open', 'peer-id-123')
 
-      const connection = store.getState().connection as any
+      const connection = store.getState().connection as unknown as MockConnectionHandle
       connection.emit('open')
 
       // Simulate connection close
@@ -343,7 +354,7 @@ describe('ConnectionSlice', () => {
       store.getState().connectToHost()
 
       const simulateFailure = () => {
-        const peer = store.getState().peer as any
+        const peer = store.getState().peer as unknown as MockPeerHandle
         peer.emit('error', { type: 'peer-unavailable' })
       }
 
@@ -367,7 +378,7 @@ describe('ConnectionSlice', () => {
       // Make 6 consecutive failed connection attempts
       for (let i = 0; i <= 5; i++) {
         store.getState().connectToHost()
-        const peer = store.getState().peer as any
+        const peer = store.getState().peer as unknown as MockPeerHandle
         if (peer) {
           peer.emit('error', { type: 'peer-unavailable', message: 'unavailable' })
         }
@@ -394,10 +405,10 @@ describe('ConnectionSlice', () => {
       store.getState().setHostId('host-123')
       store.getState().connectToHost()
 
-      const peer = store.getState().peer as any
+      const peer = store.getState().peer as unknown as MockPeerHandle
       peer.emit('open', 'peer-id-123')
 
-      const connection = store.getState().connection as any
+      const connection = store.getState().connection as unknown as MockConnectionHandle
       connection.emit('open')
 
       vi.mocked(connection.send).mockClear()
@@ -413,10 +424,10 @@ describe('ConnectionSlice', () => {
       store.getState().setHostId('host-123')
       store.getState().connectToHost()
 
-      const peer = store.getState().peer as any
+      const peer = store.getState().peer as unknown as MockPeerHandle
       peer.emit('open', 'peer-id-123')
 
-      const connection = store.getState().connection as any
+      const connection = store.getState().connection as unknown as MockConnectionHandle
       connection.emit('open')
 
       // Don't send any pong responses

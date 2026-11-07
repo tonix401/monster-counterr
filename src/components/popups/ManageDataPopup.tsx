@@ -1,6 +1,6 @@
 import React from 'react'
 import Popup from './Popup'
-import { useNavigate } from 'react-router'
+import { useGo } from '@/hooks/useGo'
 import { useTerm } from '@/store/useMonsterStore'
 
 import ExportFileButton from '../ui/ExportFileButton'
@@ -10,7 +10,7 @@ import { useMonsterStore } from '@/store/useMonsterStore'
 import { SAVE_FILE } from '@/constants'
 
 const ManageDataPopup: React.FC = () => {
-  const navigate = useNavigate()
+  const navigate = useGo()
   const t = useTerm()
 
   // Get statistics from store

@@ -8,7 +8,10 @@ export function fuzzySort(
   items: { value: string; label: string }[],
   query: string
 ): { value: string; label: string }[] {
-  if (!query) return items.sort((a, b) => a.label.replaceAll(/[^a-z0-9]+/gi, '').localeCompare(b.label.replaceAll(/[^a-z0-9]+/gi, '')))
+  if (!query)
+    return items.sort((a, b) =>
+      a.label.replaceAll(/[^a-z0-9]+/gi, '').localeCompare(b.label.replaceAll(/[^a-z0-9]+/gi, ''))
+    )
   const q = query.toLowerCase()
   function score(label: string): number | null {
     const s = label.toLowerCase()

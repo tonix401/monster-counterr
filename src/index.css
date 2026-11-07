@@ -11,6 +11,7 @@
 }
 
 :root {
+  scrollbar-gutter: stable;
   /* Core Colors */
   --bg: #1c1f2b;
   --card: #2a3042;
@@ -77,9 +78,10 @@
 body {
   margin: 0;
   background-image:
-    url('/monster-counterr/brick.svg'),
-    radial-gradient(circle at top, #2c3450, #151826 60%);
-  background-size: 160px 120px, cover;
+    url('/monster-counterr/brick.svg'), radial-gradient(circle at top, #2c3450, #151826 60%);
+  background-size:
+    160px 120px,
+    cover;
   background-attachment: fixed;
   color: var(--text);
   display: flex;
@@ -89,7 +91,6 @@ body {
 
 #root {
   width: 100%;
-  max-width: 1200px;
   display: flex;
   justify-content: center;
 }

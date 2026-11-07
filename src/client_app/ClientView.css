@@ -6,6 +6,12 @@
   margin: 0 auto;
 }
 
+/* The map gets all the width there is, since players zoom into it */
+.client-view-container.client-view-wide {
+  width: 100%;
+  max-width: none;
+}
+
 /* Header */
 .client-view-header {
   display: flex;
@@ -210,4 +216,51 @@
   .client-enemy-row {
     padding: var(--spacing-xl);
   }
+}
+
+.client-map-frame {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  touch-action: none;
+  user-select: none;
+}
+
+.client-map {
+  display: block;
+  max-width: 100%;
+  /* the whole map fits on screen until it is zoomed */
+  max-height: calc(100dvh - 220px);
+  width: auto;
+  height: auto;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.client-map-zoom {
+  position: absolute;
+  right: var(--spacing-md);
+  bottom: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.client-map-zoom button {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-lg);
+  border: var(--borderwidth) solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0.85;
+}
+
+.client-map-zoom button:hover {
+  opacity: 1;
 }

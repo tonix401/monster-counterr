@@ -2,7 +2,10 @@ import type { StateCreator } from 'zustand'
 import type { ClientStore } from '../ClientStore'
 import { Peer, type DataConnection } from 'peerjs'
 import type { MonsterStatus } from '@/types/Monster'
+import type { ClientToHostMessage } from '@/types/Protocol'
+import { checkMessageSize } from '@/store/helpers/connections/connectionHelpers'
 import { CONNECTION } from '@/constants'
+import { parseMapMessage } from '@/map/mapMessage'
 
 export interface Enemy {
   id: string
@@ -15,28 +18,13 @@ export interface EncounterData {
   enemies: Enemy[]
 }
 
-export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error' | 'name-entry'
-
-// Message validation types
-interface PingMessage {
-  type: 'ping'
-}
-
-interface PongMessage {
-  type: 'pong'
-}
-
-interface ClientNameMessage {
-  type: 'client-name'
+export interface SharedMap {
   name: string
+  /** Object URL of the picture; revoked when replaced */
+  url: string
 }
 
-interface AttackMessage {
-  type: 'attack'
-  monsterId: string
-}
-
-type OutgoingMessage = PingMessage | PongMessage | ClientNameMessage | AttackMessage
+export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error' | 'name-entry'
 
 export type ConnectionSlice = {
   peer: Peer | null
@@ -45,6 +33,7 @@ export type ConnectionSlice = {
   connectionStatus: ConnectionStatus
   error: string | null
   data: EncounterData | null
+  map: SharedMap | null
   clientName: string
   hostId: string | null
   setClientName: (name: string) => void
@@ -56,8 +45,7 @@ export type ConnectionSlice = {
 
 export const createConnectionSlice: StateCreator<ClientStore, [], [], ConnectionSlice> = (
   set,
-  get,
-  _api
+  get
 ) => {
   // Track cleanup state to prevent memory leaks and race conditions
   const cleanupState = {
@@ -141,15 +129,6 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
     })
   }
 
-  const checkMessageSize = (message: OutgoingMessage): boolean => {
-    try {
-      const size = JSON.stringify(message).length
-      return size <= CONNECTION.MAX_MESSAGE_SIZE
-    } catch {
-      return false
-    }
-  }
-
   const checkRateLimit = (): boolean => {
     const now = Date.now()
 
@@ -163,7 +142,7 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
     return cleanupState.messageCount <= CONNECTION.MAX_MESSAGES_PER_SECOND
   }
 
-  const sendMessage = (message: OutgoingMessage): boolean => {
+  const sendMessage = (message: ClientToHostMessage): boolean => {
     const connection = get().connection
     if (!connection?.open || get().connectionStatus !== 'connected') {
       return false
@@ -342,6 +321,24 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
           }
         }
 
+        const mapMessage = parseMapMessage(receivedData)
+        if (mapMessage) {
+          const previous = get().map
+          if (previous) URL.revokeObjectURL(previous.url)
+          set({
+            map:
+              mapMessage.type === 'map'
+                ? {
+                    name: mapMessage.name,
+                    url: URL.createObjectURL(
+                      new Blob([mapMessage.image as BlobPart], { type: 'image/jpeg' })
+                    ),
+                  }
+                : null,
+          })
+          return
+        }
+
         // Validate and update encounter data
         if (validateEncounterData(receivedData)) {
           set({ data: receivedData })
@@ -382,6 +379,7 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
     connectionStatus: 'name-entry',
     error: null,
     data: null,
+    map: null,
     clientName: '',
     hostId: null,
 
@@ -409,8 +407,10 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
       cleanupState.reconnectAttempts = 0
       cleanupState.isReconnecting = false
       cleanupConnection()
+      const map = get().map
+      if (map) URL.revokeObjectURL(map.url)
       const nameEntered = Boolean(get().clientName.trim())
-      set({ connectionStatus: nameEntered ? 'disconnected' : 'name-entry', error: null })
+      set({ connectionStatus: nameEntered ? 'disconnected' : 'name-entry', error: null, map: null })
     },
 
     sendAttack: (monsterId: string) => {

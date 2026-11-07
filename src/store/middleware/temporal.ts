@@ -1,6 +1,6 @@
 import type { StateCreator, StoreMutatorIdentifier } from 'zustand'
 
-interface TemporalState<T = any> {
+interface TemporalState<T = unknown> {
   past: T[]
   future: T[]
 }
@@ -28,6 +28,23 @@ interface TemporalOptions<T> {
   partialize?: (state: T & TemporalState<Partial<T>> & TemporalActions) => Partial<T>
 }
 
+/** True when both objects have the same own keys and every value is Object.is-equal. */
+const shallowEqual = (a: object, b: object): boolean => {
+  const recordA = a as Record<string, unknown>
+  const recordB = b as Record<string, unknown>
+  const keys = Object.keys(recordA)
+  return (
+    keys.length === Object.keys(recordB).length &&
+    keys.every(
+      (key) =>
+        Object.prototype.hasOwnProperty.call(recordB, key) && Object.is(recordA[key], recordB[key])
+    )
+  )
+}
+
+/** zustand's set accepts a value, a partial, or an updater, plus an optional replace flag. */
+type SetPartial<S> = S | Partial<S> | ((state: S) => S | Partial<S>)
+
 const temporalImpl =
   <T>(
     config: StateCreator<T, [], []>,
@@ -36,17 +53,29 @@ const temporalImpl =
   (set, get, api) => {
     const {
       limit = 50,
-      equality = (a, b) => JSON.stringify(a) === JSON.stringify(b),
-      partialize = (state: any) => state,
+      // Cheap shallow check first; serialise only when some value differs.
+      equality = (a, b) =>
+        (typeof a === 'object' &&
+          a !== null &&
+          typeof b === 'object' &&
+          b !== null &&
+          shallowEqual(a, b)) ||
+        JSON.stringify(a) === JSON.stringify(b),
+      partialize = (state) => state,
     } = options
 
     type T = ReturnType<typeof config>
-    type TFull = T & TemporalState<any> & TemporalActions
+    type Full = T & TemporalState<T> & TemporalActions
+
+    // Same store as `set`, with a single signature so the replace flag can be forwarded.
+    const setState = set as (partial: SetPartial<Full>, replace?: boolean) => void
+    // History entries are partialize() output, so they are Partial<T> rather than T.
+    const write = (patch: object) => setState(patch as Partial<Full>)
 
     const initialState = config(
-      (args: any) => {
+      (partial: SetPartial<T>, replace?: boolean) => {
         const currentState = get()
-        set(args as any)
+        setState(partial as SetPartial<Full>, replace)
         const newState = get()
 
         // Only add to history if the state actually changed
@@ -55,7 +84,7 @@ const temporalImpl =
 
         if (!equality(current, next)) {
           const past = [...currentState.past, current].slice(-limit)
-          set({ past, future: [] } as Partial<TFull>)
+          write({ past, future: [] })
         }
       },
       get,
@@ -75,11 +104,11 @@ const temporalImpl =
         const newPast = past.slice(0, past.length - 1)
         const current = partialize(get())
 
-        set({
+        write({
           ...previous,
           past: newPast,
           future: [current, ...future],
-        } as Partial<TFull>)
+        })
       },
 
       redo: () => {
@@ -90,11 +119,11 @@ const temporalImpl =
         const newFuture = future.slice(1)
         const current = partialize(get())
 
-        set({
+        write({
           ...next,
           past: [...past, current],
           future: newFuture,
-        } as Partial<TFull>)
+        })
       },
 
       canUndo: () => {
@@ -106,11 +135,12 @@ const temporalImpl =
       },
 
       clearHistory: () => {
-        set({ past: [], future: [] } as Partial<TFull>)
+        write({ past: [], future: [] })
       },
     }
   }
 
+// The impl is fixed to the default mutator tuples; `Temporal` widens them for callers.
 export const temporal = temporalImpl as unknown as Temporal
 
 export type { TemporalState, TemporalActions, TemporalOptions }

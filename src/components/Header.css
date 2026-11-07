@@ -28,8 +28,8 @@ header > div {
 }
 
 .title-font {
-  font-family: "Uncial Antiqua", system-ui;
-  letter-spacing: .3rem;
+  font-family: 'Uncial Antiqua', system-ui;
+  letter-spacing: 0.3rem;
   font-size: 2rem;
   font-style: normal;
 }

@@ -8,6 +8,7 @@ const TableColgroup: React.FC = () => {
 
   cols.push('drag-handle')
   if (settings.showQuickActions) cols.push('actions')
+  if (settings.showTokens) cols.push('token')
   cols.push('name')
   if (settings.showConditions) cols.push('conditions')
   if (settings.showStatus) cols.push('status')

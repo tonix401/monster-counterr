@@ -3,6 +3,7 @@ import { useLocation, useMatch, useSearchParams } from 'react-router'
 import TabBar from '@/components/ui/TabBar'
 import './ClientView.css'
 import ZoomableImage from './ZoomableImage'
+import NameSetting from './NameSetting'
 import { ASSETS } from '../constants'
 import type { MonsterStatus } from '../types/Monster'
 import {
@@ -19,9 +20,11 @@ import {
   useClientSetClientName,
   useClientSetHostId,
   useClientConnectToHost,
+  useClientJoinIfNamed,
   useClientDisconnect,
   useClientSendAttack,
   useClientMap,
+  useClientMapTokens,
 } from './store/ClientStore'
 
 const ClientView: React.FC = () => {
@@ -40,12 +43,15 @@ const ClientView: React.FC = () => {
   const clientName = useClientClientName()
   const setClientName = useClientSetClientName()
   const setHostId = useClientSetHostId()
+  const joinIfNamed = useClientJoinIfNamed()
   const connectToHost = useClientConnectToHost()
   const disconnect = useClientDisconnect()
   const sendAttack = useClientSendAttack()
   const map = useClientMap()
+  const mapTokens = useClientMapTokens()
   const { search } = useLocation()
   const onMapTab = useMatch('/client/map') !== null
+  const onSettingsTab = useMatch('/client/settings') !== null
 
   useEffect(() => {
     initialize()
@@ -53,7 +59,8 @@ const ClientView: React.FC = () => {
 
   useEffect(() => {
     setHostId(hostId)
-  }, [hostId, setHostId])
+    joinIfNamed()
+  }, [hostId, setHostId, joinIfNamed])
 
   useEffect(() => {
     return () => {
@@ -133,23 +140,70 @@ const ClientView: React.FC = () => {
   }
 
   return (
-    <div className={`client-view-container ${onMapTab ? 'client-view-wide' : ''}`}>
-      <div className="client-view-header">
-        <h2>{t('enemies')}</h2>
-        <select
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          disabled={isLoading}
-          className="client-language-select"
-        >
-          {availableLanguages.map((lang) => (
-            <option key={lang.key} value={lang.key}>
-              {lang.name}
-            </option>
-          ))}
-        </select>
+    <div className="client-view-container client-view-wide">
+      <div className="client-view-body">
+        {onSettingsTab ? (
+          <div className="client-settings">
+            <NameSetting />
+            <div className="client-field">
+              <label htmlFor="client-language">{t('language')}</label>
+              <select
+                id="client-language"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                disabled={isLoading}
+                className="client-language-select"
+              >
+                {availableLanguages.map((lang) => (
+                  <option key={lang.key} value={lang.key}>
+                    {lang.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        ) : onMapTab ? (
+          map ? (
+            <ZoomableImage src={map.url} alt={map.name} tokens={mapTokens} />
+          ) : (
+            <p>{t('mapNotShared')}</p>
+          )
+        ) : !data || !data.enemies || data.enemies.length === 0 ? (
+          <p>{t('noEnemiesInEncounter')}</p>
+        ) : (
+          <div className="client-view-grid">
+            {data.enemies.map((enemy) => (
+              <div key={enemy.id} className="client-enemy-row">
+                <div className="client-enemy-header">
+                  <div className="client-enemy-name-and-health">
+                    <h2>{enemy.name}</h2>
+                    <progress
+                      value={statusToProgressValue(enemy.status)}
+                      max={100}
+                      className={enemy.status + '-progress'}
+                    />
+                  </div>
+                  <button
+                    className="icon-button red-button"
+                    onClick={() => {
+                      sendAttack(enemy.id)
+                    }}
+                  >
+                    <img src={ASSETS.KNIFE_ICON} alt={t('attack')} />
+                  </button>
+                </div>
+                {enemy.conditions.map((condition, index) => (
+                  <div key={index} className="client-enemy-condition">
+                    {t(condition)}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
       <TabBar
+        bottom
         tabs={[
           {
             to: { pathname: '/client', search },
@@ -158,47 +212,9 @@ const ClientView: React.FC = () => {
             end: true,
           },
           { to: { pathname: '/client/map', search }, label: t('map'), icon: 'map' },
+          { to: { pathname: '/client/settings', search }, label: t('settings'), icon: 'settings' },
         ]}
       />
-      {onMapTab ? (
-        map ? (
-          <ZoomableImage src={map.url} alt={map.name} />
-        ) : (
-          <p>{t('mapNotShared')}</p>
-        )
-      ) : !data || !data.enemies || data.enemies.length === 0 ? (
-        <p>{t('noEnemiesInEncounter')}</p>
-      ) : (
-        <div className="client-view-grid">
-          {data.enemies.map((enemy) => (
-            <div key={enemy.id} className="client-enemy-row">
-              <div className="client-enemy-header">
-                <div className="client-enemy-name-and-health">
-                  <h2>{enemy.name}</h2>
-                  <progress
-                    value={statusToProgressValue(enemy.status)}
-                    max={100}
-                    className={enemy.status + '-progress'}
-                  />
-                </div>
-                <button
-                  className="icon-button red-button"
-                  onClick={() => {
-                    sendAttack(enemy.id)
-                  }}
-                >
-                  <img src={ASSETS.KNIFE_ICON} alt={t('attack')} />
-                </button>
-              </div>
-              {enemy.conditions.map((condition, index) => (
-                <div key={index} className="client-enemy-condition">
-                  {t(condition)}
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   )
 }

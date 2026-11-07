@@ -18,7 +18,6 @@
   min-height: 44px;
   padding: var(--spacing-sm) var(--spacing-lg);
   margin-bottom: calc(var(--borderwidth) * -1);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   color: var(--text);
   font-size: var(--font-base);
   font-weight: 500;
@@ -34,11 +33,11 @@
 .tab-link::after {
   content: '';
   position: absolute;
-  left: var(--spacing-sm);
-  right: var(--spacing-sm);
+  left: var(--spacing-md);
+  right: var(--spacing-md);
   bottom: 0;
-  height: 3px;
-  border-radius: 3px 3px 0 0;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
   background: var(--accent);
   transform: scaleX(0);
   transition: transform var(--transition-base);
@@ -46,12 +45,13 @@
 
 .tab-link:hover {
   opacity: 1;
-  background: var(--overlay-medium);
 }
 
+/* keyboard focus: a faint tint instead of a ring */
 .tab-link:focus-visible {
   opacity: 1;
-  outline-offset: -3px;
+  outline: none;
+  background: var(--overlay-medium);
 }
 
 .tab-link:focus:not(:focus-visible) {
@@ -60,7 +60,6 @@
 
 .tab-link.active {
   opacity: 1;
-  background: var(--overlay-accent);
 }
 
 .tab-link.active::after {
@@ -82,6 +81,37 @@
   color: var(--accent);
 }
 
+/* Bottom menu: icon over label, every tab an equal share, the marker on the top edge */
+.tab-bar-bottom {
+  padding: 0 0 env(safe-area-inset-bottom);
+  gap: 0;
+  border-top: var(--borderwidth) solid var(--border);
+  border-bottom: 0;
+  background: var(--card);
+}
+
+.tab-bar-bottom .tab-link {
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 56px;
+  margin-bottom: 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 0;
+  font-size: var(--font-sm);
+}
+
+.tab-bar-bottom .tab-link::after {
+  top: 0;
+  bottom: auto;
+  border-radius: 0 0 3px 3px;
+}
+
+.tab-bar-bottom .tab-icon {
+  width: 24px;
+  height: 24px;
+}
+
 @media (max-width: 600px) {
   .tab-bar {
     padding: 0 var(--spacing-md);
@@ -91,6 +121,41 @@
   .tab-link {
     flex: 1 1 0;
     padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .tab-bar.tab-bar-bottom {
+    padding: 0 0 env(safe-area-inset-bottom);
+  }
+}
+
+/* Tilted phone: the bottom menu becomes a column on the right edge */
+@media (orientation: landscape) and (max-height: 600px) {
+  .tab-bar.tab-bar-bottom {
+    flex: none;
+    flex-direction: column;
+    width: 88px;
+    padding: 0 env(safe-area-inset-right) 0 0;
+    border-top: 0;
+    border-left: var(--borderwidth) solid var(--border);
+  }
+
+  .tab-bar-bottom .tab-link {
+    min-height: 0;
+  }
+
+  .tab-bar-bottom .tab-link::after {
+    top: var(--spacing-sm);
+    bottom: var(--spacing-sm);
+    left: 0;
+    right: auto;
+    width: 3px;
+    height: auto;
+    border-radius: 0 3px 3px 0;
+    transform: scaleY(0);
+  }
+
+  .tab-bar-bottom .tab-link.active::after {
+    transform: scaleY(1);
   }
 }
 

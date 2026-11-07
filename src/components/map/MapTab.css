@@ -1,13 +1,12 @@
 .map-tab {
-  --map-glass: color-mix(in srgb, var(--card) 72%, transparent);
+  --map-glass: color-mix(in srgb, var(--card) 92%, transparent);
   --map-gap: var(--spacing-sm);
   display: flex;
   /* fills what the header and tabs leave of the screen (see .app-wide), however tall they are */
   flex: 1 1 0;
   min-height: 0;
-  margin: var(--spacing-xs) 0 0;
   overflow: hidden;
-  background: var(--overlay-medium);
+  background: color-mix(in srgb, var(--overlay-medium) 80%, transparent);
 }
 
 .map-main {
@@ -42,6 +41,11 @@
   opacity: 0.8;
 }
 
+.map-preview-controls {
+  align-self: flex-start;
+  flex: none;
+}
+
 .map-preview-stage {
   position: relative;
   flex: 1;
@@ -49,6 +53,30 @@
   overflow: hidden;
   border-radius: var(--radius-lg);
   background: #000;
+}
+
+.map-preview-layer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.map-preview-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+}
+
+.map-preview-empty {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  margin: 0;
+  padding: var(--spacing-lg);
+  text-align: center;
+  opacity: 0.6;
 }
 
 .map-stage {
@@ -112,15 +140,68 @@
   margin-left: auto;
 }
 
-.map-tools {
+.map-left {
   position: absolute;
-  top: 52px;
+  top: 0;
+  bottom: 0;
   left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-gap);
+  pointer-events: none;
+}
+
+.map-topbar > .map-left {
+  pointer-events: none;
+}
+
+.map-left > * {
+  pointer-events: auto;
+}
+
+.map-tools {
   flex-direction: column;
   /* a short window gets a second column instead of losing the lower tools */
   flex-wrap: wrap;
   align-content: flex-start;
-  max-height: calc(100% - 52px);
+  /* leaves room for the light group below */
+  max-height: calc(100% - 140px);
+}
+
+.map-light {
+  position: relative;
+  flex: none;
+  flex-direction: column;
+}
+
+.map-grid-size {
+  position: absolute;
+  top: 0;
+  left: calc(100% + var(--map-gap));
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  width: 180px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--map-glass);
+  box-shadow: var(--shadow-md);
+  font-size: var(--font-sm);
+}
+
+.map-right {
+  position: absolute;
+  top: 52px;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-gap);
+}
+
+.map-files,
+.map-layers {
+  flex-direction: column;
 }
 
 .map-divider {
@@ -230,7 +311,8 @@
 .map-panel {
   position: absolute;
   top: 64px;
-  right: var(--map-gap);
+  /* beside the file column, not over it */
+  right: calc(var(--map-gap) + 56px);
   z-index: 3;
   display: flex;
   flex-direction: column;
@@ -391,6 +473,27 @@
   pointer-events: none;
 }
 
+.map-link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.map-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: var(--spacing-sm, 6px) 0;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
 .map-vector {
   position: absolute;
   inset: 0;
@@ -439,14 +542,38 @@
     border-left: 0;
   }
 
-  .map-tools {
+  .map-left {
     position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .map-tools {
     flex-direction: row;
     max-height: none;
   }
 
+  .map-light {
+    flex-direction: row;
+  }
+
+  .map-grid-size {
+    top: calc(100% + var(--map-gap));
+    left: 0;
+  }
+
   .map-group-end {
     margin-left: 0;
+  }
+
+  .map-right {
+    position: static;
+    flex-direction: row;
+  }
+
+  .map-files,
+  .map-layers {
+    flex-direction: row;
   }
 
   .map-icon-btn {
@@ -456,6 +583,7 @@
 
   .map-panel {
     top: 112px;
+    right: var(--map-gap);
   }
 
   .map-icon-btn::after {
@@ -476,4 +604,92 @@
 .map-group:hover,
 .map-group:focus-within {
   z-index: 10;
+}
+
+.map-token-tip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: absolute;
+  z-index: 3;
+  transform: translate(12px, -130%);
+  padding: 2px 8px;
+  border-radius: var(--radius-md);
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  font-size: var(--font-sm);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.map-token-tip span {
+  opacity: 0.8;
+}
+
+.map-monsters {
+  display: flex;
+  flex: 0 1 40%;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  min-height: 0;
+}
+
+.map-monsters h4 {
+  margin: 0;
+  font-size: var(--font-sm);
+  opacity: 0.8;
+}
+
+.map-monsters ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.map-monsters li {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--overlay-medium);
+  cursor: grab;
+  user-select: none;
+}
+
+.map-monsters li:hover {
+  background: var(--overlay-heavy);
+}
+
+.map-monster-placed {
+  border-color: var(--accent);
+}
+
+.map-monster-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-players {
+  flex: 0 1 auto;
+  max-height: 30%;
+}
+
+.map-monsters-empty {
+  margin: 0;
+  font-size: var(--font-sm);
+  opacity: 0.6;
+}
+
+.map-grid-size input {
+  width: 100%;
 }

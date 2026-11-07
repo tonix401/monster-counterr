@@ -20,6 +20,7 @@ describe('dataHelpers', () => {
     autoRemoveDead: false,
     showXpCounter: true,
     showQuickActions: true,
+    showTokens: false,
   }
 
   describe('isSaveData', () => {
@@ -70,6 +71,37 @@ describe('dataHelpers', () => {
       const data = { schemaVersion: 1, monsters: mockMonsters }
 
       expect(isSaveData(data)).toBe(true)
+    })
+  })
+
+  describe('maps in save files', () => {
+    const map = {
+      id: 'm1',
+      name: 'Inn',
+      updatedAt: 1,
+      width: 10,
+      height: 10,
+      thumb: '',
+      data: '{"format":"fog_map"}',
+    }
+
+    it('adds maps only when given some', () => {
+      expect(buildSaveData(mockMonsters, 1, mockSettings, true, true, true).maps).toBeUndefined()
+      expect(
+        buildSaveData(mockMonsters, 1, mockSettings, true, true, true, []).maps
+      ).toBeUndefined()
+      expect(buildSaveData(mockMonsters, 1, mockSettings, true, true, true, [map]).maps).toEqual([
+        map,
+      ])
+    })
+
+    it('reads maps back and drops malformed entries', () => {
+      const out = processSaveData({
+        schemaVersion: 1,
+        maps: [map, { id: 'x' }, null] as never,
+      })
+      expect(out.maps).toEqual([map])
+      expect(processSaveData({ schemaVersion: 1 }).maps).toBeUndefined()
     })
   })
 

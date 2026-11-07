@@ -5,7 +5,6 @@ const base = {
   name: 'Inn',
   width: 100,
   height: 80,
-  view: 'blueprint' as const,
   nodes: [
     [1.04, 2],
     [30, 2],
@@ -23,11 +22,19 @@ describe('fog_map files', () => {
   it('round-trips the nodes, the lines between them and the fog', () => {
     const back = parseFogMap(serializeFogMap(base))!
     expect(back.name).toBe('Inn')
-    expect(back.view).toBe('blueprint')
     expect(back.nodes).toEqual(base.nodes)
     expect(back.edges).toEqual(base.edges)
     expect(back.fog).toEqual([[10, 12]])
     expect(back.image).toBe(base.image)
+  })
+
+  it('keeps placed monsters and still reads files from before they existed', () => {
+    const tokens = { a: { x: 4, y: 5 } }
+    expect(parseFogMap(serializeFogMap({ ...base, tokens }))!.tokens).toEqual(tokens)
+    expect(parseFogMap(serializeFogMap(base))!.tokens).toBeUndefined()
+    const bad = JSON.parse(serializeFogMap({ ...base, tokens }))
+    bad.tokens = { ok: { x: 1, y: 2 }, nope: { x: 'a' }, worse: null }
+    expect(parseFogMap(JSON.stringify(bad))!.tokens).toEqual({ ok: { x: 1, y: 2 } })
   })
 
   it('rejects anything that is not a version 2 fog_map', () => {
@@ -44,7 +51,6 @@ describe('fog_map files', () => {
         format: 'fog_map',
         version: 2,
         image: 'x',
-        view: 'nope',
         nodes: [[0, 0], 'x', [5, 5], [9, 9]],
         edges: [[0, 2], [0, 1], [2, 2], [0, 7], [2.5, 0], 'x', null],
         fog: [[1], 'x'],
@@ -52,8 +58,20 @@ describe('fog_map files', () => {
     )!
     expect(f.edges).toEqual([[0, 2]]) // the others name a bad node, the same node twice or none
     expect(f.fog).toEqual([])
-    expect(f.view).toBe('lines')
     expect(f.name).toBe('map')
+  })
+
+  it('keeps ranges and the grid, and drops bad ones', () => {
+    const ok = { ranges: { 'light:a': 20 }, grid: { on: true, cell: 40 } }
+    const back = parseFogMap(serializeFogMap({ ...base, ...ok }))!
+    expect(back.ranges).toEqual(ok.ranges)
+    expect(back.grid).toEqual(ok.grid)
+    const bad = JSON.parse(serializeFogMap(base))
+    bad.ranges = { a: -1, b: 'x', c: 30 }
+    bad.grid = { on: true, cell: 1 }
+    const f = parseFogMap(JSON.stringify(bad))!
+    expect(f.ranges).toEqual({ c: 30 })
+    expect(f.grid).toBeUndefined()
   })
 
   it('keeps the fog style, and tolerates files without one', () => {

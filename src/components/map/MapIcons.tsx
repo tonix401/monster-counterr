@@ -68,27 +68,17 @@ export const ZoomOutIcon = icon(
   </>
 )
 export const FitIcon = icon(<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />)
-export const MapIcon = icon(
-  <>
-    <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z" />
-    <path d="M9 4v14M15 6v14" />
-  </>
-)
-export const LinesIcon = icon(
-  <>
-    <rect x="3" y="3" width="18" height="18" rx="2" />
-    <path d="M3 12h9V3M12 12v9M12 16h9" />
-  </>
-)
-export const BlueprintIcon = icon(
-  <>
-    <rect x="3" y="3" width="18" height="18" rx="2" />
-    <path d="M3 9h18M9 21V9M15 9v12" strokeDasharray="2 2" />
-  </>
-)
 export const OpenIcon = icon(
   <>
     <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+  </>
+)
+export const LibraryIcon = icon(
+  <>
+    <rect x="3" y="3" width="7" height="7" rx="1" />
+    <rect x="14" y="3" width="7" height="7" rx="1" />
+    <rect x="3" y="14" width="7" height="7" rx="1" />
+    <rect x="14" y="14" width="7" height="7" rx="1" />
   </>
 )
 export const SaveIcon = icon(
@@ -98,18 +88,23 @@ export const SaveIcon = icon(
   </>
 )
 export const CloseIcon = icon(<path d="M18 6 6 18M6 6l12 12" />)
-export const ShareIcon = icon(
+export const SidebarIcon = icon(
   <>
-    <circle cx="6" cy="12" r="2.5" />
-    <circle cx="18" cy="6" r="2.5" />
-    <circle cx="18" cy="18" r="2.5" />
-    <path d="m8.2 10.8 7.6-3.6M8.2 13.2l7.6 3.6" />
+    <rect x="3" y="4" width="18" height="16" rx="2" />
+    <path d="M15 4v16" />
   </>
 )
 export const PlayerIcon = icon(
   <>
     <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
     <circle cx="12" cy="12" r="3" />
+  </>
+)
+export const HiddenIcon = icon(
+  <>
+    <path d="M10.7 5.1A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-2.6 3.5M6.6 6.6A17 17 0 0 0 2 12s3.5 7 10 7a10 10 0 0 0 4.4-1" />
+    <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+    <path d="m3 3 18 18" />
   </>
 )
 export const SlidersIcon = icon(
@@ -138,10 +133,22 @@ export const UndoIcon = icon(
     <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />
   </>
 )
+export const RedoIcon = icon(
+  <>
+    <path d="m15 14 5-5-5-5" />
+    <path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13" />
+  </>
+)
 export const TrashIcon = icon(
   <>
     <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
     <path d="M10 11v6M14 11v6" />
+  </>
+)
+export const CopyIcon = icon(
+  <>
+    <rect x="9" y="9" width="11" height="11" rx="2" />
+    <path d="M5 15V6a2 2 0 0 1 2-2h8" />
   </>
 )
 export const RefreshIcon = icon(
@@ -150,6 +157,37 @@ export const RefreshIcon = icon(
     <path d="M3 21v-5h5" />
     <path d="M3 12A9 9 0 0 1 18.5 5.8L21 8" />
     <path d="M21 3v5h-5" />
+  </>
+)
+
+export const PeopleIcon = icon(
+  <>
+    <circle cx="9" cy="8" r="3.5" />
+    <path d="M2.5 20a6.5 6.5 0 0 1 13 0" />
+    <path d="M16 4.7a3.5 3.5 0 0 1 0 6.6M18 14a6.5 6.5 0 0 1 3.5 6" />
+  </>
+)
+export const SkullIcon = icon(
+  <>
+    <path d="M12 3a8 8 0 0 0-8 8c0 2.6 1.3 4.2 3 5.3V20h10v-3.7c1.7-1.1 3-2.7 3-5.3a8 8 0 0 0-8-8z" />
+    <circle cx="9" cy="11.5" r="1.4" />
+    <circle cx="15" cy="11.5" r="1.4" />
+    <path d="M10.5 20v-2.5M13.5 20v-2.5" />
+  </>
+)
+export const WindowIcon = icon(
+  <>
+    <rect x="4" y="3" width="16" height="18" rx="1" strokeDasharray="3 2" />
+    <path d="M12 3v18M4 12h16" />
+  </>
+)
+export const FireIcon = icon(
+  <path d="M12 2c1 3.5 5 5.5 5 10.2A5 5 0 0 1 12 17.5a5 5 0 0 1-5-5.3c0-2 1-3.4 2.2-4.6.2 1.4.9 2.3 1.8 2.6C10.7 7.5 11 4.5 12 2z M9 21h6" />
+)
+export const GridIcon = icon(
+  <>
+    <rect x="3" y="3" width="18" height="18" rx="2" />
+    <path d="M3 9h18M3 15h18M9 3v18M15 3v18" />
   </>
 )
 
@@ -162,6 +200,8 @@ interface IconButtonProps {
   danger?: boolean
   disabled?: boolean
   onClick?: () => void
+  /** Makes the button draggable; called with the drag event to fill the data transfer */
+  onDragStart?: (e: React.DragEvent) => void
   /** Side the tooltip opens towards */
   tip?: 'right' | 'left' | 'below' | 'above'
 }
@@ -176,6 +216,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
   danger,
   disabled,
   onClick,
+  onDragStart,
   tip = 'below',
 }) => (
   <button
@@ -187,6 +228,8 @@ export const IconButton: React.FC<IconButtonProps> = ({
     data-tip-side={tip}
     disabled={disabled}
     onClick={onClick}
+    draggable={onDragStart ? true : undefined}
+    onDragStart={onDragStart}
   >
     {glyph}
   </button>

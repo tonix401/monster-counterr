@@ -6,6 +6,8 @@ export interface Settings {
   autoRemoveDead: boolean
   showXpCounter: boolean
   showQuickActions: boolean
+  /** A column with each monster's token (its letters in a health ring) */
+  showTokens: boolean
 }
 
 export interface SettingSchema {
@@ -57,5 +59,11 @@ export const SETTING_SCHEMA: Record<keyof Settings, SettingSchema> = {
     type: 'boolean',
     default: true,
     value: true,
+  },
+  showTokens: {
+    name: 'Show Tokens',
+    type: 'boolean',
+    default: false,
+    value: false,
   },
 }

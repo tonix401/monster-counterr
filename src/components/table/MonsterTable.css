@@ -4,7 +4,7 @@ table {
   table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
-  background: rgba(255, 255, 255, 0.01);
+  background: color-mix(in srgb, var(--overlay-light) 80%, transparent);
 }
 
 th,
@@ -37,7 +37,7 @@ th > span {
 }
 
 tr:not(.drop-zone) td {
-  background: var(--overlay-light);
+  background: color-mix(in srgb, var(--overlay-light) 80%, transparent);
 }
 
 tr:not(.drop-zone) {
@@ -58,6 +58,15 @@ tr:not(.drop-zone) {
 
 #col-actions {
   width: 170px;
+}
+
+#col-token {
+  width: 64px;
+}
+
+.token-cell svg {
+  display: block;
+  margin: 0 auto;
 }
 
 #col-conditions {

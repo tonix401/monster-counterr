@@ -1,3 +1,4 @@
+import type { SavedMap } from '@/map/mapLibrary'
 import type { Monster } from '@/types/Monster'
 import type { Settings } from '@/types/Settings'
 import type { Term } from '@/types/Term'
@@ -48,6 +49,8 @@ export interface SaveData {
   monsters: Monster[]
   currentXp: number
   settings: Settings
+  /** Every map in the library; missing in files saved without maps or by older versions */
+  maps?: SavedMap[]
 }
 
 export interface SaveFileExportSettings {
@@ -56,6 +59,8 @@ export interface SaveFileExportSettings {
   includeMonsters: boolean
   includeSettings: boolean
   includeCurrentXp: boolean
+  /** Add every saved map (picture, walls, fog, tokens) to the file; off unless asked for */
+  includeMaps: boolean
   minimizeJson: boolean
 }
 
@@ -172,7 +177,7 @@ export interface MonsterCounterActions {
 
   // Data management (export/import)
   setExportSetting: (key: keyof SaveFileExportSettings, value: boolean) => void
-  exportData: () => void
+  exportData: () => Promise<void>
   importData: (data: unknown) => boolean
 
   // Connections (P2P networking)

@@ -70,6 +70,8 @@ export interface SaveFileExportSettings {
 export type ClientConnection = {
   conn: DataConnection
   name: string
+  /** The player's own id, steady across renames and reloads; the peer id for older clients */
+  playerId: string
   lastActivity: number
   messageCount: number
   lastMessageReset: number

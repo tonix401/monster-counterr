@@ -8,7 +8,7 @@ import type {
   ClientToHostMessage,
   HostToClientMessage,
 } from '@/types/Protocol'
-import { MAX_CLIENT_NAME_LENGTH } from '@/types/Protocol'
+import { MAX_CLIENT_ID_LENGTH, MAX_CLIENT_NAME_LENGTH } from '@/types/Protocol'
 import type { ClientConnection } from '@/store/types'
 import { CONNECTION } from '@/constants'
 
@@ -34,7 +34,12 @@ export function validateIncomingMessage(data: unknown): data is IncomingMessage 
     case 'ping':
       return true
     case 'client-name':
-      return typeof msg.name === 'string' && msg.name.length <= MAX_CLIENT_NAME_LENGTH
+      return (
+        typeof msg.name === 'string' &&
+        msg.name.length <= MAX_CLIENT_NAME_LENGTH &&
+        (msg.id === undefined ||
+          (typeof msg.id === 'string' && msg.id.length <= MAX_CLIENT_ID_LENGTH))
+      )
     case 'attack':
       return typeof msg.monsterId === 'string'
     default:

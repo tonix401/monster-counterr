@@ -13,6 +13,8 @@ export interface PongMessage {
 export interface ClientNameMessage {
   type: 'client-name'
   name: string
+  /** A random id the player keeps across reloads and renames; older clients send none */
+  id?: string
 }
 
 export interface AttackMessage {
@@ -28,3 +30,5 @@ export type HostToClientMessage = PongMessage
 
 /** Maximum accepted length of a client name in a `client-name` message. */
 export const MAX_CLIENT_NAME_LENGTH = 50
+/** Maximum accepted length of the id in a `client-name` message. */
+export const MAX_CLIENT_ID_LENGTH = 64

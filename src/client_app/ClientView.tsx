@@ -20,6 +20,7 @@ import {
   useClientSetClientName,
   useClientSetHostId,
   useClientConnectToHost,
+  useClientJoinIfNamed,
   useClientDisconnect,
   useClientSendAttack,
   useClientMap,
@@ -42,6 +43,7 @@ const ClientView: React.FC = () => {
   const clientName = useClientClientName()
   const setClientName = useClientSetClientName()
   const setHostId = useClientSetHostId()
+  const joinIfNamed = useClientJoinIfNamed()
   const connectToHost = useClientConnectToHost()
   const disconnect = useClientDisconnect()
   const sendAttack = useClientSendAttack()
@@ -57,7 +59,8 @@ const ClientView: React.FC = () => {
 
   useEffect(() => {
     setHostId(hostId)
-  }, [hostId, setHostId])
+    joinIfNamed()
+  }, [hostId, setHostId, joinIfNamed])
 
   useEffect(() => {
     return () => {

@@ -13,8 +13,13 @@ import ConnectionsPopup from '@/components/popups/ConnectionsPopup'
 import MonsterInfoPopup from '@/components/popups/MonsterInfoPopup'
 import ClientView from '@/client_app/ClientView'
 import { startMapSync } from '@/map/mapSync'
+import { useMonsterStore } from '@/store/useMonsterStore'
 
 startMapSync()
+
+// a host who was sharing before a reload shares again, until they stop it in the connections menu
+if (useMonsterStore.getState().peerId && !window.location.hash.startsWith('#/client'))
+  useMonsterStore.getState().initializeHost()
 
 const popupRoutes = [
   <Route key="add" path="add" element={<AddMonsterPopup />} />,

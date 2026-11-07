@@ -126,6 +126,7 @@ export const useMonsterStore = create<StoreWithTemporal>()(
                     {
                       conn,
                       name: data.name || 'Unknown Client',
+                      playerId: data.id || conn.peer,
                       lastActivity: now,
                       messageCount: 0,
                       lastMessageReset: now,

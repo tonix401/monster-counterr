@@ -37,11 +37,15 @@ export type ConnectionSlice = {
   /** The monsters the DM lets players see on the map, in the pixels of its picture */
   mapTokens: TokensMessage | null
   clientName: string
+  /** Tells the host which player this is, whatever the name; kept across reloads */
+  clientId: string
   hostId: string | null
   setClientName: (name: string) => void
   /** Changes the name and tells the host, which reconnects with it if the line is down */
   renameClient: (name: string) => void
   setHostId: (hostId: string | null) => void
+  /** Connects without asking, when a name was saved from an earlier visit */
+  joinIfNamed: () => void
   connectToHost: () => void
   disconnect: () => void
   sendAttack: (monsterId: string) => void
@@ -305,7 +309,7 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
         set({ connectionStatus: 'connected' })
 
         // Step 6: Authenticate with client name
-        if (!sendMessage({ type: 'client-name', name: clientName })) {
+        if (!sendMessage({ type: 'client-name', name: clientName, id: get().clientId })) {
           handleConnectionLost('Failed to authenticate')
           return
         }
@@ -393,6 +397,7 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
     map: null,
     mapTokens: null,
     clientName: '',
+    clientId: crypto.randomUUID(),
     hostId: null,
 
     setClientName: (name: string) => {
@@ -403,7 +408,7 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
       const trimmed = name.trim()
       if (!trimmed) return
       set({ clientName: trimmed })
-      sendMessage({ type: 'client-name', name: trimmed })
+      sendMessage({ type: 'client-name', name: trimmed, id: get().clientId })
     },
 
     setHostId: (hostId: string | null) => {
@@ -417,6 +422,14 @@ export const createConnectionSlice: StateCreator<ClientStore, [], [], Connection
       }
 
       set({ hostId, error: null })
+    },
+
+    joinIfNamed: () => {
+      // A player who has joined before is let straight in under the name they saved. A view that
+      // was just torn down and set up again (React does so in development) is 'disconnected'.
+      const { clientName, hostId, connectionStatus } = get()
+      if (!clientName.trim() || !hostId) return
+      if (connectionStatus === 'name-entry' || connectionStatus === 'disconnected') connectToHost()
     },
 
     connectToHost,

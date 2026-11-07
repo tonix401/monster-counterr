@@ -168,6 +168,7 @@ describe('connectionHelpers', () => {
     it('should allow messages within rate limit', () => {
       const connection: ClientConnection = {
         conn: {} as DataConnection,
+        playerId: 'id',
         name: 'Player1',
         messageCount: 0,
         lastMessageReset: Date.now(),
@@ -182,6 +183,7 @@ describe('connectionHelpers', () => {
     it('should reject messages exceeding rate limit', () => {
       const connection: ClientConnection = {
         conn: {} as DataConnection,
+        playerId: 'id',
         name: 'Player1',
         messageCount: 0,
         lastMessageReset: Date.now(),
@@ -200,6 +202,7 @@ describe('connectionHelpers', () => {
     it('should reset counter after 1 second', () => {
       const connection: ClientConnection = {
         conn: {} as DataConnection,
+        playerId: 'id',
         name: 'Player1',
         messageCount: 0,
         lastMessageReset: Date.now(),
@@ -222,6 +225,7 @@ describe('connectionHelpers', () => {
     it('should track message count correctly', () => {
       const connection: ClientConnection = {
         conn: {} as DataConnection,
+        playerId: 'id',
         name: 'Player1',
         messageCount: 0,
         lastMessageReset: Date.now(),
@@ -298,6 +302,7 @@ describe('connectionHelpers', () => {
       const connections: ClientConnection[] = [
         {
           conn: mockConn1,
+          playerId: 'id',
           name: 'Player1',
           messageCount: 0,
           lastMessageReset: Date.now(),
@@ -305,6 +310,7 @@ describe('connectionHelpers', () => {
         },
         {
           conn: mockConn2,
+          playerId: 'id',
           name: 'Player2',
           messageCount: 0,
           lastMessageReset: Date.now(),
@@ -328,6 +334,7 @@ describe('connectionHelpers', () => {
       const connections: ClientConnection[] = [
         {
           conn: mockConn1,
+          playerId: 'id',
           name: 'Player1',
           messageCount: 0,
           lastMessageReset: now,
@@ -335,6 +342,7 @@ describe('connectionHelpers', () => {
         },
         {
           conn: mockConn2,
+          playerId: 'id',
           name: 'Player2',
           messageCount: 0,
           lastMessageReset: now,
@@ -358,6 +366,7 @@ describe('connectionHelpers', () => {
       const connections: ClientConnection[] = [
         {
           conn: mockConn,
+          playerId: 'id',
           name: 'Player1',
           messageCount: 0,
           lastMessageReset: now,
@@ -606,6 +615,7 @@ describe('connectionHelpers', () => {
       const connections: ClientConnection[] = [
         {
           conn: mockConn1,
+          playerId: 'id',
           name: 'Player1',
           messageCount: 0,
           lastMessageReset: Date.now(),
@@ -613,6 +623,7 @@ describe('connectionHelpers', () => {
         },
         {
           conn: mockConn2,
+          playerId: 'id',
           name: 'Player2',
           messageCount: 0,
           lastMessageReset: Date.now(),
@@ -634,6 +645,7 @@ describe('connectionHelpers', () => {
       const connections: ClientConnection[] = [
         {
           conn: mockConn1,
+          playerId: 'id',
           name: 'Player1',
           messageCount: 0,
           lastMessageReset: Date.now(),
@@ -641,6 +653,7 @@ describe('connectionHelpers', () => {
         },
         {
           conn: mockConn2,
+          playerId: 'id',
           name: 'Player2',
           messageCount: 0,
           lastMessageReset: Date.now(),
@@ -669,6 +682,7 @@ describe('connectionHelpers', () => {
       const connections: ClientConnection[] = [
         {
           conn: mockConn1,
+          playerId: 'id',
           name: 'Player1',
           messageCount: 0,
           lastMessageReset: Date.now(),
@@ -676,6 +690,7 @@ describe('connectionHelpers', () => {
         },
         {
           conn: mockConn2,
+          playerId: 'id',
           name: 'Player2',
           messageCount: 0,
           lastMessageReset: Date.now(),
@@ -706,6 +721,7 @@ describe('connectionHelpers', () => {
       const connections: ClientConnection[] = [
         {
           conn: mockConn1,
+          playerId: 'id',
           name: 'Player1',
           messageCount: 0,
           lastMessageReset: Date.now(),
@@ -713,6 +729,7 @@ describe('connectionHelpers', () => {
         },
         {
           conn: mockConn2,
+          playerId: 'id',
           name: 'Player2',
           messageCount: 0,
           lastMessageReset: Date.now(),
@@ -720,6 +737,7 @@ describe('connectionHelpers', () => {
         },
         {
           conn: mockConn3,
+          playerId: 'id',
           name: 'Player3',
           messageCount: 0,
           lastMessageReset: Date.now(),

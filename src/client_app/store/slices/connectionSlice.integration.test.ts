@@ -120,6 +120,7 @@ describe('Connection Integration Tests', () => {
       expect(connection.send).toHaveBeenCalledWith({
         type: 'client-name',
         name: 'TestUser',
+        id: store.getState().clientId,
       })
 
       // Step 6: Receive encounter data

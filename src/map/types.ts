@@ -10,6 +10,8 @@ export interface MapNode {
   id: number
   x: number
   y: number
+  /** Lies on the outer border of the map; fixed in place */
+  border?: boolean
 }
 
 /** A wall between two nodes (by id); never zero-length, and each pair is joined at most once */
@@ -17,6 +19,8 @@ export interface MapEdge {
   id: number
   a: number
   b: number
+  /** Part of the invisible outer border: always there, never drawn, but lines still snap to it */
+  border?: boolean
 }
 
 /** The walls drawn on the map; always replaced, never changed in place, so history can keep old ones */

@@ -9,11 +9,12 @@ const nodeMap = (g: Graph): Map<number, MapNode> => new Map(g.nodes.map((n) => [
 
 const pairKey = (a: number, b: number): string => (a < b ? `${a}:${b}` : `${b}:${a}`)
 
-/** Every wall as plain coordinates, for drawing, hit testing and finding rooms */
-export function edgeSegments(g: Graph): WallSegment[] {
+/** Every wall as plain coordinates, for drawing, hit testing and finding rooms; the border only on request */
+export function edgeSegments(g: Graph, withBorder = true): WallSegment[] {
   const at = nodeMap(g)
   const out: WallSegment[] = []
   for (const e of g.edges) {
+    if (e.border && !withBorder) continue
     const p = at.get(e.a)
     const q = at.get(e.b)
     if (p && q) out.push({ x1: p.x, y1: p.y, x2: q.x, y2: q.y })
@@ -54,19 +55,45 @@ export function addEdge(g: Graph, a: number, b: number): Graph {
   return { ...g, edges: [...g.edges, { id: g.next, a, b }], next: g.next + 1 }
 }
 
-/** Nodes that no wall touches are dropped */
+/** Nodes that no wall touches are dropped, and border nodes nothing hangs on any more are healed */
 function dropOrphans(g: Graph): Graph {
   const used = new Set<number>()
   for (const e of g.edges) {
     used.add(e.a)
     used.add(e.b)
   }
-  return g.nodes.every((n) => used.has(n.id))
-    ? g
-    : { ...g, nodes: g.nodes.filter((n) => used.has(n.id)) }
+  return healBorder(
+    g.nodes.every((n) => used.has(n.id))
+      ? g
+      : { ...g, nodes: g.nodes.filter((n) => used.has(n.id)) }
+  )
 }
 
+/** A border node that only two border walls in a straight line meet in disappears, and they become one */
+function healBorder(g: Graph): Graph {
+  const deg = degreeOf(g)
+  const at = nodeMap(g)
+  for (const n of g.nodes) {
+    if (!n.border || deg.get(n.id) !== 2) continue
+    const mine = g.edges.filter((e) => e.a === n.id || e.b === n.id)
+    if (!mine.every((e) => e.border)) continue
+    const [p, q] = mine.map((e) => at.get(e.a === n.id ? e.b : e.a)!)
+    if (Math.abs((n.x - p.x) * (q.y - n.y) - (n.y - p.y) * (q.x - n.x)) > 1e-6) continue // a corner
+    return healBorder({
+      nodes: g.nodes.filter((o) => o !== n),
+      edges: [
+        ...g.edges.filter((e) => !mine.includes(e)),
+        { id: g.next, a: p.id, b: q.id, border: true },
+      ],
+      next: g.next + 1,
+    })
+  }
+  return g
+}
+
+/** The border can not be removed */
 export function removeEdge(g: Graph, id: number): Graph {
+  if (g.edges.find((e) => e.id === id)?.border) return g
   return dropOrphans({ ...g, edges: g.edges.filter((e) => e.id !== id) })
 }
 
@@ -75,6 +102,7 @@ export function removeEdge(g: Graph, id: number): Graph {
  * removed together with its walls.
  */
 export function removeNode(g: Graph, id: number): Graph {
+  if (g.nodes.find((n) => n.id === id)?.border) return g
   const mine = g.edges.filter((e) => e.a === id || e.b === id)
   const rest = g.edges.filter((e) => e.a !== id && e.b !== id)
   const nodes = g.nodes.filter((n) => n.id !== id)
@@ -94,8 +122,11 @@ export type Snap =
   | { kind: 'edge'; edge: MapEdge; x: number; y: number }
   | { kind: 'free'; x: number; y: number }
 
-/** The nearest node within `r`, else the nearest spot on a wall within `r`, else the point itself */
-export function snapPoint(g: Graph, x: number, y: number, r: number): Snap {
+/**
+ * The nearest node within `r`, else the nearest spot on a wall within `r`, else the point itself.
+ * `solid` leaves out the invisible border walls, for picking what is on the map rather than snapping.
+ */
+export function snapPoint(g: Graph, x: number, y: number, r: number, solid = false): Snap {
   let node: MapNode | null = null
   let best = r
   for (const n of g.nodes) {
@@ -111,6 +142,7 @@ export function snapPoint(g: Graph, x: number, y: number, r: number): Snap {
   let spot: [number, number] = [x, y]
   best = r
   for (const e of g.edges) {
+    if (solid && e.border) continue
     const p = at.get(e.a)
     const q = at.get(e.b)
     if (!p || !q) continue
@@ -138,11 +170,11 @@ export function splitEdge(
   return {
     id,
     g: {
-      nodes: [...g.nodes, { id, x, y }],
+      nodes: [...g.nodes, { id, x, y, ...(e.border && { border: true }) }],
       edges: [
         ...g.edges.filter((o) => o !== e),
-        { id: id + 1, a: e.a, b: id },
-        { id: id + 2, a: id, b: e.b },
+        { id: id + 1, a: e.a, b: id, ...(e.border && { border: true }) },
+        { id: id + 2, a: id, b: e.b, ...(e.border && { border: true }) },
       ],
       next: id + 3,
     },
@@ -247,14 +279,15 @@ export function addEllipse(
   return addPolyline(g, snapAll(g, ellipsePoints(x1, y1, x2, y2, M), r), true, r)
 }
 
-/** Moves a node; every wall on it follows. */
+/** Moves a node; every wall on it follows. Border nodes stay where they are. */
 export function moveNode(g: Graph, id: number, x: number, y: number): Graph {
+  if (g.nodes.find((n) => n.id === id)?.border) return g
   return { ...g, nodes: g.nodes.map((n) => (n.id === id ? { ...n, x, y } : n)) }
 }
 
 /** `from` joins `into`: its walls now end there, and walls that become a point or a repeat vanish */
 export function mergeNodes(g: Graph, from: number, into: number): Graph {
-  if (from === into) return g
+  if (from === into || g.nodes.find((n) => n.id === from)?.border) return g
   const seen = new Set<string>()
   const edges: MapEdge[] = []
   for (const e of g.edges) {
@@ -341,15 +374,18 @@ export function tidy(g: Graph, r: number, ids?: Iterable<number>): Graph {
       const q = at.get(e.b)
       if (!p || !q || Math.hypot(p.x - q.x, p.y - q.y) >= r * 0.6 || !(near(p.id) || near(q.id)))
         continue
-      const mid = { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 }
-      out = mergeNodes(moveNode(out, p.id, mid.x, mid.y), q.id, p.id)
+      if (e.border || (p.border && q.border)) continue
+      // a border node stays put and takes the other in
+      if (p.border || q.border)
+        out = mergeNodes(out, p.border ? q.id : p.id, p.border ? p.id : q.id)
+      else out = mergeNodes(moveNode(out, p.id, (p.x + q.x) / 2, (p.y + q.y) / 2), q.id, p.id)
       break
     }
     if (out !== before) continue
 
     // a node between two almost straight walls goes onto the straight line
     for (const n of out.nodes) {
-      if (deg.get(n.id) !== 2 || !near(n.id)) continue
+      if (n.border || deg.get(n.id) !== 2 || !near(n.id)) continue
       const ends = out.edges
         .filter((e) => e.a === n.id || e.b === n.id)
         .map((e) => at.get(e.a === n.id ? e.b : e.a)!)
@@ -391,12 +427,13 @@ export function dropNode(g: Graph, id: number, r: number, tidyReach = 0): { g: G
   return { g: tidy(joined, tidyReach, [at]), id: at }
 }
 
-/** The wall nearest to the point within `tol`, ignoring nodes */
+/** The wall nearest to the point within `tol`, ignoring nodes and the invisible border */
 export function hitEdge(g: Graph, x: number, y: number, tol: number): MapEdge | null {
   const at = nodeMap(g)
   let best = tol
   let hit: MapEdge | null = null
   for (const e of g.edges) {
+    if (e.border) continue
     const p = at.get(e.a)
     const q = at.get(e.b)
     if (!p || !q) continue
@@ -413,7 +450,7 @@ export type GraphHit = { kind: 'node'; node: MapNode } | { kind: 'edge'; edge: M
 
 /** The node (preferred) or wall within `tol` of the point */
 export function hitTest(g: Graph, x: number, y: number, tol: number): GraphHit | null {
-  const s = snapPoint(g, x, y, tol)
+  const s = snapPoint(g, x, y, tol, true)
   if (s.kind === 'node') return { kind: 'node', node: s.node }
   if (s.kind === 'edge') return { kind: 'edge', edge: s.edge }
   return null
@@ -493,6 +530,67 @@ export function graphFromSegments(segs: WallSegment[], M: number): Graph {
   }
   const nodes = corners.map((c, i) => ({ id: i + 1, x: c.x, y: c.y }))
   return tidy(dropOrphans({ nodes, edges, next }), tol)
+}
+
+/**
+ * Gives the graph its invisible border: corner nodes at the map's corners, walls between them, and
+ * every node already on a side (a saved junction, a detected wall that reaches the edge) joined
+ * into that side's chain. Safe to repeat; a graph that already has its border comes back as is.
+ */
+export function ensureBorder(g: Graph, W: number, H: number): Graph {
+  const tol = 1
+  const sides = [
+    (n: { x: number; y: number }) => Math.abs(n.y) <= tol && n.x >= -tol && n.x <= W + tol,
+    (n: { x: number; y: number }) => Math.abs(n.x - W) <= tol && n.y >= -tol && n.y <= H + tol,
+    (n: { x: number; y: number }) => Math.abs(n.y - H) <= tol && n.x >= -tol && n.x <= W + tol,
+    (n: { x: number; y: number }) => Math.abs(n.x) <= tol && n.y >= -tol && n.y <= H + tol,
+  ]
+  const nodes: MapNode[] = g.nodes.map((n) => {
+    if (!sides.some((on) => on(n))) return n
+    const x = sides[1](n) ? W : sides[3](n) ? 0 : n.x
+    const y = sides[2](n) ? H : sides[0](n) ? 0 : n.y
+    return { id: n.id, x, y, border: true }
+  })
+  let next = g.next
+  for (const [x, y] of [
+    [0, 0],
+    [W, 0],
+    [W, H],
+    [0, H],
+  ]) {
+    if (!nodes.some((n) => n.x === x && n.y === y)) nodes.push({ id: next++, x, y, border: true })
+  }
+
+  // each side is a chain of border walls through its nodes, in order
+  let edges = g.edges.map((e) => (e.border ? { id: e.id, a: e.a, b: e.b } : e))
+  const link = new Set<string>()
+  const chain: MapEdge[] = []
+  sides.forEach((on, i) => {
+    const along = (n: MapNode): number => (i % 2 ? n.y : n.x)
+    const mine = nodes.filter((n) => on(n)).sort((a, b) => along(a) - along(b))
+    const ids = new Set(mine.map((n) => n.id))
+    for (let k = 0; k + 1 < mine.length; k++) link.add(pairKey(mine[k].id, mine[k + 1].id))
+    // a wall drawn along the side between two of its nodes is the border's own
+    edges = edges.filter((e) => !(ids.has(e.a) && ids.has(e.b) && !link.has(pairKey(e.a, e.b))))
+    for (let k = 0; k + 1 < mine.length; k++)
+      chain.push({ id: 0, a: mine[k].id, b: mine[k + 1].id })
+  })
+  const seen = new Set<string>()
+  const out: MapEdge[] = []
+  for (const e of edges) {
+    const key = pairKey(e.a, e.b)
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(link.has(key) ? { ...e, border: true } : e)
+  }
+  for (const c of chain) {
+    const key = pairKey(c.a, c.b)
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push({ id: next++, a: c.a, b: c.b, border: true })
+  }
+  const done: Graph = { nodes, edges: out, next }
+  return JSON.stringify(done) === JSON.stringify(g) ? g : done
 }
 
 /** The walls as a list of points and a list of point-index pairs, the way a file keeps them */

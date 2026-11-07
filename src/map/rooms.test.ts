@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addPolyline, emptyGraph } from './graph'
+import { addPolyline, emptyGraph, ensureBorder } from './graph'
 import { analyzeGraph } from './rooms'
 import type { Graph } from './types'
 
@@ -96,5 +96,32 @@ describe('analyzeGraph', () => {
     const a = analyzeGraph(g, W, H, 0.05)
     expect(inner(a)).toHaveLength(1) // the island folds into the room around it
     expect(a.own[70 * W + 70]).toBe(a.own[150 * W + 200])
+  })
+})
+
+describe('analyzeGraph with the border', () => {
+  const outdoors = (g: Graph) => ensureBorder(g, W, H)
+
+  it('makes the outside one room around the buildings', () => {
+    const a = analyzeGraph(outdoors(house()), W, H, 0.2)
+    expect(inner(a)).toHaveLength(3)
+    expect(a.own[5 * W + 5]).toBe(a.own[290 * W + 395])
+    expect(a.own[5 * W + 5]).not.toBe(a.own[150 * W + 100])
+  })
+
+  it('splits the outside where a building is joined to the border twice', () => {
+    const g = addPolyline(
+      addPolyline(outdoors(house()), [
+        [200, 40],
+        [200, 0],
+      ]),
+      [
+        [200, 260],
+        [200, 300],
+      ]
+    )
+    const a = analyzeGraph(g, W, H, 0.2)
+    expect(inner(a)).toHaveLength(4)
+    expect(a.own[150 * W + 20]).not.toBe(a.own[150 * W + 380])
   })
 })

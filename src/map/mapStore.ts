@@ -5,6 +5,7 @@ import { parseFogMap, serializeFogMap, type FogMapFile } from './fogMapFile'
 import { loadMapText, saveMapText } from './mapStorage'
 import {
   emptyGraph,
+  ensureBorder,
   graphFromLists,
   graphFromSegments,
   graphLists,
@@ -178,12 +179,13 @@ export const useMapStore = create<MapState>()((set, get) => {
           .filter((i) => i >= 0 && i < W * H)
 
         analyzer().load(gray, W, H)
-        const graph = saved
+        const found = saved
           ? graphFromLists(
               saved.nodes.map((p) => [p[0] * fx, p[1] * fy]),
               saved.edges
             )
           : graphFromSegments(await analyzer().detect(detectParams(get().params)), Math.max(W, H))
+        const graph = ensureBorder(found, W, H)
         previewSeq++
         set({
           loaded: true,
@@ -366,7 +368,7 @@ export const useMapStore = create<MapState>()((set, get) => {
       const segs = s.preview ?? (await analyzer().detect(detectParams(s.params)))
       previewSeq++
       set({ preview: null, selected: null })
-      edit(graphFromSegments(segs, Math.max(s.width, s.height)))
+      edit(ensureBorder(graphFromSegments(segs, Math.max(s.width, s.height)), s.width, s.height))
     },
     setView: (view) => {
       set({ view })

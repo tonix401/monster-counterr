@@ -7,6 +7,8 @@ import {
   dropNode,
   edgeSegments,
   emptyGraph,
+  ensureBorder,
+  hitEdge,
   graphFromLists,
   graphFromSegments,
   graphLists,
@@ -266,7 +268,7 @@ describe('tidy', () => {
   it('straightens a node that two nearly straight walls meet in', () => {
     const g = addPolyline(emptyGraph(), [
       [0, 0],
-      [100, 3],
+      [100, 0.5],
       [200, 0],
     ])
     const out = tidy(g, 5)
@@ -299,5 +301,74 @@ describe('tidy', () => {
       [100, 4],
     ])
     expect(edgeSegments(tidy(g, 5))[0]).toEqual({ x1: 0, y1: 0, x2: 100, y2: 0 })
+  })
+})
+
+describe('the invisible border', () => {
+  const bordered = (): Graph => ensureBorder(emptyGraph(), 200, 100)
+
+  it('is four corners and four walls, and is not made twice', () => {
+    const g = bordered()
+    expect(g.nodes).toHaveLength(4)
+    expect(g.edges).toHaveLength(4)
+    expect(g.edges.every((e) => e.border)).toBe(true)
+    expect(ensureBorder(g, 200, 100)).toBe(g)
+    expect(edgeSegments(g, false)).toHaveLength(0)
+  })
+
+  it('is snapped to by lines, which split it', () => {
+    const g = addPolyline(bordered(), [
+      [100, 0.5],
+      [100, 50],
+    ])
+    expect(snapPoint(bordered(), 100, 4, 10)).toMatchObject({ kind: 'edge', y: 0 })
+    const top = g.nodes.find((n) => n.x === 100 && n.y === 0)!
+    expect(top.border).toBe(true)
+    expect(g.edges.filter((e) => e.border)).toHaveLength(5)
+  })
+
+  it('can not be picked, erased or moved', () => {
+    const g = bordered()
+    expect(hitEdge(g, 100, 1, 10)).toBeNull()
+    expect(hitTest(g, 100, 1, 10)).toBeNull()
+    expect(removeEdge(g, g.edges[0].id)).toBe(g)
+    expect(removeNode(g, g.nodes[0].id)).toBe(g)
+    expect(moveNode(g, g.nodes[0].id, 30, 30)).toBe(g)
+  })
+
+  it('joins back into one wall when the last line leaves it', () => {
+    const g = addPolyline(bordered(), [
+      [100, 0],
+      [100, 50],
+    ])
+    const line = g.edges.find((e) => !e.border)!
+    const out = removeEdge(g, line.id)
+    expect(out.nodes).toHaveLength(4)
+    expect(out.edges).toHaveLength(4)
+  })
+
+  it('takes in the nodes of a saved or detected graph that lie on a side', () => {
+    const g = ensureBorder(
+      graphFromLists(
+        [
+          [100, 0.4],
+          [100, 60],
+        ],
+        [[0, 1]]
+      ),
+      200,
+      100
+    )
+    expect(g.nodes).toHaveLength(6)
+    expect(g.edges.filter((e) => e.border)).toHaveLength(5)
+    expect(g.nodes.find((n) => n.x === 100 && n.y === 0)?.border).toBe(true)
+  })
+
+  it('is not tidied away', () => {
+    const g = addPolyline(bordered(), [
+      [100, 0],
+      [100, 50],
+    ])
+    expect(tidy(g, 5)).toBe(g)
   })
 })

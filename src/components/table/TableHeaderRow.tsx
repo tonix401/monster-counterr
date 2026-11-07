@@ -8,6 +8,7 @@ const TableHeaderRow: React.FC = () => {
   const headers: { key: string; label: string }[] = [{ key: 'drag-handle', label: '' }]
 
   if (settings.showQuickActions) headers.push({ key: 'actions', label: t('actions') })
+  if (settings.showTokens) headers.push({ key: 'token', label: t('token') })
   headers.push({ key: 'name', label: t('name') })
   if (settings.showConditions) headers.push({ key: 'conditions', label: t('conditions') })
   if (settings.showStatus) headers.push({ key: 'status', label: t('status') })

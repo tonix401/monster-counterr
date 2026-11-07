@@ -29,6 +29,12 @@ const SettingsPopup: React.FC = () => {
         onChange={handleSettingChange}
       />
       <BinarySettingsRow<keyof Settings>
+        settingKey="showTokens"
+        label={t('showTokens')}
+        value={settings.showTokens ?? false}
+        onChange={handleSettingChange}
+      />
+      <BinarySettingsRow<keyof Settings>
         settingKey="showConditions"
         label={t('showConditions')}
         value={settings.showConditions}

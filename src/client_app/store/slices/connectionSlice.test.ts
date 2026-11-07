@@ -126,6 +126,29 @@ describe('ConnectionSlice', () => {
       expect(store.getState().error).toBeNull()
     })
 
+    it('joins straight away when a name was saved, and asks for one otherwise', () => {
+      store.getState().setHostId('host-123')
+      store.getState().joinIfNamed()
+      expect(store.getState().connectionStatus).toBe('name-entry')
+      expect(store.getState().peer).toBeNull()
+
+      store.getState().setClientName('Saved Name')
+      store.getState().joinIfNamed()
+      expect(store.getState().connectionStatus).toBe('connecting')
+      expect(store.getState().peer).not.toBeNull()
+    })
+
+    it('joins again after the view was torn down and set up again', () => {
+      store.getState().setClientName('Saved Name')
+      store.getState().setHostId('host-123')
+      store.getState().joinIfNamed()
+      store.getState().disconnect() // what unmounting does
+      expect(store.getState().connectionStatus).toBe('disconnected')
+      store.getState().joinIfNamed()
+      expect(store.getState().connectionStatus).toBe('connecting')
+      expect(store.getState().peer).not.toBeNull()
+    })
+
     it('should set name-entry status when host ID is null', () => {
       store.getState().setHostId(null)
       expect(store.getState().hostId).toBeNull()
@@ -283,6 +306,7 @@ describe('ConnectionSlice', () => {
       expect(connection.send).toHaveBeenCalledWith({
         type: 'client-name',
         name: 'TestUser',
+        id: store.getState().clientId,
       })
     })
 

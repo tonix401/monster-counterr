@@ -19,6 +19,7 @@ const MonsterTable: React.FC = () => {
   // Calculate the actual number of columns
   let colCount = 1 // drag-handle
   if (settings.showQuickActions) colCount++
+  if (settings.showTokens) colCount++
   colCount++ // name
   if (settings.showConditions) colCount++
   if (settings.showStatus) colCount++

@@ -28,6 +28,8 @@ export const useClientStore = create<ClientStore>()(
       name: 'monster-counter-client',
       partialize: (state) => ({
         language: state.language,
+        clientId: state.clientId,
+        clientName: state.clientName,
       }),
     }
   )
@@ -45,12 +47,15 @@ export const useClientConnectionStatus = (): ConnectionSlice['connectionStatus']
 export const useClientConnectionError = (): string | null => useClientStore((state) => state.error)
 export const useClientEncounterData = (): ConnectionSlice['data'] =>
   useClientStore((state) => state.data)
+export const useClientMapTokens = (): ConnectionSlice['mapTokens'] =>
+  useClientStore((state) => state.mapTokens)
 export const useClientMap = (): ConnectionSlice['map'] => useClientStore((state) => state.map)
 export const useClientClientName = (): string => useClientStore((state) => state.clientName)
 export const useClientSetClientName = (): ((name: string) => void) =>
   useClientStore((state) => state.setClientName)
 export const useClientSetHostId = (): ((hostId: string | null) => void) =>
   useClientStore((state) => state.setHostId)
+export const useClientJoinIfNamed = (): (() => void) => useClientStore((state) => state.joinIfNamed)
 export const useClientConnectToHost = (): (() => void) =>
   useClientStore((state) => state.connectToHost)
 export const useClientDisconnect = (): (() => void) => useClientStore((state) => state.disconnect)

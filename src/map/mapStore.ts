@@ -2,23 +2,34 @@ import { create } from 'zustand'
 import { analyzeGraph } from './rooms'
 import { createAnalyzerClient, type AnalyzerClient } from './analyzerClient'
 import { parseFogMap, serializeFogMap, type FogMapFile } from './fogMapFile'
-import { loadMapText, saveMapText } from './mapStorage'
+import {
+  getCurrentId,
+  listMaps,
+  loadMap,
+  removeMap,
+  saveMap,
+  saveMeta,
+  setCurrentId,
+  takeLegacyMap,
+} from './mapStorage'
+import { newMapId, uniqueName, type MapMeta, type SavedMap } from './mapLibrary'
 import {
   emptyGraph,
+  ensureBorder,
   graphFromLists,
   graphFromSegments,
   graphLists,
   removeEdge,
   removeNode,
 } from './graph'
-import { makeCanvas } from './render'
+import { makeCanvas, makeThumb } from './render'
+import { DEFAULT_LIGHT_FT, newLightId, playerTokenId, type Token, type Tokens } from './tokens'
 import {
   MAP_MAX_DIM,
   type Analysis,
   type FogStyle,
   type Graph,
   type MapMode,
-  type MapView,
   type Selection,
   type WallSegment,
 } from './types'
@@ -37,10 +48,24 @@ const DETECT_KEYS: (keyof MapParams)[] = ['sens', 'minLen', 'gap']
 
 export type MapError = 'mapInvalidFile' | 'mapLoadFailed' | null
 
+/** What undo restores: the walls and everything the DM has put on the map */
+interface Undo {
+  graph: Graph
+  tokens: Tokens
+  ranges: Record<string, number>
+  players: Record<string, string>
+}
+
 interface MapState {
   loaded: boolean
   restored: boolean
   name: string
+  /** The id the open map has in the library, null while no map is open */
+  mapId: string | null
+  /** The maps kept in this browser, newest first */
+  library: MapMeta[]
+  /** Whether a newly imported picture gets its walls found at once; off, they are found on request */
+  autoDetect: boolean
   /** The map as a data URL at working resolution; this is what gets saved */
   image: string
   width: number
@@ -48,12 +73,22 @@ interface MapState {
   base: HTMLCanvasElement | null
   analysis: Analysis | null
   fog: Set<number>
+  /** Monsters placed on this map, by monster id */
+  tokens: Tokens
+  /** The last name of each player, by id, so a token keeps its letters while the player is away */
+  players: Record<string, string>
+  /** How far each fire and player reaches, in feet, by token id */
+  ranges: Record<string, number>
+  /** The square grid: one square is 5 ft and `cell` map pixels wide */
+  grid: { on: boolean; cell: number }
   /** How players see the fogged rooms */
   fogStyle: FogStyle
   /** The walls: nodes, and lines between them */
   graph: Graph
-  /** The walls before each edit, newest last */
-  history: Graph[]
+  /** The walls and tokens before each edit, newest last */
+  history: Undo[]
+  /** What undo took back, newest last, for redo */
+  future: Undo[]
   /** The walls a map was opened with; "clear edits" returns to them */
   baseline: Graph
   selected: Selection | null
@@ -62,7 +97,6 @@ interface MapState {
   previewing: boolean
   /** Walls found with the current settings, not yet part of the map */
   preview: WallSegment[] | null
-  view: MapView
   mode: MapMode
   busy: boolean
   /** Whether players connected over PeerJS get to see the map */
@@ -72,13 +106,28 @@ interface MapState {
   openFile: (file: File) => Promise<void>
   restore: () => Promise<void>
   closeMap: () => void
+  setAutoDetect: (on: boolean) => void
+  refreshLibrary: () => Promise<void>
+  openFromLibrary: (id: string) => Promise<void>
+  renameMap: (id: string, name: string) => Promise<void>
+  duplicateMap: (id: string) => Promise<void>
+  /** Every map in the library with its file text, the open one as it is right now */
+  exportMaps: () => Promise<SavedMap[]>
+  /** Adds maps from a save file; one whose id is taken comes in as a copy under a new name */
+  importMaps: (maps: SavedMap[]) => Promise<void>
+  deleteMap: (id: string) => Promise<void>
   toText: () => string | null
   setParam: <K extends keyof MapParams>(key: K, value: number) => void
   showPreview: (on: boolean) => void
   /** Replaces the walls with the ones found in the picture */
   applyDetection: () => Promise<void>
-  setView: (view: MapView) => void
   setMode: (mode: MapMode) => void
+  /** New walls from the drawing tools are translucent (windows) instead of solid */
+  drawClear: boolean
+  /** What the DM's map shows; the players' picture is not affected */
+  layers: MapLayers
+  setLayer: (layer: keyof MapLayers, on: boolean) => void
+  setDrawClear: (on: boolean) => void
   setShared: (on: boolean) => void
   /** Edits between begin and end (a drag) become one undo step */
   beginGesture: () => void
@@ -88,11 +137,35 @@ interface MapState {
   select: (selection: Selection | null) => void
   deleteSelected: () => void
   undoEdit: () => void
+  redoEdit: () => void
   clearEdits: () => void
   setFog: (id: number, on: boolean) => boolean
   setFogStyle: (style: FogStyle) => void
   fogAll: () => void
   revealAll: () => void
+  /** Puts a monster on the map, or moves it; saved with the map */
+  placeToken: (monsterId: string, at: Token) => void
+  removeToken: (monsterId: string) => void
+  /** Drops the tokens of monsters that left the encounter */
+  setTokens: (tokens: Tokens) => void
+  setPlayerName: (id: string, name: string) => void
+  /** Puts a new fire on the map and returns its token id */
+  addLight: (at: Token) => string
+  setRange: (id: string, ft: number) => void
+  setGrid: (grid: Partial<{ on: boolean; cell: number }>) => void
+  /** Takes a player who has left off the map and out of the list */
+  forgetPlayer: (id: string) => void
+}
+
+/** About thirty squares across the longer side, so a fresh map has a usable grid */
+const defaultCell = (w: number, h: number): number => Math.max(8, Math.round(Math.max(w, h) / 30))
+
+/** The kinds of things the DM can hide on the map to cut the clutter */
+export interface MapLayers {
+  lights: boolean
+  players: boolean
+  monsters: boolean
+  walls: boolean
 }
 
 export const DEFAULT_PARAMS: MapParams = { sens: 70, minLen: 6, gap: 6.5, minRoom: 0.2 }
@@ -110,16 +183,47 @@ let previewAgain = false
 let saveTimer: ReturnType<typeof setTimeout> | undefined
 /** Fog from a loaded file, applied once the first analysis exists */
 let pendingFog: number[] = []
+const AUTO_DETECT_KEY = 'monster-counterr-map-auto-detect'
+const readAutoDetect = (): boolean => {
+  try {
+    return localStorage.getItem(AUTO_DETECT_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+/** The open map's picture for the library list, made when it is opened */
+let thumb = ''
 let gesture = false
 let gestureFresh = false
 let pending = false
+
+/** The selection, unless it is the token that was just taken off the map */
+const gone = (sel: Selection | null, tokenId: string): Selection | null =>
+  sel?.kind === 'token' && sel.id === tokenId ? null : sel
 
 export const useMapStore = create<MapState>()((set, get) => {
   const analyzer = (): AnalyzerClient => (client ??= createAnalyzerClient())
 
   function scheduleSave(): void {
     clearTimeout(saveTimer)
-    saveTimer = setTimeout(() => void saveMapText(get().toText()), 800)
+    saveTimer = setTimeout(() => void saveNow(), 800)
+  }
+
+  /** Writes the open map to the library now; the text is made before anything is awaited */
+  async function saveNow(): Promise<void> {
+    clearTimeout(saveTimer)
+    const s = get()
+    const text = s.toText()
+    if (!s.mapId || !text) return
+    const meta: MapMeta = {
+      id: s.mapId,
+      name: s.name,
+      updatedAt: Date.now(),
+      width: s.width,
+      height: s.height,
+      thumb,
+    }
+    if (await saveMap(meta, text)) await get().refreshLibrary()
   }
 
   /** Finds the rooms between the walls. `throttle` is for drags: an update already waiting is enough. */
@@ -149,7 +253,14 @@ export const useMapStore = create<MapState>()((set, get) => {
     }, delay)
   }
 
-  function openImage(url: string, name: string, saved: FogMapFile | null): Promise<void> {
+  /** `id` and `savedThumb` are those of a map from the library; a new map gets a new id */
+  function openImage(
+    url: string,
+    name: string,
+    saved: FogMapFile | null,
+    id: string | null = null,
+    savedThumb: string | null = null
+  ): Promise<void> {
     return new Promise((resolve) => {
       const img = new Image()
       img.onerror = () => {
@@ -178,15 +289,23 @@ export const useMapStore = create<MapState>()((set, get) => {
           .filter((i) => i >= 0 && i < W * H)
 
         analyzer().load(gray, W, H)
-        const graph = saved
+        // walls come from the file, from detection when that is automatic, or not at all
+        const found = saved
           ? graphFromLists(
               saved.nodes.map((p) => [p[0] * fx, p[1] * fy]),
               saved.edges
             )
-          : graphFromSegments(await analyzer().detect(detectParams(get().params)), Math.max(W, H))
+          : get().autoDetect
+            ? graphFromSegments(await analyzer().detect(detectParams(get().params)), Math.max(W, H))
+            : emptyGraph()
+        const graph = ensureBorder(found, W, H)
         previewSeq++
+        const mapId = id ?? newMapId()
+        thumb = savedThumb ?? makeThumb(base)
+        void setCurrentId(mapId)
         set({
           loaded: true,
+          mapId,
           name,
           // a fresh image is stored at working resolution so saves stay small
           image: saved ? url : base.toDataURL('image/jpeg', 0.88),
@@ -195,13 +314,26 @@ export const useMapStore = create<MapState>()((set, get) => {
           base,
           analysis: null,
           fog: new Set(),
+          tokens: saved?.tokens
+            ? Object.fromEntries(
+                Object.entries(saved.tokens).map(([k, t]) => [
+                  k,
+                  { x: Math.min(W - 1, t.x * fx), y: Math.min(H - 1, t.y * fy) },
+                ])
+              )
+            : {},
+          players: saved?.players ?? {},
+          ranges: saved?.ranges ?? {},
+          grid: saved?.grid
+            ? { on: saved.grid.on, cell: saved.grid.cell * fx }
+            : { on: false, cell: defaultCell(W, H) },
           fogStyle: saved?.fogStyle ?? 'fog',
           graph,
           history: [],
+          future: [],
           baseline: graph,
           selected: null,
           preview: null,
-          view: saved ? saved.view : get().view,
           error: null,
         })
         analyze(40)
@@ -211,15 +343,37 @@ export const useMapStore = create<MapState>()((set, get) => {
     })
   }
 
+  /** The history with the state before this change added (one step for a whole gesture) */
+  function remember(): Undo[] {
+    const s = get()
+    const joined = gesture && !gestureFresh
+    gestureFresh = false
+    return joined ? s.history : [...s.history, current()]
+  }
+
+  const current = (): Undo => {
+    const s = get()
+    return { graph: s.graph, tokens: s.tokens, ranges: s.ranges, players: s.players }
+  }
+
+  /** A change to the tokens, ranges or player names that undo can take back */
+  function change(
+    patch: Partial<Pick<MapState, 'tokens' | 'ranges' | 'players' | 'selected'>>
+  ): void {
+    set({ ...patch, history: remember(), future: [] })
+    scheduleSave()
+  }
+
   function edit(graph: Graph, live = false): void {
     const s = get()
     if (graph === s.graph) return // nothing changed, so there is nothing to undo
-    const history = gesture && !gestureFresh ? s.history : [...s.history, s.graph]
-    gestureFresh = false
+    const history = remember()
     const sel = s.selected
     const kept =
-      !sel || (sel.kind === 'node' ? graph.nodes : graph.edges).some((o) => o.id === sel.id)
-    set({ graph, history, selected: kept ? sel : null })
+      !sel ||
+      sel.kind === 'token' ||
+      (sel.kind === 'node' ? graph.nodes : graph.edges).some((o) => o.id === sel.id)
+    set({ graph, history, future: [], selected: kept ? sel : null })
     if (live) analyze(30, true)
     else rebuild()
   }
@@ -252,21 +406,30 @@ export const useMapStore = create<MapState>()((set, get) => {
     loaded: false,
     restored: false,
     name: 'map',
+    mapId: null,
+    library: [],
+    autoDetect: readAutoDetect(),
     image: '',
     width: 0,
     height: 0,
     base: null,
     analysis: null,
     fog: new Set(),
+    tokens: {},
+    players: {},
+    ranges: {},
+    drawClear: false,
+    layers: { lights: true, players: true, monsters: true, walls: true },
+    grid: { on: false, cell: 40 },
     fogStyle: 'fog',
     graph: emptyGraph(),
     history: [],
+    future: [],
     baseline: emptyGraph(),
     selected: null,
     params: DEFAULT_PARAMS,
     previewing: false,
     preview: null,
-    view: 'lines',
     mode: 'fog',
     busy: false,
     shared: false,
@@ -288,7 +451,10 @@ export const useMapStore = create<MapState>()((set, get) => {
           if (!isFog)
             return void openImage(
               reader.result as string,
-              file.name.replace(/\.[^.]+$/, ''),
+              uniqueName(
+                file.name.replace(/\.[^.]+$/, ''),
+                get().library.map((m) => m.name)
+              ),
               null
             ).then(resolve)
           const saved = parseFogMap(reader.result as string)
@@ -296,7 +462,14 @@ export const useMapStore = create<MapState>()((set, get) => {
             set({ error: 'mapInvalidFile' })
             return resolve()
           }
-          void openImage(saved.image, saved.name, saved).then(resolve)
+          void openImage(
+            saved.image,
+            uniqueName(
+              saved.name,
+              get().library.map((m) => m.name)
+            ),
+            saved
+          ).then(resolve)
         }
         if (isFog) reader.readAsText(file)
         else reader.readAsDataURL(file)
@@ -305,12 +478,21 @@ export const useMapStore = create<MapState>()((set, get) => {
     restore: async () => {
       if (get().restored) return
       set({ restored: true })
-      const text = await loadMapText()
+      await get().refreshLibrary()
+      const id = await getCurrentId()
+      const meta = id ? get().library.find((m) => m.id === id) : undefined
+      const text = meta ? await loadMap(meta.id) : null
       const saved = text ? parseFogMap(text) : null
-      if (saved && !get().loaded) await openImage(saved.image, saved.name, saved)
+      if (meta && saved && !get().loaded)
+        return openImage(saved.image, meta.name, saved, meta.id, meta.thumb)
+      // a map kept by an older version, in a single slot, joins the library
+      const old = await takeLegacyMap()
+      const legacy = old ? parseFogMap(old) : null
+      if (legacy && !get().loaded) await openImage(legacy.image, legacy.name, legacy)
     },
 
     closeMap: () => {
+      void saveNow() // the map stays in the library; only the open one is let go
       clearTimeout(timer)
       pendingFog = []
       previewSeq++
@@ -319,8 +501,13 @@ export const useMapStore = create<MapState>()((set, get) => {
         base: null,
         analysis: null,
         fog: new Set(),
+        tokens: {},
+        players: {},
+        ranges: {},
+        mapId: null,
         graph: emptyGraph(),
         history: [],
+        future: [],
         baseline: emptyGraph(),
         selected: null,
         previewing: false,
@@ -329,7 +516,95 @@ export const useMapStore = create<MapState>()((set, get) => {
         shared: false,
         image: '',
       })
-      void saveMapText(null)
+      void setCurrentId(null)
+    },
+
+    setAutoDetect: (autoDetect) => {
+      set({ autoDetect })
+      try {
+        localStorage.setItem(AUTO_DETECT_KEY, autoDetect ? '1' : '0')
+      } catch {
+        // a browser that refuses storage just forgets the choice
+      }
+    },
+
+    refreshLibrary: async () => set({ library: await listMaps() }),
+
+    openFromLibrary: async (id) => {
+      if (id === get().mapId) return
+      await saveNow()
+      const meta = get().library.find((m) => m.id === id)
+      const text = meta ? await loadMap(id) : null
+      const saved = text ? parseFogMap(text) : null
+      if (!meta || !saved) return set({ error: 'mapLoadFailed' })
+      await openImage(saved.image, meta.name, saved, id, meta.thumb)
+    },
+
+    renameMap: async (id, name) => {
+      const meta = get().library.find((m) => m.id === id)
+      const next = name.trim()
+      if (!meta || !next || next === meta.name) return
+      const taken = get()
+        .library.filter((m) => m.id !== id)
+        .map((m) => m.name)
+      const unique = uniqueName(next, taken)
+      if (id === get().mapId) {
+        set({ name: unique })
+        await saveNow()
+      } else await saveMeta({ ...meta, name: unique })
+      await get().refreshLibrary()
+    },
+
+    duplicateMap: async (id) => {
+      if (id === get().mapId) await saveNow()
+      const meta = get().library.find((m) => m.id === id)
+      const text = meta ? await loadMap(id) : null
+      if (!meta || !text) return
+      const name = uniqueName(
+        meta.name,
+        get().library.map((m) => m.name)
+      )
+      await saveMap({ ...meta, id: newMapId(), name, updatedAt: Date.now() }, text)
+      await get().refreshLibrary()
+    },
+
+    exportMaps: async () => {
+      await saveNow() // so the open map is in the library as it is now
+      await get().refreshLibrary()
+      const out: SavedMap[] = []
+      for (const meta of get().library) {
+        const data = await loadMap(meta.id)
+        if (data) out.push({ ...meta, data })
+      }
+      return out
+    },
+
+    importMaps: async (maps) => {
+      await get().refreshLibrary()
+      const ids = new Set(get().library.map((m) => m.id))
+      const names = get().library.map((m) => m.name)
+      for (const m of maps) {
+        if (!parseFogMap(m.data)) continue
+        const taken = ids.has(m.id)
+        const name = taken ? uniqueName(m.name, names) : m.name
+        const id = taken ? newMapId() : m.id
+        const { data, ...meta } = m
+        if (await saveMap({ ...meta, id, name }, data)) {
+          ids.add(id)
+          names.push(name)
+        }
+      }
+      await get().refreshLibrary()
+    },
+
+    deleteMap: async (id) => {
+      if (id === get().mapId) {
+        set({ mapId: null }) // so closing does not write the map back after deleting it
+        clearTimeout(saveTimer)
+        get().closeMap()
+      }
+      await removeMap(id)
+      await get().refreshLibrary()
     },
 
     toText: () => {
@@ -340,9 +615,12 @@ export const useMapStore = create<MapState>()((set, get) => {
         name: s.name,
         width: s.width,
         height: s.height,
-        view: s.view,
         ...graphLists(s.graph),
         fogStyle: s.fogStyle,
+        ...(Object.keys(s.tokens).length ? { tokens: s.tokens } : {}),
+        ...(Object.keys(s.players).length ? { players: s.players } : {}),
+        ...(Object.keys(s.ranges).length ? { ranges: s.ranges } : {}),
+        grid: s.grid,
         fog: [...s.fog]
           .map((id) => rooms[id]?.sample)
           .filter((v): v is number => v !== undefined)
@@ -366,13 +644,11 @@ export const useMapStore = create<MapState>()((set, get) => {
       const segs = s.preview ?? (await analyzer().detect(detectParams(s.params)))
       previewSeq++
       set({ preview: null, selected: null })
-      edit(graphFromSegments(segs, Math.max(s.width, s.height)))
-    },
-    setView: (view) => {
-      set({ view })
-      scheduleSave()
+      edit(ensureBorder(graphFromSegments(segs, Math.max(s.width, s.height)), s.width, s.height))
     },
     setMode: (mode) => set({ mode }),
+    setDrawClear: (drawClear) => set({ drawClear }),
+    setLayer: (layer, on) => set({ layers: { ...get().layers, [layer]: on } }),
     setShared: (shared) => set({ shared }),
 
     beginGesture: () => {
@@ -387,19 +663,42 @@ export const useMapStore = create<MapState>()((set, get) => {
     deleteSelected: () => {
       const { graph, selected } = get()
       if (!selected) return
+      if (selected.kind === 'token') {
+        // a monster only leaves the map; a fire or a player's spot goes the same way
+        get().removeToken(selected.id)
+        return
+      }
       edit(
         selected.kind === 'node' ? removeNode(graph, selected.id) : removeEdge(graph, selected.id)
       )
     },
     undoEdit: () => {
-      const { history } = get()
+      const { history, future } = get()
       if (!history.length) return
-      set({ graph: history[history.length - 1], history: history.slice(0, -1), selected: null })
+      set({
+        ...history[history.length - 1],
+        history: history.slice(0, -1),
+        future: [...future, current()],
+        selected: null,
+      })
       rebuild()
+      scheduleSave()
+    },
+    redoEdit: () => {
+      const { history, future } = get()
+      if (!future.length) return
+      set({
+        ...future[future.length - 1],
+        history: [...history, current()],
+        future: future.slice(0, -1),
+        selected: null,
+      })
+      rebuild()
+      scheduleSave()
     },
     clearEdits: () => {
-      set({ graph: get().baseline, history: [], selected: null })
-      rebuild()
+      gesture = false
+      edit(get().baseline)
     },
 
     setFog: (id, on) => {
@@ -424,6 +723,73 @@ export const useMapStore = create<MapState>()((set, get) => {
       })
       scheduleSave()
     },
+    placeToken: (monsterId, at) => {
+      const { width, height } = get()
+      const x = Math.max(0, Math.min(width - 1, at.x))
+      const y = Math.max(0, Math.min(height - 1, at.y))
+      const was = get().tokens[monsterId]
+      if (was && was.x === x && was.y === y) return
+      change({ tokens: { ...get().tokens, [monsterId]: { x, y } } })
+    },
+
+    removeToken: (monsterId) => {
+      if (!(monsterId in get().tokens)) return
+      change({
+        tokens: Object.fromEntries(Object.entries(get().tokens).filter(([id]) => id !== monsterId)),
+        ranges: Object.fromEntries(Object.entries(get().ranges).filter(([id]) => id !== monsterId)),
+        selected: gone(get().selected, monsterId),
+      })
+    },
+
+    forgetPlayer: (id) => {
+      const key = playerTokenId(id)
+      const { tokens, players } = get()
+      change({
+        tokens: Object.fromEntries(Object.entries(tokens).filter(([k]) => k !== key)),
+        players: Object.fromEntries(Object.entries(players).filter(([k]) => k !== id)),
+        ranges: Object.fromEntries(Object.entries(get().ranges).filter(([k]) => k !== key)),
+        selected: gone(get().selected, key),
+      })
+    },
+
+    addLight: (at) => {
+      const id = newLightId()
+      const { width, height } = get()
+      const x = Math.max(0, Math.min(width - 1, at.x))
+      const y = Math.max(0, Math.min(height - 1, at.y))
+      change({
+        tokens: { ...get().tokens, [id]: { x, y } },
+        ranges: { ...get().ranges, [id]: DEFAULT_LIGHT_FT },
+      })
+      return id
+    },
+
+    setRange: (id, ft) => {
+      const next = Math.max(1, Math.min(300, Math.round(ft)))
+      if (get().ranges[id] === next) return
+      change({ ranges: { ...get().ranges, [id]: next } })
+    },
+
+    setGrid: (patch) => {
+      const g = { ...get().grid, ...patch }
+      const max = Math.max(get().width, get().height) / 4
+      g.cell = Math.max(8, Math.min(Math.max(8, max), g.cell))
+      set({ grid: g })
+      scheduleSave()
+    },
+
+    setPlayerName: (id, name) => {
+      if (get().players[id] === name) return
+      set({ players: { ...get().players, [id]: name } })
+      scheduleSave()
+    },
+
+    setTokens: (tokens) => {
+      if (tokens === get().tokens) return
+      set({ tokens })
+      scheduleSave()
+    },
+
     revealAll: () => {
       set({ fog: new Set() })
       scheduleSave()

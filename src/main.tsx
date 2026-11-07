@@ -8,12 +8,18 @@ import SettingsPopup from '@/components/popups/SettingsPopup'
 import MenuPopup from '@/components/popups/MenuPopup'
 import CustomMonstersPopup from '@/components/popups/CustomMonstersPopup'
 import ManageDataPopup from '@/components/popups/ManageDataPopup'
+import MapLibraryPopup from '@/components/popups/MapLibraryPopup'
 import ConnectionsPopup from '@/components/popups/ConnectionsPopup'
 import MonsterInfoPopup from '@/components/popups/MonsterInfoPopup'
 import ClientView from '@/client_app/ClientView'
 import { startMapSync } from '@/map/mapSync'
+import { useMonsterStore } from '@/store/useMonsterStore'
 
 startMapSync()
+
+// a host who was sharing before a reload shares again, until they stop it in the connections menu
+if (useMonsterStore.getState().peerId && !window.location.hash.startsWith('#/client'))
+  useMonsterStore.getState().initializeHost()
 
 const popupRoutes = [
   <Route key="add" path="add" element={<AddMonsterPopup />} />,
@@ -22,6 +28,7 @@ const popupRoutes = [
   <Route key="menu" path="menu" element={<MenuPopup />} />,
   <Route key="connections" path="connections" element={<ConnectionsPopup />} />,
   <Route key="custom-monsters" path="custom-monsters" element={<CustomMonstersPopup />} />,
+  <Route key="maps" path="maps" element={<MapLibraryPopup />} />,
   <Route key="manage-data" path="manage-data" element={<ManageDataPopup />} />,
 ]
 
@@ -38,6 +45,7 @@ createRoot(document.getElementById('root')!).render(
         </Route>
         <Route path="client" element={<ClientView />}>
           <Route path="map" element={null} />
+          <Route path="settings" element={null} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

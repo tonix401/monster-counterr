@@ -1,3 +1,4 @@
+import { useMapStore } from '@/map/mapStore'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import Peer, { type DataConnection } from 'peerjs'
@@ -29,6 +30,14 @@ export const useMonsterStore = create<StoreWithTemporal>()(
       (set, get) => {
         // Timeout id for the pending highlight reset (see highlightMonster)
         let highlightTimeoutId: number | null = null
+
+        // Hosting comes back by itself after a reload or a dropped line, until the host stops it
+        let hostRetryTimer: number | null = null
+        let sameIdAttempts = 0
+        const HOST_RETRY_MS = 3000
+        // right after a reload the signaling server may still hold the old peer for a while
+        const MAX_SAME_ID_ATTEMPTS = 10
+        const RECOVERABLE_PEER_ERRORS = ['network', 'server-error', 'socket-error', 'socket-closed']
 
         // ==================== CONNECTION HANDLERS ====================
 
@@ -70,6 +79,7 @@ export const useMonsterStore = create<StoreWithTemporal>()(
         }
 
         const handlePeerOpen = (id: string): void => {
+          sameIdAttempts = 0
           set({ peerId: id, isConnecting: false })
           startPingInterval()
           startHealthCheck()
@@ -116,6 +126,7 @@ export const useMonsterStore = create<StoreWithTemporal>()(
                     {
                       conn,
                       name: data.name || 'Unknown Client',
+                      playerId: data.id || conn.peer,
                       lastActivity: now,
                       messageCount: 0,
                       lastMessageReset: now,
@@ -124,6 +135,14 @@ export const useMonsterStore = create<StoreWithTemporal>()(
                 }))
                 // Send initial state
                 get().broadcastMonsters()
+              } else {
+                // a player renaming themselves while connected
+                const name = data.name || 'Unknown Client'
+                set((state) => ({
+                  connections: state.connections.map((c) =>
+                    c.conn.peer === conn.peer ? { ...c, name } : c
+                  ),
+                }))
               }
               return
             }
@@ -178,6 +197,7 @@ export const useMonsterStore = create<StoreWithTemporal>()(
             autoRemoveDead: SETTING_SCHEMA.autoRemoveDead.default,
             showXpCounter: SETTING_SCHEMA.showXpCounter.default,
             showQuickActions: SETTING_SCHEMA.showQuickActions.default,
+            showTokens: SETTING_SCHEMA.showTokens.default,
           },
 
           // XP tracking
@@ -201,6 +221,7 @@ export const useMonsterStore = create<StoreWithTemporal>()(
             includeMonsters: true,
             includeSettings: true,
             includeCurrentXp: true,
+            includeMaps: false,
             minimizeJson: true,
           },
 
@@ -442,15 +463,19 @@ export const useMonsterStore = create<StoreWithTemporal>()(
             }))
           },
 
-          exportData: () => {
+          exportData: async () => {
             const { monsters, xp, settings, exportSettings } = get()
+            const maps = exportSettings.includeMaps
+              ? await useMapStore.getState().exportMaps()
+              : undefined
             const data = dataHelpers.buildSaveData(
               monsters,
               xp,
               settings,
               exportSettings.includeSettings,
               exportSettings.includeCurrentXp,
-              exportSettings.includeMonsters
+              exportSettings.includeMonsters,
+              maps
             )
             const dataJson = dataHelpers.serializeSaveData(data, exportSettings.minimizeJson)
             dataHelpers.downloadFile(dataJson)
@@ -469,6 +494,7 @@ export const useMonsterStore = create<StoreWithTemporal>()(
               if (result.xp !== undefined) newState.xp = result.xp
               if (result.settings !== undefined) newState.settings = result.settings
               set(newState)
+              if (result.maps?.length) void useMapStore.getState().importMaps(result.maps)
               return true
             } catch (error) {
               console.error('Failed to load save file:', error)
@@ -484,34 +510,45 @@ export const useMonsterStore = create<StoreWithTemporal>()(
 
           initializeHost: () => {
             if (get().peer) return
+            if (hostRetryTimer !== null) window.clearTimeout(hostRetryTimer)
+            hostRetryTimer = null
 
             set({ isConnecting: true })
 
-            // Try to reconnect with stored peerId if available
+            // Try to reconnect with stored peerId if available; the stored id means hosting is wanted
             const storedPeerId = get().peerId
             const peer = storedPeerId ? new Peer(storedPeerId) : new Peer()
 
+            const retryLater = (): void => {
+              peer.destroy()
+              set({ peer: null })
+              hostRetryTimer = window.setTimeout(() => get().initializeHost(), HOST_RETRY_MS)
+            }
+
             peer.on('open', handlePeerOpen)
             peer.on('connection', handleConnection)
+            // the line to the signaling server dropped: players already connected stay, new ones need it back
+            peer.on('disconnected', () => {
+              if (!peer.destroyed && get().peerId) peer.reconnect()
+            })
 
             peer.on('error', (err) => {
               console.error('PeerJS error:', err)
 
-              // If the stored ID is unavailable, try again with a new ID
-              if (err.type === 'unavailable-id') {
-                console.log('Stored peer ID unavailable, requesting new ID')
-                peer.destroy()
-                set({ peer: null, peerId: null })
-
-                const newPeer = new Peer()
-                newPeer.on('open', handlePeerOpen)
-                newPeer.on('connection', handleConnection)
-                newPeer.on('error', (newErr) => {
-                  console.error('PeerJS error:', newErr)
-                  set({ isConnecting: false })
-                })
-
-                set({ peer: newPeer })
+              if (err.type === 'unavailable-id' && storedPeerId) {
+                if (sameIdAttempts < MAX_SAME_ID_ATTEMPTS) {
+                  // keep the same link and QR code for players who already have them
+                  sameIdAttempts++
+                  retryLater()
+                } else {
+                  console.log('Stored peer ID unavailable, requesting new ID')
+                  sameIdAttempts = 0
+                  peer.destroy()
+                  set({ peer: null, peerId: null })
+                  get().initializeHost()
+                }
+              } else if (storedPeerId && RECOVERABLE_PEER_ERRORS.includes(err.type)) {
+                retryLater()
               } else {
                 set({ isConnecting: false })
               }
@@ -529,6 +566,9 @@ export const useMonsterStore = create<StoreWithTemporal>()(
           },
 
           disconnectAll: () => {
+            if (hostRetryTimer !== null) window.clearTimeout(hostRetryTimer)
+            hostRetryTimer = null
+            sameIdAttempts = 0
             const { peer, connections, healthCheckInterval, pingIntervalId } = get()
             connections.forEach(({ conn }) => conn.close())
             peer?.destroy()

@@ -8,40 +8,12 @@ export function makeCanvas(w: number, h: number): HTMLCanvasElement {
   return c
 }
 
-export function paintBlueprint(canvas: HTMLCanvasElement, a: Analysis): void {
-  const { W, H, own, rooms } = a
-  const M = Math.max(W, H)
-  const g = canvas.getContext('2d')!
-  g.fillStyle = '#123a63'
-  g.fillRect(0, 0, W, H)
-  const step = Math.max(16, Math.round(M / 50))
-  g.lineWidth = 1
-  for (let k = 0; k * step <= M; k++) {
-    g.strokeStyle = k % 5 === 0 ? 'rgba(170,210,255,.22)' : 'rgba(170,210,255,.09)'
-    const v = k * step + 0.5
-    g.beginPath()
-    g.moveTo(v, 0)
-    g.lineTo(v, H)
-    g.moveTo(0, v)
-    g.lineTo(W, v)
-    g.stroke()
-  }
-  // faint room fills so the layout reads at a glance; the walls themselves are vector strokes drawn over the map
-  const layer = makeCanvas(W, H)
-  const lg = layer.getContext('2d')!
-  const im = lg.createImageData(W, H)
-  const b = im.data
-  for (let i = 0, p = 0; i < own.length; i++, p += 4) {
-    const R = rooms[own[i]]
-    if (R && !R.ext) {
-      b[p] = 150
-      b[p + 1] = 200
-      b[p + 2] = 255
-      b[p + 3] = 22
-    }
-  }
-  lg.putImageData(im, 0, 0)
-  g.drawImage(layer, 0, 0)
+/** A small JPEG of the map for the library list */
+export function makeThumb(base: HTMLCanvasElement, width = 160): string {
+  const h = Math.max(1, Math.round((base.height / base.width) * width))
+  const c = makeCanvas(width, h)
+  c.getContext('2d')!.drawImage(base, 0, 0, width, h)
+  return c.toDataURL('image/jpeg', 0.7)
 }
 
 /**
@@ -53,7 +25,9 @@ export function paintFog(
   a: Analysis,
   fog: Set<number>,
   style: FogStyle,
-  solid: boolean
+  solid: boolean,
+  /** Pixels that light reaches: fogged rooms are clear there (players' picture only) */
+  lit: Uint8Array | null = null
 ): void {
   const { W, H, own } = a
   const g = canvas.getContext('2d')!
@@ -67,7 +41,7 @@ export function paintFog(
 
   if (solid && !dark) {
     const mist = new Uint8Array(own.length)
-    for (let i = 0; i < own.length; i++) mist[i] = flag[own[i]]
+    for (let i = 0; i < own.length; i++) mist[i] = flag[own[i]] && !lit?.[i] ? 1 : 0
     const cloud = cloudFog(mist, W, H, Math.max(2, Math.round(Math.max(W, H) * 0.005)))
     for (let i = 0, p = 0; i < own.length; i++, p += 4) {
       if (!cloud.alpha[i]) continue
@@ -79,7 +53,7 @@ export function paintFog(
     }
   } else {
     for (let i = 0, p = 0; i < own.length; i++, p += 4) {
-      if (!flag[own[i]]) continue
+      if (!flag[own[i]] || lit?.[i]) continue
       const x = i % W
       const y = (i - x) / W
       const s = (x + y) % 14 < 2
@@ -128,18 +102,48 @@ export function paintHover(canvas: HTMLCanvasElement, a: Analysis, id: number): 
   g.putImageData(im, R.bx0, R.by0)
 }
 
-/** The picture players get: the map with every fogged room painted over, so hidden rooms never leave the DM's browser. */
+/** Square lines every `cell` pixels, light on dark so they read on any map */
+export function drawGrid(g: CanvasRenderingContext2D, W: number, H: number, cell: number): void {
+  if (!(cell >= 4)) return
+  g.save()
+  g.lineWidth = 1
+  for (const [color, off] of [
+    ['rgba(0,0,0,.4)', 0.5],
+    ['rgba(255,255,255,.3)', 1.5],
+  ] as const) {
+    g.strokeStyle = color
+    g.beginPath()
+    for (let x = cell; x < W; x += cell) {
+      g.moveTo(Math.round(x) + off, 0)
+      g.lineTo(Math.round(x) + off, H)
+    }
+    for (let y = cell; y < H; y += cell) {
+      g.moveTo(0, Math.round(y) + off)
+      g.lineTo(W, Math.round(y) + off)
+    }
+    g.stroke()
+  }
+  g.restore()
+}
+
+/**
+ * The picture players get: the map with every fogged room painted over, so hidden rooms never
+ * leave the DM's browser. Light clears the fog where it reaches; the grid lies under the fog.
+ */
 export async function renderPlayerImage(
   base: HTMLCanvasElement,
   a: Analysis,
   fog: Set<number>,
-  style: FogStyle
+  style: FogStyle,
+  lit: Uint8Array | null = null,
+  grid: { on: boolean; cell: number } | null = null
 ): Promise<Blob | null> {
   const out = makeCanvas(a.W, a.H)
   const g = out.getContext('2d')!
   g.drawImage(base, 0, 0)
+  if (grid?.on) drawGrid(g, a.W, a.H, grid.cell)
   const fogLayer = makeCanvas(a.W, a.H)
-  paintFog(fogLayer, a, fog, style, true)
+  paintFog(fogLayer, a, fog, style, true, lit)
   g.drawImage(fogLayer, 0, 0)
   return new Promise((resolve) => out.toBlob(resolve, 'image/jpeg', 0.8))
 }

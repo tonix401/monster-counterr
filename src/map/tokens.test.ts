@@ -5,6 +5,7 @@ import {
   hitToken,
   monsterInitials,
   monsterLabel,
+  playerTokenId,
   playerTokens,
   pruneTokens,
   RING_FRACTION,
@@ -33,9 +34,50 @@ const analysis = (): Analysis => {
   return { W: 10, H: 10, own, rooms: [] }
 }
 
+describe('player tokens', () => {
+  it('keep their place when away, and show to players only in unfogged rooms, by letters', () => {
+    const tokens = {
+      [playerTokenId('a1')]: { x: 1, y: 1 },
+      [playerTokenId('b2')]: { x: 7, y: 1 },
+    }
+    expect(pruneTokens(tokens, new Set())).toBe(tokens)
+    const out = playerTokens(tokens, [], analysis(), new Set([2]), { a1: 'Ana Maria', b2: 'Bo' })
+    expect(out).toEqual([{ x: 1, y: 1, initials: 'AM', status: 'player' }])
+  })
+})
+
+describe('light tokens', () => {
+  it('are picked at 70% of a monster token', () => {
+    const tokens = { 'light:a': { x: 10, y: 10 } }
+    expect(hitToken(tokens, 10 + 6, 10, 10)).toBe('light:a')
+    expect(hitToken(tokens, 10 + 8, 10, 10)).toBeNull()
+  })
+
+  it('stay on the map, and light a fogged room for the monsters standing in it', () => {
+    const tokens = { 'light:a': { x: 1, y: 1 } }
+    expect(pruneTokens(tokens, new Set())).toBe(tokens)
+    const lit = new Uint8Array(100)
+    lit[1 * 10 + 7] = 1
+    const fogged = new Set([2])
+    expect(visibleToPlayers({ x: 7, y: 1 }, { isHidden: false }, analysis(), fogged)).toBe(false)
+    expect(visibleToPlayers({ x: 7, y: 1 }, { isHidden: false }, analysis(), fogged, lit)).toBe(
+      true
+    )
+    expect(visibleToPlayers({ x: 7, y: 1 }, { isHidden: true }, analysis(), fogged, lit)).toBe(
+      false
+    )
+  })
+})
+
 describe('token helpers', () => {
   it('fills the ring in rough steps', () => {
-    expect(RING_FRACTION).toEqual({ healthy: 1, injured: 0.5, 'badly-injured': 0.25, down: 0 })
+    expect(RING_FRACTION).toEqual({
+      player: 1,
+      healthy: 1,
+      injured: 0.5,
+      'badly-injured': 0.25,
+      down: 0,
+    })
   })
 
   it('numbers the label of grouped monsters', () => {

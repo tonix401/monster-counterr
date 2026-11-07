@@ -22,6 +22,11 @@ export function edgeSegments(g: Graph, withBorder = true): WallSegment[] {
   return out
 }
 
+/** The walls that stop light and sight: every wall that is not translucent, the border included */
+export function opaqueSegments(g: Graph): WallSegment[] {
+  return edgeSegments({ ...g, edges: g.edges.filter((e) => !e.clear) }, true)
+}
+
 /** The ends of one edge, or null when it is not in the graph */
 export function edgeEnds(g: Graph, id: number): WallSegment | null {
   const e = g.edges.find((o) => o.id === id)
@@ -49,10 +54,34 @@ export function closestOnSegment(x: number, y: number, s: WallSegment): [number,
 export const edgeBetween = (g: Graph, a: number, b: number): MapEdge | undefined =>
   g.edges.find((e) => (e.a === a && e.b === b) || (e.a === b && e.b === a))
 
-/** Adds a wall between two existing nodes; does nothing for the same node or a pair already joined */
-export function addEdge(g: Graph, a: number, b: number): Graph {
-  if (a === b || edgeBetween(g, a, b)) return g
-  return { ...g, edges: [...g.edges, { id: g.next, a, b }], next: g.next + 1 }
+/**
+ * Adds a wall between two existing nodes; does nothing for the same node. A pair already joined
+ * keeps its wall, but takes on the new kind (drawing a window over a wall makes it a window).
+ */
+export function addEdge(g: Graph, a: number, b: number, clear = false): Graph {
+  if (a === b) return g
+  const had = edgeBetween(g, a, b)
+  if (had) return had.border || !had.clear === !clear ? g : setEdgeClear(g, had.id, clear)
+  return {
+    ...g,
+    edges: [...g.edges, { id: g.next, a, b, ...(clear && { clear: true }) }],
+    next: g.next + 1,
+  }
+}
+
+/** Makes a wall translucent or solid again; the border is always solid */
+export function setEdgeClear(g: Graph, id: number, clear: boolean): Graph {
+  const e = g.edges.find((o) => o.id === id)
+  if (!e || e.border || !e.clear === !clear) return g
+  return {
+    ...g,
+    edges: g.edges.map((o) => {
+      if (o.id !== id) return o
+      const rest = { ...o }
+      delete rest.clear
+      return clear ? { ...rest, clear: true } : rest
+    }),
+  }
 }
 
 /** Nodes that no wall touches are dropped, and border nodes nothing hangs on any more are healed */
@@ -110,7 +139,12 @@ export function removeNode(g: Graph, id: number): Graph {
     const a = mine[0].a === id ? mine[0].b : mine[0].a
     const b = mine[1].a === id ? mine[1].b : mine[1].a
     if (a !== b && !rest.some((e) => pairKey(e.a, e.b) === pairKey(a, b))) {
-      return { nodes, edges: [...rest, { id: g.next, a, b }], next: g.next + 1 }
+      const clear = !!mine[0].clear && !!mine[1].clear
+      return {
+        nodes,
+        edges: [...rest, { id: g.next, a, b, ...(clear && { clear: true }) }],
+        next: g.next + 1,
+      }
     }
   }
   return dropOrphans({ ...g, nodes, edges: rest })
@@ -173,8 +207,20 @@ export function splitEdge(
       nodes: [...g.nodes, { id, x, y, ...(e.border && { border: true }) }],
       edges: [
         ...g.edges.filter((o) => o !== e),
-        { id: id + 1, a: e.a, b: id, ...(e.border && { border: true }) },
-        { id: id + 2, a: id, b: e.b, ...(e.border && { border: true }) },
+        {
+          id: id + 1,
+          a: e.a,
+          b: id,
+          ...(e.border && { border: true }),
+          ...(e.clear && { clear: true }),
+        },
+        {
+          id: id + 2,
+          a: id,
+          b: e.b,
+          ...(e.border && { border: true }),
+          ...(e.clear && { clear: true }),
+        },
       ],
       next: id + 3,
     },
@@ -198,7 +244,8 @@ export function addPolyline(
   g: Graph,
   pts: [number, number][],
   closed = false,
-  tidyReach = 0
+  tidyReach = 0,
+  clear = false
 ): Graph {
   let out = g
   let first = -1
@@ -208,11 +255,11 @@ export function addPolyline(
     const placed = placeNode(out, p[0], p[1])
     out = placed.g
     if (placed.joined) joined.push(placed.id)
-    if (prev !== -1) out = addEdge(out, prev, placed.id)
+    if (prev !== -1) out = addEdge(out, prev, placed.id, clear)
     else first = placed.id
     prev = placed.id
   }
-  if (closed && pts.length > 2) out = addEdge(out, prev, first)
+  if (closed && pts.length > 2) out = addEdge(out, prev, first, clear)
   return tidy(out, tidyReach, joined)
 }
 
@@ -229,7 +276,8 @@ export function addRect(
   y1: number,
   x2: number,
   y2: number,
-  r: number
+  r: number,
+  clear = false
 ): Graph {
   const pts: [number, number][] = [
     [x1, y1],
@@ -237,7 +285,7 @@ export function addRect(
     [x2, y2],
     [x1, y2],
   ]
-  return addPolyline(g, snapAll(g, pts, r), true, r)
+  return addPolyline(g, snapAll(g, pts, r), true, r, clear)
 }
 
 /** How many corners a ring around the box gets: a smooth look, but few enough to edit by hand */
@@ -274,9 +322,10 @@ export function addEllipse(
   x2: number,
   y2: number,
   M: number,
-  r: number
+  r: number,
+  clear = false
 ): Graph {
-  return addPolyline(g, snapAll(g, ellipsePoints(x1, y1, x2, y2, M), r), true, r)
+  return addPolyline(g, snapAll(g, ellipsePoints(x1, y1, x2, y2, M), r), true, r, clear)
 }
 
 /** Moves a node; every wall on it follows. Border nodes stay where they are. */
@@ -581,7 +630,7 @@ export function ensureBorder(g: Graph, W: number, H: number): Graph {
     const key = pairKey(e.a, e.b)
     if (seen.has(key)) continue
     seen.add(key)
-    out.push(link.has(key) ? { ...e, border: true } : e)
+    out.push(link.has(key) ? { id: e.id, a: e.a, b: e.b, border: true } : e)
   }
   for (const c of chain) {
     const key = pairKey(c.a, c.b)
@@ -594,24 +643,33 @@ export function ensureBorder(g: Graph, W: number, H: number): Graph {
 }
 
 /** The walls as a list of points and a list of point-index pairs, the way a file keeps them */
-export function graphLists(g: Graph): { nodes: [number, number][]; edges: [number, number][] } {
+export function graphLists(g: Graph): {
+  nodes: [number, number][]
+  edges: ([number, number] | [number, number, 1])[]
+} {
   const index = new Map(g.nodes.map((n, i) => [n.id, i]))
   const r1 = (v: number): number => Math.round(v * 10) / 10
   return {
     nodes: g.nodes.map((n) => [r1(n.x), r1(n.y)]),
-    edges: g.edges.map((e) => [index.get(e.a)!, index.get(e.b)!]),
+    // a third 1 marks a translucent wall; readers that don't know it see an ordinary wall
+    edges: g.edges.map((e) =>
+      e.clear ? [index.get(e.a)!, index.get(e.b)!, 1] : [index.get(e.a)!, index.get(e.b)!]
+    ),
   }
 }
 
 /** The graph for such lists; pairs that name a missing point, join a point to itself or repeat are skipped, and so are points no pair uses */
-export function graphFromLists(points: [number, number][], pairs: [number, number][]): Graph {
+export function graphFromLists(
+  points: [number, number][],
+  pairs: ([number, number] | [number, number, number])[]
+): Graph {
   let g: Graph = {
     nodes: points.map((p, i) => ({ id: i + 1, x: p[0], y: p[1] })),
     edges: [],
     next: points.length + 1,
   }
-  for (const [i, j] of pairs) {
-    if (points[i] && points[j]) g = addEdge(g, i + 1, j + 1)
+  for (const [i, j, c] of pairs) {
+    if (points[i] && points[j]) g = addEdge(g, i + 1, j + 1, c === 1)
   }
   return dropOrphans(g)
 }

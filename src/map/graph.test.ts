@@ -14,8 +14,10 @@ import {
   graphLists,
   hitTest,
   moveNode,
+  opaqueSegments,
   removeEdge,
   removeNode,
+  setEdgeClear,
   snapPoint,
   tidy,
 } from './graph'
@@ -230,6 +232,73 @@ describe('file lists', () => {
     )
     expect(odd.edges).toHaveLength(1)
     expect(odd.nodes).toHaveLength(2)
+  })
+})
+
+describe('translucent walls', () => {
+  const line = (clear: boolean): Graph =>
+    addPolyline(
+      emptyGraph(),
+      [
+        [0, 0],
+        [100, 0],
+      ],
+      false,
+      0,
+      clear
+    )
+
+  it('are walls for the file and the lists, but not for light', () => {
+    const g = line(true)
+    expect(g.edges[0].clear).toBe(true)
+    expect(edgeSegments(g)).toHaveLength(1)
+    expect(opaqueSegments(g)).toHaveLength(0)
+    expect(opaqueSegments(line(false))).toHaveLength(1)
+    const { nodes, edges } = graphLists(g)
+    expect(edges).toEqual([[0, 1, 1]])
+    expect(graphFromLists(nodes, edges).edges[0].clear).toBe(true)
+    expect(graphLists(line(false)).edges).toEqual([[0, 1]])
+  })
+
+  it('can be drawn over a wall, switched, and keep their kind when split', () => {
+    const g = line(false)
+    expect(addEdge(g, 1, 2, true).edges[0].clear).toBe(true)
+    expect(addEdge(line(true), 1, 2, false).edges[0].clear).toBeUndefined()
+    expect(setEdgeClear(g, g.edges[0].id, true).edges[0].clear).toBe(true)
+    const t = line(true)
+    const cut = addPolyline(
+      t,
+      [
+        [50, -20],
+        [50, 0],
+      ],
+      false,
+      0
+    )
+    expect(cut.edges.filter((e) => e.clear)).toHaveLength(2)
+  })
+
+  it('are never part of the border', () => {
+    const g = ensureBorder(
+      addEdge(
+        addPolyline(
+          emptyGraph(),
+          [
+            [0, 0],
+            [100, 0],
+          ],
+          false,
+          0,
+          true
+        ),
+        1,
+        2,
+        true
+      ),
+      100,
+      80
+    )
+    expect(g.edges.filter((e) => e.border).every((e) => !e.clear)).toBe(true)
   })
 })
 

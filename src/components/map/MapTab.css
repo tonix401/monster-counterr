@@ -5,7 +5,6 @@
   /* fills what the header and tabs leave of the screen (see .app-wide), however tall they are */
   flex: 1 1 0;
   min-height: 0;
-  margin: var(--spacing-xs) 0 0;
   overflow: hidden;
   background: color-mix(in srgb, var(--overlay-medium) 80%, transparent);
 }

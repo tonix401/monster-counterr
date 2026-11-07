@@ -53,11 +53,13 @@
   --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.35);
 
   /* Overlays */
-  --overlay-light: rgba(255, 255, 255, 0.02);
-  --overlay-medium: rgba(255, 255, 255, 0.05);
-  --overlay-heavy: rgba(255, 255, 255, 0.08);
-  --overlay-accent: rgba(124, 77, 255, 0.08);
-  --overlay-accent-light: rgba(124, 77, 255, 0.05);
+  /* Tints laid over the card colour instead of the page, so the background never shows through */
+  --overlay-light: color-mix(in srgb, white 2%, var(--card));
+  --overlay-medium: color-mix(in srgb, white 5%, var(--card));
+  --overlay-heavy: color-mix(in srgb, white 8%, var(--card));
+  --overlay-accent: color-mix(in srgb, var(--accent) 12%, var(--card));
+  --overlay-accent-light: color-mix(in srgb, var(--accent) 7%, var(--card));
+  --overlay-accent-strong: color-mix(in srgb, var(--accent) 22%, var(--card));
 
   /* Button Sizes */
   --button-height: 32px;

@@ -229,7 +229,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     g.save()
     if (s.preview) g.globalAlpha = 0.35
     g.beginPath()
-    for (const m of edgeSegments(s.graph)) {
+    for (const m of edgeSegments(s.graph, false)) {
       g.moveTo(m.x1, m.y1)
       g.lineTo(m.x2, m.y2)
     }
@@ -256,7 +256,10 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       g.fillStyle = s.view === 'blueprint' ? '#28beff' : '#fff'
       g.strokeStyle = s.view === 'blueprint' ? '#e8f4ff' : '#0a6e99'
       g.lineWidth = 1.5 * (dpr / sc)
+      // the border itself is invisible: only the nodes walls hang on show
+      const hung = new Set(s.graph.edges.filter((e) => !e.border).flatMap((e) => [e.a, e.b]))
       for (const n of s.graph.nodes) {
+        if (n.border && !hung.has(n.id)) continue
         g.beginPath()
         g.arc(n.x, n.y, rr, 0, Math.PI * 2)
         g.fill()
@@ -512,7 +515,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       // while drawing, the right button moves a node
       const pos = { sx: toWork(e)[0], sy: toWork(e)[1] }
       const hit = hitTest(s.graph, pos.sx, pos.sy, tol())
-      if (hit?.kind === 'node') {
+      if (hit?.kind === 'node' && !hit.node.border) {
         e.preventDefault()
         s.beginGesture()
         drag.current = {
@@ -555,20 +558,27 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       s.beginGesture()
       if (hit.kind === 'node') {
         s.select({ kind: 'node', id: hit.node.id })
-        drag.current = { kind: 'node', id: hit.node.id, sx: x, sy: y, moved: false, g0: s.graph }
+        // border nodes are fixed
+        if (!hit.node.border)
+          drag.current = { kind: 'node', id: hit.node.id, sx: x, sy: y, moved: false, g0: s.graph }
       } else {
         const ends = edgeEnds(s.graph, hit.edge.id)!
         s.select({ kind: 'edge', id: hit.edge.id })
-        drag.current = {
-          kind: 'edge',
-          id: hit.edge.id,
-          sx: x,
-          sy: y,
-          moved: false,
-          g0: s.graph,
-          ends,
-        }
+        const fixed = s.graph.nodes.some(
+          (n) => n.border && (n.id === hit.edge.a || n.id === hit.edge.b)
+        )
+        if (!fixed)
+          drag.current = {
+            kind: 'edge',
+            id: hit.edge.id,
+            sx: x,
+            sy: y,
+            moved: false,
+            g0: s.graph,
+            ends,
+          }
       }
+      if (!drag.current) s.endGesture() // a fixed border node or wall: nothing to drag
     } else if (s.mode === 'erase') {
       s.beginGesture()
       drag.current = { kind: 'erase' }

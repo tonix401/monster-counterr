@@ -133,6 +133,12 @@ export const UndoIcon = icon(
     <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />
   </>
 )
+export const RedoIcon = icon(
+  <>
+    <path d="m15 14 5-5-5-5" />
+    <path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13" />
+  </>
+)
 export const TrashIcon = icon(
   <>
     <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
@@ -154,6 +160,37 @@ export const RefreshIcon = icon(
   </>
 )
 
+export const PeopleIcon = icon(
+  <>
+    <circle cx="9" cy="8" r="3.5" />
+    <path d="M2.5 20a6.5 6.5 0 0 1 13 0" />
+    <path d="M16 4.7a3.5 3.5 0 0 1 0 6.6M18 14a6.5 6.5 0 0 1 3.5 6" />
+  </>
+)
+export const SkullIcon = icon(
+  <>
+    <path d="M12 3a8 8 0 0 0-8 8c0 2.6 1.3 4.2 3 5.3V20h10v-3.7c1.7-1.1 3-2.7 3-5.3a8 8 0 0 0-8-8z" />
+    <circle cx="9" cy="11.5" r="1.4" />
+    <circle cx="15" cy="11.5" r="1.4" />
+    <path d="M10.5 20v-2.5M13.5 20v-2.5" />
+  </>
+)
+export const WindowIcon = icon(
+  <>
+    <rect x="4" y="3" width="16" height="18" rx="1" strokeDasharray="3 2" />
+    <path d="M12 3v18M4 12h16" />
+  </>
+)
+export const FireIcon = icon(
+  <path d="M12 2c1 3.5 5 5.5 5 10.2A5 5 0 0 1 12 17.5a5 5 0 0 1-5-5.3c0-2 1-3.4 2.2-4.6.2 1.4.9 2.3 1.8 2.6C10.7 7.5 11 4.5 12 2z M9 21h6" />
+)
+export const GridIcon = icon(
+  <>
+    <rect x="3" y="3" width="18" height="18" rx="2" />
+    <path d="M3 9h18M3 15h18M9 3v18M15 3v18" />
+  </>
+)
+
 interface IconButtonProps {
   label: string
   shortcut?: string
@@ -163,6 +200,8 @@ interface IconButtonProps {
   danger?: boolean
   disabled?: boolean
   onClick?: () => void
+  /** Makes the button draggable; called with the drag event to fill the data transfer */
+  onDragStart?: (e: React.DragEvent) => void
   /** Side the tooltip opens towards */
   tip?: 'right' | 'left' | 'below' | 'above'
 }
@@ -177,6 +216,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
   danger,
   disabled,
   onClick,
+  onDragStart,
   tip = 'below',
 }) => (
   <button
@@ -188,6 +228,8 @@ export const IconButton: React.FC<IconButtonProps> = ({
     data-tip-side={tip}
     disabled={disabled}
     onClick={onClick}
+    draggable={onDragStart ? true : undefined}
+    onDragStart={onDragStart}
   >
     {glyph}
   </button>

@@ -41,6 +41,11 @@
   opacity: 0.8;
 }
 
+.map-preview-controls {
+  align-self: flex-start;
+  flex: none;
+}
+
 .map-preview-stage {
   position: relative;
   flex: 1;
@@ -135,15 +140,68 @@
   margin-left: auto;
 }
 
-.map-tools {
+.map-left {
   position: absolute;
-  top: 52px;
+  top: 0;
+  bottom: 0;
   left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-gap);
+  pointer-events: none;
+}
+
+.map-topbar > .map-left {
+  pointer-events: none;
+}
+
+.map-left > * {
+  pointer-events: auto;
+}
+
+.map-tools {
   flex-direction: column;
   /* a short window gets a second column instead of losing the lower tools */
   flex-wrap: wrap;
   align-content: flex-start;
-  max-height: calc(100% - 52px);
+  /* leaves room for the light group below */
+  max-height: calc(100% - 140px);
+}
+
+.map-light {
+  position: relative;
+  flex: none;
+  flex-direction: column;
+}
+
+.map-grid-size {
+  position: absolute;
+  top: 0;
+  left: calc(100% + var(--map-gap));
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  width: 180px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--map-glass);
+  box-shadow: var(--shadow-md);
+  font-size: var(--font-sm);
+}
+
+.map-right {
+  position: absolute;
+  top: 52px;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-gap);
+}
+
+.map-files,
+.map-layers {
+  flex-direction: column;
 }
 
 .map-divider {
@@ -253,7 +311,8 @@
 .map-panel {
   position: absolute;
   top: 64px;
-  right: var(--map-gap);
+  /* beside the file column, not over it */
+  right: calc(var(--map-gap) + 56px);
   z-index: 3;
   display: flex;
   flex-direction: column;
@@ -483,14 +542,38 @@
     border-left: 0;
   }
 
-  .map-tools {
+  .map-left {
     position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .map-tools {
     flex-direction: row;
     max-height: none;
   }
 
+  .map-light {
+    flex-direction: row;
+  }
+
+  .map-grid-size {
+    top: calc(100% + var(--map-gap));
+    left: 0;
+  }
+
   .map-group-end {
     margin-left: 0;
+  }
+
+  .map-right {
+    position: static;
+    flex-direction: row;
+  }
+
+  .map-files,
+  .map-layers {
+    flex-direction: row;
   }
 
   .map-icon-btn {
@@ -500,6 +583,7 @@
 
   .map-panel {
     top: 112px;
+    right: var(--map-gap);
   }
 
   .map-icon-btn::after {
@@ -595,8 +679,17 @@
   white-space: nowrap;
 }
 
+.map-players {
+  flex: 0 1 auto;
+  max-height: 30%;
+}
+
 .map-monsters-empty {
   margin: 0;
   font-size: var(--font-sm);
   opacity: 0.6;
+}
+
+.map-grid-size input {
+  width: 100%;
 }

@@ -21,6 +21,8 @@ export interface MapEdge {
   b: number
   /** Part of the invisible outer border: always there, never drawn, but lines still snap to it */
   border?: boolean
+  /** Translucent (a window, bars): still a wall for rooms and fog, but light and sight pass through */
+  clear?: boolean
 }
 
 /** The walls drawn on the map; always replaced, never changed in place, so history can keep old ones */
@@ -31,7 +33,8 @@ export interface Graph {
   next: number
 }
 
-export type Selection = { kind: 'node' | 'edge'; id: number }
+/** A wall node or wall (graph id), or a token on the map (monster id, `player:<guid>`, `light:<uid>`) */
+export type Selection = { kind: 'node' | 'edge'; id: number } | { kind: 'token'; id: string }
 
 /** How a fogged room looks to players: grey fog, or no light at all */
 export type FogStyle = 'fog' | 'dark'

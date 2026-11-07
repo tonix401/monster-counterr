@@ -40,6 +40,7 @@ createRoot(document.getElementById('root')!).render(
         </Route>
         <Route path="client" element={<ClientView />}>
           <Route path="map" element={null} />
+          <Route path="settings" element={null} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

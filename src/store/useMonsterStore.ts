@@ -124,6 +124,14 @@ export const useMonsterStore = create<StoreWithTemporal>()(
                 }))
                 // Send initial state
                 get().broadcastMonsters()
+              } else {
+                // a player renaming themselves while connected
+                const name = data.name || 'Unknown Client'
+                set((state) => ({
+                  connections: state.connections.map((c) =>
+                    c.conn.peer === conn.peer ? { ...c, name } : c
+                  ),
+                }))
               }
               return
             }

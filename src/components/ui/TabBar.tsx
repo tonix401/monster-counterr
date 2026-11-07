@@ -2,7 +2,7 @@ import React from 'react'
 import { NavLink, type To } from 'react-router'
 import './TabBar.css'
 
-export type TabIcon = 'encounter' | 'map'
+export type TabIcon = 'encounter' | 'map' | 'settings'
 
 export interface Tab {
   to: To
@@ -31,6 +31,12 @@ const Icon: React.FC<{ icon: TabIcon }> = ({ icon }) =>
       <path d="M9 4 3 6.5v13L9 17l6 3 6-2.5v-13L15 7z" />
       <path d="M9 4v13M15 7v13" />
     </svg>
+  ) : icon === 'settings' ? (
+    <svg {...svgProps} className="tab-icon">
+      <path d="M4 7h10M18 7h2M4 17h2M10 17h10" />
+      <circle cx="16" cy="7" r="2" />
+      <circle cx="8" cy="17" r="2" />
+    </svg>
   ) : (
     <svg {...svgProps} className="tab-icon">
       <path d="M14.5 17.5 3 6V3h3l11.5 11.5" />
@@ -40,8 +46,9 @@ const Icon: React.FC<{ icon: TabIcon }> = ({ icon }) =>
     </svg>
   )
 
-const TabBar: React.FC<{ tabs: Tab[] }> = ({ tabs }) => (
-  <nav className="tab-bar" aria-label="Views">
+/** `bottom` makes it a phone style menu: icon above label, spread over the full width */
+const TabBar: React.FC<{ tabs: Tab[]; bottom?: boolean }> = ({ tabs, bottom }) => (
+  <nav className={`tab-bar ${bottom ? 'tab-bar-bottom' : ''}`} aria-label="Views">
     {tabs.map((tab, i) => (
       <NavLink key={i} to={tab.to} end={tab.end} replace className="tab-link">
         {tab.icon && <Icon icon={tab.icon} />}

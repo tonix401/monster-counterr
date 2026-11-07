@@ -82,6 +82,37 @@
   color: var(--accent);
 }
 
+/* Bottom menu: icon over label, every tab an equal share, the marker on the top edge */
+.tab-bar-bottom {
+  padding: 0 0 env(safe-area-inset-bottom);
+  gap: 0;
+  border-top: var(--borderwidth) solid var(--border);
+  border-bottom: 0;
+  background: var(--card);
+}
+
+.tab-bar-bottom .tab-link {
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 56px;
+  margin-bottom: 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 0;
+  font-size: var(--font-sm);
+}
+
+.tab-bar-bottom .tab-link::after {
+  top: 0;
+  bottom: auto;
+  border-radius: 0 0 3px 3px;
+}
+
+.tab-bar-bottom .tab-icon {
+  width: 24px;
+  height: 24px;
+}
+
 @media (max-width: 600px) {
   .tab-bar {
     padding: 0 var(--spacing-md);
@@ -91,6 +122,10 @@
   .tab-link {
     flex: 1 1 0;
     padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .tab-bar.tab-bar-bottom {
+    padding: 0 0 env(safe-area-inset-bottom);
   }
 }
 

@@ -6,14 +6,16 @@ import {
   closestOnSegment,
   dropNode,
   edgeEnds,
-  edgeSegments,
+  wallsByKind,
   ellipsePoints,
   hitEdge,
   hitTest,
   mergeTarget,
   moveNode,
   removeEdge,
-  setEdgeClear,
+  nextWallKind,
+  setEdgeKind,
+  wallKind,
   snapPoint,
   splitEdge,
   type Snap,
@@ -21,7 +23,8 @@ import {
 import { useMapStore } from '@/map/mapStore'
 import { useMonsters, useMonsterStore, useTerm } from '@/store/useMonsterStore'
 import { drawFire, drawToken } from '@/map/tokenArt'
-import { litFor, lightSources } from '@/map/light'
+import { litRequest, lightSources } from '@/map/light'
+import { lightClient } from '@/map/lightClient'
 import {
   FT_PER_CELL,
   LIGHT_TOKEN_SCALE,
@@ -37,8 +40,8 @@ import {
   rangeFt,
   tokenRadius,
 } from '@/map/tokens'
-import { drawGrid, makeCanvas, paintFog, paintHover } from '@/map/render'
-import type { Graph, MapMode, WallSegment } from '@/map/types'
+import { drawGrid, makeCanvas, paintFog, paintFogLit, paintHover } from '@/map/render'
+import type { Graph, MapMode, WallKind, WallSegment } from '@/map/types'
 
 interface Layers {
   fog: HTMLCanvasElement
@@ -67,8 +70,8 @@ export const MIN_ZOOM = 1
 export const MAX_ZOOM = 12
 
 /** A line, rectangle or circle being dragged out, before it becomes part of the map */
-/** `clear`: drawn with the right button (or the translucent toggle), so the walls let light through */
-type Draft = { mode: MapMode; sx: number; sy: number; box: WallSegment; clear: boolean }
+/** `kind`: the right button draws translucent walls, the left one what the palette has selected */
+type Draft = { mode: MapMode; sx: number; sy: number; box: WallSegment; kind: WallKind }
 type Drag =
   | {
       kind: 'node'
@@ -77,7 +80,7 @@ type Drag =
       sy: number
       moved: boolean
       g0: Graph
-      clear: boolean
+      wall: WallKind
       /** border nodes cannot be moved, but a line can start from them */
       fixed: boolean
       at: [number, number]
@@ -90,7 +93,7 @@ type Drag =
       moved: boolean
       g0: Graph
       ends: WallSegment
-      clear: boolean
+      wall: WallKind
     }
   | { kind: 'erase' }
   | { kind: 'pan'; cx: number; cy: number; view: View }
@@ -110,8 +113,8 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
   const pending = useRef(false)
   /** Where the next mode change starts a line (a double click on a node in select mode) */
   const startAt = useRef<[number, number] | null>(null)
-  /** Whether that line is translucent (started with the right button) */
-  const startClear = useRef(false)
+  /** What that line is (translucent when started with the right button) */
+  const startKind = useRef<WallKind>('solid')
   /** The last click in select mode, to tell a double click on a wall for either button */
   const lastClick = useRef<{ t: number; x: number; y: number; button: number } | null>(null)
   /** A pan is under way: the cursor closes to a fist for all of it */
@@ -128,15 +131,19 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
   const pointers = useRef(new Map<number, { x: number; y: number }>())
   const pinch = useRef<{ dist: number; view: View } | null>(null)
   const space = useRef(false)
-  /** A middle press on a wall: a click without a drag flips it between solid and translucent */
+  /** A middle press on a wall: a click without a drag turns it into the next kind */
   const middleWall = useRef<{ id: number; cx: number; cy: number } | null>(null)
   /** A token being dragged: the monster and where the pointer has taken it */
   const tokenDrag = useRef<{ id: string; x: number; y: number; moved: boolean } | null>(null)
   /** A light or sight circle being resized by its handle: the token and the feet it would have */
   const fogFrame = useRef(0)
-  /** Whether the polygon being clicked out is translucent: decided by its first click */
-  const polyClear = useRef(false)
-  const litCache = useRef<{ key: unknown[]; lit: Uint8Array | null } | null>(null)
+  /** What the polygon being clicked out is: decided by its first click */
+  const polyKind = useRef<WallKind>('solid')
+  const litCache = useRef<{ key: unknown[]; shapes: Float32Array[] } | null>(null)
+  /** The fog of all fogged rooms without any light, the starting point of every frame */
+  const still = useRef<{ key: unknown[]; canvas: HTMLCanvasElement } | null>(null)
+  const wallLayer = useRef<{ key: unknown[]; canvas: HTMLCanvasElement } | null>(null)
+  const fogBase = useRef<{ key: unknown[]; canvas: HTMLCanvasElement } | null>(null)
   const rangeDrag = useRef<{ id: string; ft: number; dir: number } | null>(null)
   /** The name of the monster under the pointer, shown to the DM only */
   const [tip, setTip] = useState<{ id: string; x: number; y: number } | null>(null)
@@ -176,8 +183,18 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     const ctx = cv.getContext('2d')!
     const L = layers.current
     ctx.clearRect(0, 0, cv.width, cv.height)
-    ctx.drawImage(s.base, 0, 0)
-    if (s.grid.on) drawGrid(ctx, cv.width, cv.height, s.grid.cell)
+    // the picture and its grid only change with the map or the grid: kept as one image
+    const stillKey = [s.base, s.grid.on, s.grid.cell, cv.width, cv.height]
+    if (!still.current || still.current.key.some((k, i) => k !== stillKey[i])) {
+      const canvas = still.current?.canvas ?? makeCanvas(cv.width, cv.height)
+      canvas.width = cv.width
+      canvas.height = cv.height
+      const sg = canvas.getContext('2d')!
+      sg.drawImage(s.base, 0, 0)
+      if (s.grid.on) drawGrid(sg, cv.width, cv.height, s.grid.cell)
+      still.current = { key: stillKey, canvas }
+    }
+    ctx.drawImage(still.current.canvas, 0, 0)
     if (!L) return
     ctx.drawImage(L.fog, 0, 0)
     if (player) return
@@ -276,7 +293,38 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     g.setTransform(sc, 0, 0, sc, (cr.left - br.left) * dpr, (cr.top - br.top) * dpr)
     g.globalAlpha = 1 // a previous draw may have left it dimmed for the detection preview
     drawLight(g, s, dpr, sc)
-    if (s.layers.walls) drawWalls(g, s, dpr, sc)
+    if (s.layers.walls) {
+      // the walls are drawn again only when they, the selection or the view change: a drag of a
+      // token only copies the picture of them
+      const t = g.getTransform()
+      const editing = s.mode === 'select'
+      const key = [
+        s.graph,
+        s.preview,
+        editing,
+        editing ? s.selected : null,
+        w,
+        h,
+        dpr,
+        t.a,
+        t.e,
+        t.f,
+      ]
+      let layer = wallLayer.current
+      if (!layer || layer.key.some((k, i) => k !== key[i])) {
+        const canvas = layer?.canvas ?? makeCanvas(w, h)
+        canvas.width = w
+        canvas.height = h
+        const wg = canvas.getContext('2d')!
+        wg.setTransform(t)
+        drawWalls(wg, s, dpr, sc)
+        wallLayer.current = layer = { key, canvas }
+      }
+      g.save()
+      g.setTransform(1, 0, 0, 1, 0, 0)
+      g.drawImage(layer.canvas, 0, 0)
+      g.restore()
+    }
     drawTokens(g, s)
     drawHandles(g, s, dpr, sc)
   }
@@ -318,26 +366,49 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
           ),
         }
       : s
-    let lit: Uint8Array | null
-    if (over) lit = litFor(seen, over, who)
-    else {
-      // zooming and panning repaint the fog too: the lit pixels only change with these
-      const key = [s.analysis, s.graph, s.tokens, s.ranges, s.grid.cell, who]
-      const had = litCache.current
-      if (!had || had.key.some((k, i) => k !== key[i]))
-        litCache.current = { key, lit: litFor(seen, null, who) }
-      lit = litCache.current!.lit
+    // the fog of every fogged room is painted once per change to the rooms or the fog; each frame
+    // of a drag then only cuts the light out of a copy of it
+    const baseKey = [s.analysis, s.fog, s.fogStyle, player]
+    if (!fogBase.current || fogBase.current.key.some((k, i) => k !== baseKey[i])) {
+      const canvas = fogBase.current?.canvas ?? makeCanvas(s.analysis.W, s.analysis.H)
+      if (canvas.width !== s.analysis.W || canvas.height !== s.analysis.H) {
+        canvas.width = s.analysis.W
+        canvas.height = s.analysis.H
+      }
+      paintFog(canvas, s.analysis, s.fog, s.fogStyle, player, null)
+      fogBase.current = { key: baseKey, canvas }
     }
-    paintFog(L.fog, s.analysis, s.fog, s.fogStyle, player, lit)
+    const base = fogBase.current.canvas
+    // zooming and panning repaint the fog too: the lit shapes only change with these
+    const key = [s.analysis, s.graph, s.tokens, s.ranges, s.grid.cell, who]
+    const had = litCache.current
+    const fresh = !over && had && !had.key.some((k, i) => k !== key[i])
+    // painted at once with the light as it last was; the new light follows from the worker
+    paintFogLit(L.fog, base, had?.shapes ?? null)
+    if (fresh) return
+    const analysis = s.analysis
+    void lightClient()
+      .shapes(litRequest(seen, over, who), 'dm')
+      .then((shapes) => {
+        // undefined: a newer request replaced this one; the map may also have changed meanwhile
+        const now = useMapStore.getState()
+        if (!shapes || layers.current !== L || now.analysis !== analysis) return
+        // a drag's light is never reused for the next paint (NaN equals no key)
+        litCache.current = { key: over ? [NaN] : key, shapes }
+        const cur = fogBase.current
+        if (cur) paintFogLit(L.fog, cur.canvas, shapes)
+        draw()
+      })
   }
 
-  /** While a light is dragged the fog follows, at most once a frame */
+  /** While a token is dragged the fog, picture and overlay follow, together and at most once a frame */
   const refogSoon = (): void => {
     if (fogFrame.current) return
     fogFrame.current = requestAnimationFrame(() => {
       fogFrame.current = 0
       paintDmFog()
       draw()
+      drawVectors()
     })
   }
 
@@ -449,6 +520,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     sc: number
   ): void => {
     const editing = s.mode === 'select'
+    const walls = wallsByKind(s.graph)
     g.lineWidth = 3 * (dpr / sc)
     g.lineCap = 'square'
     g.strokeStyle = '#28beff'
@@ -456,10 +528,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     g.save()
     if (s.preview) g.globalAlpha = 0.35
     g.beginPath()
-    for (const m of edgeSegments(
-      { ...s.graph, edges: s.graph.edges.filter((e) => !e.clear) },
-      false
-    )) {
+    for (const m of walls.solid) {
       g.moveTo(m.x1, m.y1)
       g.lineTo(m.x2, m.y2)
     }
@@ -469,10 +538,18 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     g.lineCap = 'butt'
     g.setLineDash([7 * (dpr / sc), 5 * (dpr / sc)])
     g.beginPath()
-    for (const m of edgeSegments(
-      { ...s.graph, edges: s.graph.edges.filter((e) => e.clear) },
-      false
-    )) {
+    for (const m of walls.clear) {
+      g.moveTo(m.x1, m.y1)
+      g.lineTo(m.x2, m.y2)
+    }
+    g.stroke()
+    // furniture is green and thinner: it stops light like a wall but makes no rooms
+    g.strokeStyle = '#3ddc84'
+    g.lineCap = 'round'
+    g.lineWidth = 2.5 * (dpr / sc)
+    g.setLineDash([])
+    g.beginPath()
+    for (const m of walls.furniture) {
       g.moveTo(m.x1, m.y1)
       g.lineTo(m.x2, m.y2)
     }
@@ -651,15 +728,15 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     snapHint.current = null
     const from = startAt.current
     startAt.current = null
-    const fromClear = startClear.current
-    startClear.current = false
+    const fromKind = startKind.current
+    startKind.current = 'solid'
     if (mode === 'wall' && from) {
       draft.current = {
         mode: 'wall',
         sx: from[0],
         sy: from[1],
         box: { x1: from[0], y1: from[1], x2: from[0], y2: from[1] },
-        clear: fromClear || useMapStore.getState().drawClear,
+        kind: fromKind !== 'solid' ? fromKind : useMapStore.getState().drawKind,
       }
       pending.current = true
       draw()
@@ -889,7 +966,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       return startPan(e)
     }
     if (e.button !== 0 && !(e.button === 2 && (drawing || onWall))) return
-    const clear = e.button === 2 || s.drawClear
+    const kind: WallKind = e.button === 2 ? 'clear' : s.drawKind
     const handle = pending.current || e.button !== 0 ? null : hitHandle(x, y)
     if (handle) {
       // the edge of a light or sight circle: drag to make it bigger or smaller
@@ -946,7 +1023,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
             sx: x,
             sy: y,
             box: { x1: x, y1: y, x2: x, y2: y },
-            clear: s.drawClear,
+            kind: s.drawKind,
           }
         }
         return draw()
@@ -970,7 +1047,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
           s.select({ kind: 'node', id: cut.id })
         }
         startAt.current = at
-        startClear.current = clear
+        startKind.current = kind
         return s.setMode('wall')
       }
       s.beginGesture()
@@ -984,7 +1061,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
           sy: y,
           moved: false,
           g0: s.graph,
-          clear,
+          wall: kind,
           fixed: !!hit.node.border,
           at: [hit.node.x, hit.node.y],
         }
@@ -1003,7 +1080,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
             moved: false,
             g0: s.graph,
             ends,
-            clear,
+            wall: kind,
           }
       }
       if (!drag.current) s.endGesture() // a fixed border node or wall: nothing to drag
@@ -1019,7 +1096,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       const last = pts[pts.length - 1]
       // the second click of a double click lands on the same spot
       if (last && Math.hypot(near.x - last[0], near.y - last[1]) < 3 * unit()) return
-      if (!pts.length) polyClear.current = clear
+      if (!pts.length) polyKind.current = kind
       pts.push([near.x, near.y])
       polyAt.current = [near.x, near.y]
       draw()
@@ -1030,7 +1107,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
         sx: start.x,
         sy: start.y,
         box: boxFor(s.mode, start.x, start.y, x, y, e.shiftKey, s.graph, tol()),
-        clear,
+        kind,
       }
       draw()
     }
@@ -1043,7 +1120,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     polyAt.current = null
     if (pts.length >= 2) {
       const s = useMapStore.getState()
-      s.setGraph(addPolyline(s.graph, pts, closed, tol(), polyClear.current))
+      s.setGraph(addPolyline(s.graph, pts, closed, tol(), polyKind.current))
     }
     useMapStore.getState().setMode('select')
     draw()
@@ -1087,7 +1164,6 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
         rd.ft = Math.max(1, Math.min(300, Math.round(ft)))
         setHot(HANDLE_CURSORS[rd.dir])
         refogSoon()
-        drawVectors()
       }
       return
     }
@@ -1098,8 +1174,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       setHot('grabbing')
       td.x = x
       td.y = y
-      if (isLightTokenId(td.id) || isPlayerTokenId(td.id)) refogSoon()
-      return drawVectors()
+      return refogSoon() // fires, players and a selected monster's sight all follow the drag
     }
     const over =
       s.mode === 'select' ? hitToken(shownTokens(s), x, y, tokenRadius(width, height)) : null
@@ -1213,7 +1288,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
     middleWall.current = null
     if (mw && e.type === 'pointerup' && Math.hypot(e.clientX - mw.cx, e.clientY - mw.cy) < 4) {
       const w = s.graph.edges.find((o) => o.id === mw.id)
-      if (w && !w.border) s.setGraph(setEdgeClear(s.graph, w.id, !w.clear))
+      if (w && !w.border) s.setGraph(setEdgeKind(s.graph, w.id, nextWallKind(wallKind(w))))
     }
     if (dg?.kind === 'erase') s.setMode('select')
     const c = draft.current
@@ -1224,7 +1299,7 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
       if (s.mode === 'select') {
         draft.current = null
         startAt.current = [c.sx, c.sy]
-        startClear.current = c.clear
+        startKind.current = c.kind
         return s.setMode('wall')
       }
       pending.current = true
@@ -1254,11 +1329,11 @@ const MapCanvas: React.FC<{ player: boolean }> = ({ player }) => {
           ],
           false,
           r,
-          c.clear
+          c.kind
         )
       )
-    else if (c.mode === 'rect') s.setGraph(addRect(s.graph, b.x1, b.y1, b.x2, b.y2, r, c.clear))
-    else s.setGraph(addEllipse(s.graph, b.x1, b.y1, b.x2, b.y2, M, r, c.clear))
+    else if (c.mode === 'rect') s.setGraph(addRect(s.graph, b.x1, b.y1, b.x2, b.y2, r, c.kind))
+    else s.setGraph(addEllipse(s.graph, b.x1, b.y1, b.x2, b.y2, M, r, c.kind))
     s.setMode('select')
   }
 

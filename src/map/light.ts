@@ -1,4 +1,4 @@
-import { makeCanvas } from './render'
+import { makeAnyCanvas } from './render'
 import { opaqueSegments } from './graph'
 import {
   ftToPx,
@@ -47,6 +47,8 @@ export function lightSources(
 const turn = (a: number): number => ((a % TAU) + TAU) % TAU
 const TAU = Math.PI * 2
 const ARC_STEPS = 96
+/** Directions the walls are filed under while a polygon is worked out */
+const SECTORS = 360
 const EPS = 1e-4
 
 /** Distance along the ray (dx, dy) from (ox, oy) to the segment, or Infinity */
@@ -91,47 +93,102 @@ export function visibilityPolygon(
     }
   }
   angles.sort((a, b) => a - b)
+
+  // each wall is filed under the directions it spans, so a ray only meets the few walls in its way
+  const step = TAU / SECTORS
+  const buckets: number[][] = Array.from({ length: SECTORS }, () => [])
+  near.forEach((s, i) => {
+    const a1 = Math.atan2(s.y1 - cy, s.x1 - cx)
+    let d = Math.atan2(s.y2 - cy, s.x2 - cx) - a1
+    if (d > Math.PI) d -= TAU
+    else if (d < -Math.PI) d += TAU
+    // a wall through the light (or an end on it) spans every direction
+    const through =
+      Math.abs(Math.abs(d) - Math.PI) < 1e-6 ||
+      Math.hypot(s.x1 - cx, s.y1 - cy) < 1e-9 ||
+      Math.hypot(s.x2 - cx, s.y2 - cy) < 1e-9
+    const from = Math.floor(Math.min(a1, a1 + d) / step) - 1
+    const to = Math.floor(Math.max(a1, a1 + d) / step) + 1
+    if (through || to - from + 1 >= SECTORS) for (const b of buckets) b.push(i)
+    else for (let k = from; k <= to; k++) buckets[((k % SECTORS) + SECTORS) % SECTORS].push(i)
+  })
+
   const out: Point[] = []
   for (const a of angles) {
     const dx = Math.cos(a)
     const dy = Math.sin(a)
     let d = r
-    for (const s of near) d = Math.min(d, rayHit(cx, cy, dx, dy, s))
+    for (const i of buckets[Math.min(SECTORS - 1, Math.floor(a / step))])
+      d = Math.min(d, rayHit(cx, cy, dx, dy, near[i]))
     out.push([cx + dx * d, cy + dy * d])
   }
   return out
 }
 
-/** The lit pixels of a map as it stands, or with one source's place or reach changed (a drag in progress) */
-export function litFor(
-  m: {
-    analysis: { W: number; H: number } | null
-    graph: Graph
-    tokens: Tokens
-    ranges: Record<string, number>
-    grid: { cell: number }
-  },
+/** Everything the light calculation needs, as plain data: it is sent to a worker */
+export interface LightRequest {
+  W: number
+  H: number
+  walls: WallSegment[]
+  sources: LightSource[]
+}
+
+type LitMap = {
+  analysis: { W: number; H: number } | null
+  graph: Graph
+  tokens: Tokens
+  ranges: Record<string, number>
+  grid: { cell: number }
+}
+
+/** The request for a map as it stands, or with one source's place or reach changed (a drag in progress) */
+export function litRequest(
+  m: LitMap,
   override?: { id: string; x?: number; y?: number; ft?: number } | null,
   include?: string | null
-): Uint8Array | null {
+): LightRequest | null {
   if (!m.analysis) return null
-  const sources = lightSources(m.tokens, m.ranges, m.grid.cell, override, include)
-  return litMask(m.analysis.W, m.analysis.H, lightPolygons(sources, m.graph))
+  return {
+    W: m.analysis.W,
+    H: m.analysis.H,
+    walls: opaqueSegments(m.graph),
+    sources: lightSources(m.tokens, m.ranges, m.grid.cell, override, include),
+  }
 }
 
 /**
  * What one audience sees lit: every fire, and the sight of that one player (none for `null`, the
  * view everybody shares). Other players' eyes light nothing for them.
  */
-export function litForViewer(
-  m: Parameters<typeof litFor>[0],
-  playerId: string | null
-): Uint8Array | null {
+export function litRequestForViewer(m: LitMap, playerId: string | null): LightRequest | null {
   const mine = playerId === null ? null : playerTokenId(playerId)
   const tokens = Object.fromEntries(
     Object.entries(m.tokens).filter(([id]) => isLightTokenId(id) || id === mine)
   )
-  return litFor({ ...m, tokens })
+  return litRequest({ ...m, tokens })
+}
+
+const polygonsOf = (req: LightRequest): Point[][] =>
+  req.sources.filter((s) => s.r > 0).map((s) => visibilityPolygon(s.x, s.y, s.r, req.walls))
+
+/** What one source lights, as flat x, y pairs (cheap to send between threads) */
+export function lightShape(s: LightSource, walls: WallSegment[]): Float32Array {
+  const poly = visibilityPolygon(s.x, s.y, s.r, walls)
+  const out = new Float32Array(poly.length * 2)
+  poly.forEach(([x, y], i) => {
+    out[i * 2] = x
+    out[i * 2 + 1] = y
+  })
+  return out
+}
+
+/** What each source lights. Runs in the worker. */
+export const lightShapes = (req: LightRequest): Float32Array[] =>
+  req.sources.filter((s) => s.r > 0).map((s) => lightShape(s, req.walls))
+
+/** The lit pixels for a request: one byte per pixel, null when nothing is lit. Runs in the worker. */
+export function lightMask(req: LightRequest): Uint8Array | null {
+  return litMask(req.W, req.H, polygonsOf(req))
 }
 
 /** The polygons for several sources, against the solid walls of the graph (the map border included) */
@@ -143,8 +200,8 @@ export function lightPolygons(sources: LightSource[], graph: Graph): Point[][] {
 /** One byte per pixel, 1 where any of the polygons covers it; null when nothing is lit */
 export function litMask(W: number, H: number, polygons: Point[][]): Uint8Array | null {
   if (!polygons.length) return null
-  const c = makeCanvas(W, H)
-  const g = c.getContext('2d')!
+  const c = makeAnyCanvas(W, H)
+  const g = c.getContext('2d') as CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
   g.fillStyle = '#fff'
   for (const poly of polygons) {
     g.beginPath()

@@ -15,13 +15,14 @@ import {
   hitTest,
   moveNode,
   opaqueSegments,
+  wallsByKind,
   removeEdge,
   removeNode,
-  setEdgeClear,
+  setEdgeKind,
   snapPoint,
   tidy,
 } from './graph'
-import type { Graph } from './types'
+import type { Graph, WallKind } from './types'
 
 const square = (): Graph =>
   addPolyline(
@@ -236,7 +237,7 @@ describe('file lists', () => {
 })
 
 describe('translucent walls', () => {
-  const line = (clear: boolean): Graph =>
+  const line = (kind: WallKind = 'solid'): Graph =>
     addPolyline(
       emptyGraph(),
       [
@@ -245,27 +246,28 @@ describe('translucent walls', () => {
       ],
       false,
       0,
-      clear
+      kind
     )
 
   it('are walls for the file and the lists, but not for light', () => {
-    const g = line(true)
-    expect(g.edges[0].clear).toBe(true)
+    const g = line('clear')
+    expect(g.edges[0].kind).toBe('clear')
     expect(edgeSegments(g)).toHaveLength(1)
     expect(opaqueSegments(g)).toHaveLength(0)
-    expect(opaqueSegments(line(false))).toHaveLength(1)
+    expect(opaqueSegments(line())).toHaveLength(1)
     const { nodes, edges } = graphLists(g)
     expect(edges).toEqual([[0, 1, 1]])
-    expect(graphFromLists(nodes, edges).edges[0].clear).toBe(true)
-    expect(graphLists(line(false)).edges).toEqual([[0, 1]])
+    expect(graphFromLists(nodes, edges).edges[0].kind).toBe('clear')
+    expect(graphLists(line()).edges).toEqual([[0, 1]])
+    expect(graphLists(line('furniture')).edges).toEqual([[0, 1, 2]])
   })
 
   it('can be drawn over a wall, switched, and keep their kind when split', () => {
-    const g = line(false)
-    expect(addEdge(g, 1, 2, true).edges[0].clear).toBe(true)
-    expect(addEdge(line(true), 1, 2, false).edges[0].clear).toBeUndefined()
-    expect(setEdgeClear(g, g.edges[0].id, true).edges[0].clear).toBe(true)
-    const t = line(true)
+    const g = line()
+    expect(addEdge(g, 1, 2, 'clear').edges[0].kind).toBe('clear')
+    expect(addEdge(line('clear'), 1, 2, 'solid').edges[0].kind).toBeUndefined()
+    expect(setEdgeKind(g, g.edges[0].id, 'furniture').edges[0].kind).toBe('furniture')
+    const t = line('clear')
     const cut = addPolyline(
       t,
       [
@@ -275,7 +277,7 @@ describe('translucent walls', () => {
       false,
       0
     )
-    expect(cut.edges.filter((e) => e.clear)).toHaveLength(2)
+    expect(cut.edges.filter((e) => e.kind === 'clear')).toHaveLength(2)
   })
 
   it('are never part of the border', () => {
@@ -289,16 +291,16 @@ describe('translucent walls', () => {
           ],
           false,
           0,
-          true
+          'clear'
         ),
         1,
         2,
-        true
+        'clear'
       ),
       100,
       80
     )
-    expect(g.edges.filter((e) => e.border).every((e) => !e.clear)).toBe(true)
+    expect(g.edges.filter((e) => e.border).every((e) => !e.kind)).toBe(true)
   })
 })
 
@@ -439,5 +441,44 @@ describe('the invisible border', () => {
       [100, 50],
     ])
     expect(tidy(g, 5)).toBe(g)
+  })
+})
+
+describe('wallsByKind', () => {
+  it('sorts the visible walls by kind and leaves the border out', () => {
+    let g = ensureBorder(emptyGraph(), 100, 100)
+    g = addPolyline(
+      g,
+      [
+        [10, 10],
+        [50, 10],
+      ],
+      false,
+      2,
+      'solid'
+    )
+    g = addPolyline(
+      g,
+      [
+        [10, 30],
+        [50, 30],
+      ],
+      false,
+      2,
+      'clear'
+    )
+    g = addPolyline(
+      g,
+      [
+        [10, 60],
+        [50, 60],
+      ],
+      false,
+      2,
+      'furniture'
+    )
+    const k = wallsByKind(g)
+    expect([k.solid.length, k.clear.length, k.furniture.length]).toEqual([1, 1, 1])
+    expect(wallsByKind(g)).toBe(k)
   })
 })

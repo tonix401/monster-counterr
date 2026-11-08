@@ -21,9 +21,15 @@ export interface MapEdge {
   b: number
   /** Part of the invisible outer border: always there, never drawn, but lines still snap to it */
   border?: boolean
-  /** Translucent (a window, bars): still a wall for rooms and fog, but light and sight pass through */
-  clear?: boolean
+  /** Absent for a solid wall; see `WallKind` */
+  kind?: 'clear' | 'furniture'
 }
+
+/**
+ * What a wall is: solid (rooms, fog, blocks light), translucent (a window or bars: still bounds
+ * rooms, but light and sight pass) or furniture (stops light like a wall but makes no rooms)
+ */
+export type WallKind = 'solid' | 'clear' | 'furniture'
 
 /** The walls drawn on the map; always replaced, never changed in place, so history can keep old ones */
 export interface Graph {

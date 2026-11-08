@@ -5,12 +5,12 @@ import { useGo } from '@/hooks/useGo'
 import { useMapStore, type MapLayers, type MapParams } from '@/map/mapStore'
 import { getPublishedMap, getPublishedTokens, subscribePublishedMap } from '@/map/mapSync'
 import { TokenLayer } from '@/components/TokenMark'
-import type { MapMode } from '@/map/types'
+import type { MapMode, WallKind } from '@/map/types'
 import MapCanvas, { MONSTER_DRAG } from './MapCanvas'
 import MonsterAvatar from '@/components/MonsterAvatar'
 import { useMonsters, useMonsterStore } from '@/store/useMonsterStore'
 import PlayerAvatar from '@/components/PlayerAvatar'
-import { setEdgeClear } from '@/map/graph'
+import { nextWallKind, setEdgeKind, wallKind, WALL_KINDS } from '@/map/graph'
 import { FT_PER_CELL, NEW_LIGHT, isPlayerTokenId, monsterLabel, playerTokenId } from '@/map/tokens'
 import {
   CircleIcon,
@@ -43,6 +43,8 @@ import {
   RedoIcon,
   UndoIcon,
   WallIcon,
+  SolidWallIcon,
+  FurnitureIcon,
   ZoomInIcon,
   ZoomOutIcon,
 } from './MapIcons'
@@ -53,6 +55,17 @@ interface Tool {
   label: string
   key: string
   icon: React.ReactNode
+}
+/** The kinds of wall the palette and the bottom bar offer */
+const WALL_LABEL: Record<WallKind, string> = {
+  solid: 'mapWallSolid',
+  clear: 'mapWallClear',
+  furniture: 'mapWallFurniture',
+}
+const WALL_ICON: Record<WallKind, React.ReactNode> = {
+  solid: <SolidWallIcon />,
+  clear: <WindowIcon />,
+  furniture: <FurnitureIcon />,
 }
 /** Tool palette, in groups separated by a divider */
 const TOOL_GROUPS: Tool[][] = [
@@ -409,14 +422,17 @@ const MapTab: React.FC = () => {
                 </React.Fragment>
               ))}
               <span className="map-divider" />
-              <IconButton
-                label={t('mapTranslucent')}
-                icon={<WindowIcon />}
-                tip="right"
-                active={s.drawClear}
-                pressed={s.drawClear}
-                onClick={() => s.setDrawClear(!s.drawClear)}
-              />
+              {WALL_KINDS.map((k) => (
+                <IconButton
+                  key={k}
+                  label={t(WALL_LABEL[k])}
+                  icon={WALL_ICON[k]}
+                  tip="right"
+                  active={s.drawKind === k}
+                  pressed={s.drawKind === k}
+                  onClick={() => s.setDrawKind(k)}
+                />
+              ))}
             </div>
             <div className="map-group map-light" role="group" aria-label={t('mapGroupLight')}>
               <IconButton
@@ -538,14 +554,16 @@ const MapTab: React.FC = () => {
                 onClick={s.deleteSelected}
               />
               <IconButton
-                label={t('mapToggleTranslucent')}
-                icon={<WindowIcon />}
+                label={t('mapCycleWallKind')}
+                icon={WALL_ICON[selectedWall ? wallKind(selectedWall) : 'solid']}
                 tip="above"
                 disabled={!selectedWall || selectedWall.border}
-                active={!!selectedWall?.clear}
+                active={!!selectedWall?.kind}
                 onClick={() =>
                   selectedWall &&
-                  s.setGraph(setEdgeClear(s.graph, selectedWall.id, !selectedWall.clear))
+                  s.setGraph(
+                    setEdgeKind(s.graph, selectedWall.id, nextWallKind(wallKind(selectedWall)))
+                  )
                 }
               />
               <IconButton

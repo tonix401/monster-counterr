@@ -1,4 +1,4 @@
-import type { Graph, MapEdge, MapNode, WallSegment } from './types'
+import type { Graph, MapEdge, MapNode, WallKind, WallSegment } from './types'
 
 /** Two points closer than this (pixels) count as the same place */
 const SAME = 0.75
@@ -6,6 +6,16 @@ const SAME = 0.75
 export const emptyGraph = (): Graph => ({ nodes: [], edges: [], next: 1 })
 
 const nodeMap = (g: Graph): Map<number, MapNode> => new Map(g.nodes.map((n) => [n.id, n]))
+
+export const WALL_KINDS: WallKind[] = ['solid', 'clear', 'furniture']
+
+export const wallKind = (e: MapEdge): WallKind => e.kind ?? 'solid'
+
+/** The next kind in the cycle solid, translucent, furniture */
+export const nextWallKind = (k: WallKind): WallKind =>
+  WALL_KINDS[(WALL_KINDS.indexOf(k) + 1) % WALL_KINDS.length]
+
+const kindField = (k: WallKind): Pick<MapEdge, 'kind'> => (k === 'solid' ? {} : { kind: k })
 
 const pairKey = (a: number, b: number): string => (a < b ? `${a}:${b}` : `${b}:${a}`)
 
@@ -22,9 +32,34 @@ export function edgeSegments(g: Graph, withBorder = true): WallSegment[] {
   return out
 }
 
+/** Graphs are never changed in place, so what stops light is worked out once per graph */
+const opaque = new WeakMap<Graph, WallSegment[]>()
+
 /** The walls that stop light and sight: every wall that is not translucent, the border included */
 export function opaqueSegments(g: Graph): WallSegment[] {
-  return edgeSegments({ ...g, edges: g.edges.filter((e) => !e.clear) }, true)
+  const had = opaque.get(g)
+  if (had) return had
+  const out = edgeSegments({ ...g, edges: g.edges.filter((e) => e.kind !== 'clear') }, true)
+  opaque.set(g, out)
+  return out
+}
+
+const byKind = new WeakMap<Graph, Record<WallKind, WallSegment[]>>()
+
+/** The visible walls of each kind as coordinates, worked out once per graph (the border is left out) */
+export function wallsByKind(g: Graph): Record<WallKind, WallSegment[]> {
+  const had = byKind.get(g)
+  if (had) return had
+  const at = nodeMap(g)
+  const out: Record<WallKind, WallSegment[]> = { solid: [], clear: [], furniture: [] }
+  for (const e of g.edges) {
+    if (e.border) continue
+    const p = at.get(e.a)
+    const q = at.get(e.b)
+    if (p && q) out[wallKind(e)].push({ x1: p.x, y1: p.y, x2: q.x, y2: q.y })
+  }
+  byKind.set(g, out)
+  return out
 }
 
 /** The ends of one edge, or null when it is not in the graph */
@@ -58,28 +93,28 @@ export const edgeBetween = (g: Graph, a: number, b: number): MapEdge | undefined
  * Adds a wall between two existing nodes; does nothing for the same node. A pair already joined
  * keeps its wall, but takes on the new kind (drawing a window over a wall makes it a window).
  */
-export function addEdge(g: Graph, a: number, b: number, clear = false): Graph {
+export function addEdge(g: Graph, a: number, b: number, kind: WallKind = 'solid'): Graph {
   if (a === b) return g
   const had = edgeBetween(g, a, b)
-  if (had) return had.border || !had.clear === !clear ? g : setEdgeClear(g, had.id, clear)
+  if (had) return had.border || wallKind(had) === kind ? g : setEdgeKind(g, had.id, kind)
   return {
     ...g,
-    edges: [...g.edges, { id: g.next, a, b, ...(clear && { clear: true }) }],
+    edges: [...g.edges, { id: g.next, a, b, ...kindField(kind) }],
     next: g.next + 1,
   }
 }
 
-/** Makes a wall translucent or solid again; the border is always solid */
-export function setEdgeClear(g: Graph, id: number, clear: boolean): Graph {
+/** Changes what a wall is; the border is always solid */
+export function setEdgeKind(g: Graph, id: number, kind: WallKind): Graph {
   const e = g.edges.find((o) => o.id === id)
-  if (!e || e.border || !e.clear === !clear) return g
+  if (!e || e.border || wallKind(e) === kind) return g
   return {
     ...g,
     edges: g.edges.map((o) => {
       if (o.id !== id) return o
       const rest = { ...o }
-      delete rest.clear
-      return clear ? { ...rest, clear: true } : rest
+      delete rest.kind
+      return { ...rest, ...kindField(kind) }
     }),
   }
 }
@@ -139,10 +174,10 @@ export function removeNode(g: Graph, id: number): Graph {
     const a = mine[0].a === id ? mine[0].b : mine[0].a
     const b = mine[1].a === id ? mine[1].b : mine[1].a
     if (a !== b && !rest.some((e) => pairKey(e.a, e.b) === pairKey(a, b))) {
-      const clear = !!mine[0].clear && !!mine[1].clear
+      const kind = wallKind(mine[0]) === wallKind(mine[1]) ? wallKind(mine[0]) : 'solid'
       return {
         nodes,
-        edges: [...rest, { id: g.next, a, b, ...(clear && { clear: true }) }],
+        edges: [...rest, { id: g.next, a, b, ...kindField(kind) }],
         next: g.next + 1,
       }
     }
@@ -212,14 +247,14 @@ export function splitEdge(
           a: e.a,
           b: id,
           ...(e.border && { border: true }),
-          ...(e.clear && { clear: true }),
+          ...(e.kind && { kind: e.kind }),
         },
         {
           id: id + 2,
           a: id,
           b: e.b,
           ...(e.border && { border: true }),
-          ...(e.clear && { clear: true }),
+          ...(e.kind && { kind: e.kind }),
         },
       ],
       next: id + 3,
@@ -245,7 +280,7 @@ export function addPolyline(
   pts: [number, number][],
   closed = false,
   tidyReach = 0,
-  clear = false
+  kind: WallKind = 'solid'
 ): Graph {
   let out = g
   let first = -1
@@ -255,11 +290,11 @@ export function addPolyline(
     const placed = placeNode(out, p[0], p[1])
     out = placed.g
     if (placed.joined) joined.push(placed.id)
-    if (prev !== -1) out = addEdge(out, prev, placed.id, clear)
+    if (prev !== -1) out = addEdge(out, prev, placed.id, kind)
     else first = placed.id
     prev = placed.id
   }
-  if (closed && pts.length > 2) out = addEdge(out, prev, first, clear)
+  if (closed && pts.length > 2) out = addEdge(out, prev, first, kind)
   return tidy(out, tidyReach, joined)
 }
 
@@ -277,7 +312,7 @@ export function addRect(
   x2: number,
   y2: number,
   r: number,
-  clear = false
+  kind: WallKind = 'solid'
 ): Graph {
   const pts: [number, number][] = [
     [x1, y1],
@@ -285,7 +320,7 @@ export function addRect(
     [x2, y2],
     [x1, y2],
   ]
-  return addPolyline(g, snapAll(g, pts, r), true, r, clear)
+  return addPolyline(g, snapAll(g, pts, r), true, r, kind)
 }
 
 /** How many corners a ring around the box gets: a smooth look, but few enough to edit by hand */
@@ -323,9 +358,9 @@ export function addEllipse(
   y2: number,
   M: number,
   r: number,
-  clear = false
+  kind: WallKind = 'solid'
 ): Graph {
-  return addPolyline(g, snapAll(g, ellipsePoints(x1, y1, x2, y2, M), r), true, r, clear)
+  return addPolyline(g, snapAll(g, ellipsePoints(x1, y1, x2, y2, M), r), true, r, kind)
 }
 
 /** Moves a node; every wall on it follows. Border nodes stay where they are. */
@@ -645,15 +680,17 @@ export function ensureBorder(g: Graph, W: number, H: number): Graph {
 /** The walls as a list of points and a list of point-index pairs, the way a file keeps them */
 export function graphLists(g: Graph): {
   nodes: [number, number][]
-  edges: ([number, number] | [number, number, 1])[]
+  edges: ([number, number] | [number, number, 1 | 2])[]
 } {
   const index = new Map(g.nodes.map((n, i) => [n.id, i]))
   const r1 = (v: number): number => Math.round(v * 10) / 10
   return {
     nodes: g.nodes.map((n) => [r1(n.x), r1(n.y)]),
-    // a third 1 marks a translucent wall; readers that don't know it see an ordinary wall
+    // a third 1 marks a translucent wall, a 2 furniture; readers that don't know it see an ordinary wall
     edges: g.edges.map((e) =>
-      e.clear ? [index.get(e.a)!, index.get(e.b)!, 1] : [index.get(e.a)!, index.get(e.b)!]
+      e.kind
+        ? [index.get(e.a)!, index.get(e.b)!, e.kind === 'clear' ? 1 : 2]
+        : [index.get(e.a)!, index.get(e.b)!]
     ),
   }
 }
@@ -669,7 +706,8 @@ export function graphFromLists(
     next: points.length + 1,
   }
   for (const [i, j, c] of pairs) {
-    if (points[i] && points[j]) g = addEdge(g, i + 1, j + 1, c === 1)
+    if (points[i] && points[j])
+      g = addEdge(g, i + 1, j + 1, c === 1 ? 'clear' : c === 2 ? 'furniture' : 'solid')
   }
   return dropOrphans(g)
 }

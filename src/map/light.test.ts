@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { addPolyline, emptyGraph } from './graph'
 import { lightPolygons, lightSources, visibilityPolygon, type Point } from './light'
-import type { WallSegment } from './types'
+import type { WallKind, WallSegment } from './types'
 
 const inside = (poly: Point[], x: number, y: number): boolean => {
   let c = false
@@ -54,7 +54,7 @@ describe('visibilityPolygon', () => {
 })
 
 describe('lightPolygons', () => {
-  const wallAt = (clear: boolean) =>
+  const wallAt = (kind: WallKind) =>
     addPolyline(
       emptyGraph(),
       [
@@ -63,13 +63,14 @@ describe('lightPolygons', () => {
       ],
       false,
       0,
-      clear
+      kind
     )
 
   it('is stopped by a solid wall and goes through a translucent one', () => {
     const src = [{ id: 'light:a', x: 50, y: 50, r: 30 }]
-    expect(inside(lightPolygons(src, wallAt(false))[0], 70, 50)).toBe(false)
-    expect(inside(lightPolygons(src, wallAt(true))[0], 70, 50)).toBe(true)
+    expect(inside(lightPolygons(src, wallAt('solid'))[0], 70, 50)).toBe(false)
+    expect(inside(lightPolygons(src, wallAt('clear'))[0], 70, 50)).toBe(true)
+    expect(inside(lightPolygons(src, wallAt('furniture'))[0], 70, 50)).toBe(false)
   })
 })
 
@@ -86,5 +87,46 @@ describe('lightSources', () => {
   it('applies a drag in progress', () => {
     const s = lightSources({ 'light:a': { x: 1, y: 2 } }, {}, 10, { id: 'light:a', x: 9, ft: 15 })
     expect(s).toEqual([{ id: 'light:a', x: 9, y: 2, r: 30 }])
+  })
+})
+
+describe('visibilityPolygon against plain line of sight', () => {
+  const crosses = (ax: number, ay: number, bx: number, by: number, s: WallSegment): boolean => {
+    const d1x = bx - ax
+    const d1y = by - ay
+    const d2x = s.x2 - s.x1
+    const d2y = s.y2 - s.y1
+    const den = d1x * d2y - d1y * d2x
+    if (Math.abs(den) < 1e-12) return false
+    const t = ((s.x1 - ax) * d2y - (s.y1 - ay) * d2x) / den
+    const u = ((s.x1 - ax) * d1y - (s.y1 - ay) * d1x) / den
+    return t > 0 && t < 1 && u >= 0 && u <= 1
+  }
+
+  it('lights exactly the points the light can see, walls crossing or not', () => {
+    let seed = 7
+    const rnd = (): number => (seed = (seed * 16807) % 2147483647) / 2147483647
+    let wrong = 0
+    let total = 0
+    for (let trial = 0; trial < 120; trial++) {
+      const walls: WallSegment[] = Array.from({ length: 12 }, () => ({
+        x1: rnd() * 200,
+        y1: rnd() * 200,
+        x2: rnd() * 200,
+        y2: rnd() * 200,
+      }))
+      const cx = rnd() * 200
+      const cy = rnd() * 200
+      const poly = visibilityPolygon(cx, cy, 150, walls)
+      for (let k = 0; k < 100; k++) {
+        const x = rnd() * 200
+        const y = rnd() * 200
+        if (Math.hypot(x - cx, y - cy) > 145) continue
+        total++
+        if (!walls.some((s) => crosses(cx, cy, x, y, s)) !== inside(poly, x, y)) wrong++
+      }
+    }
+    // a point a hair from a wall's end may fall either way; anything beyond that is a bug
+    expect(wrong / total).toBeLessThan(0.001)
   })
 })

@@ -8,6 +8,45 @@ export function makeCanvas(w: number, h: number): HTMLCanvasElement {
   return c
 }
 
+/** A canvas in a page or in a worker */
+export type AnyCanvas = HTMLCanvasElement | OffscreenCanvas
+type Ctx2D = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
+
+export const makeAnyCanvas = (w: number, h: number): AnyCanvas =>
+  typeof document === 'undefined' ? new OffscreenCanvas(w, h) : makeCanvas(w, h)
+
+const ctx2d = (c: AnyCanvas): Ctx2D => c.getContext('2d') as Ctx2D
+
+/**
+ * Cuts the lit polygons (flat x, y pairs) out of a layer: what light reaches is clear of the fog
+ * on it. The edges are smoothed, and it costs a canvas fill rather than a loop over every pixel.
+ */
+export function cutLight(g: Ctx2D, polygons: Float32Array[]): void {
+  g.save()
+  g.globalCompositeOperation = 'destination-out'
+  g.fillStyle = '#000'
+  for (const p of polygons) {
+    g.beginPath()
+    g.moveTo(p[0], p[1])
+    for (let i = 2; i < p.length; i += 2) g.lineTo(p[i], p[i + 1])
+    g.closePath()
+    g.fill()
+  }
+  g.restore()
+}
+
+/** The DM's fog of every fogged room, with the light as polygons cut out of it; the base is built by `paintFog` */
+export function paintFogLit(
+  canvas: HTMLCanvasElement,
+  fogBase: HTMLCanvasElement,
+  polygons: Float32Array[] | null
+): void {
+  const g = canvas.getContext('2d')!
+  g.clearRect(0, 0, canvas.width, canvas.height)
+  g.drawImage(fogBase, 0, 0)
+  if (polygons?.length) cutLight(g, polygons)
+}
+
 /** A small JPEG of the map for the library list */
 export function makeThumb(base: HTMLCanvasElement, width = 160): string {
   const h = Math.max(1, Math.round((base.height / base.width) * width))
@@ -21,7 +60,7 @@ export function makeThumb(base: HTMLCanvasElement, width = 160): string {
  * translucent and hatched, in a deeper shade for darkness.
  */
 export function paintFog(
-  canvas: HTMLCanvasElement,
+  canvas: AnyCanvas,
   a: Analysis,
   fog: Set<number>,
   style: FogStyle,
@@ -30,7 +69,7 @@ export function paintFog(
   lit: Uint8Array | null = null
 ): void {
   const { W, H, own } = a
-  const g = canvas.getContext('2d')!
+  const g = ctx2d(canvas)
   g.clearRect(0, 0, W, H)
   if (!fog.size) return
   const flag = new Uint8Array(a.rooms.length)
@@ -52,31 +91,29 @@ export function paintFog(
       d[p + 3] = cloud.alpha[i]
     }
   } else {
-    for (let i = 0, p = 0; i < own.length; i++, p += 4) {
-      if (!flag[own[i]] || lit?.[i]) continue
-      const x = i % W
-      const y = (i - x) / W
-      const s = (x + y) % 14 < 2
-      if (solid) {
-        d[p] = DARK_SOLID[0]
-        d[p + 1] = DARK_SOLID[1]
-        d[p + 2] = DARK_SOLID[2]
-        d[p + 3] = 255
-      } else if (dark) {
-        d[p] = s ? 14 : 30
-        d[p + 1] = s ? 14 : 30
-        d[p + 2] = s ? 20 : 38
-        d[p + 3] = s ? 245 : 215
-      } else {
-        d[p] = s ? 80 : 112
-        d[p + 1] = s ? 82 : 114
-        d[p + 2] = s ? 86 : 118
-        d[p + 3] = s ? 235 : 195
+    // one 32-bit write per pixel; the stripe is a diagonal counter, not a division per pixel
+    const px = new Uint32Array(d.buffer)
+    const [stripe, plain] = solid
+      ? [
+          rgba(DARK_SOLID[0], DARK_SOLID[1], DARK_SOLID[2], 255),
+          rgba(DARK_SOLID[0], DARK_SOLID[1], DARK_SOLID[2], 255),
+        ]
+      : dark
+        ? [rgba(14, 14, 20, 245), rgba(30, 30, 38, 215)]
+        : [rgba(80, 82, 86, 235), rgba(112, 114, 118, 195)]
+    for (let y = 0, i = 0; y < H; y++) {
+      let phase = y % 14
+      for (let x = 0; x < W; x++, i++, phase = phase === 13 ? 0 : phase + 1) {
+        if (flag[own[i]] && !lit?.[i]) px[i] = phase < 2 ? stripe : plain
       }
     }
   }
   g.putImageData(im, 0, 0)
 }
+
+/** A pixel as the 32-bit word a canvas stores it in (little-endian, the byte order of every browser machine) */
+const rgba = (r: number, g: number, b: number, a: number): number =>
+  ((a << 24) | (b << 16) | (g << 8) | r) >>> 0
 
 export function paintHover(canvas: HTMLCanvasElement, a: Analysis, id: number): void {
   const { W, H, own } = a
@@ -103,7 +140,7 @@ export function paintHover(canvas: HTMLCanvasElement, a: Analysis, id: number): 
 }
 
 /** Square lines every `cell` pixels, light on dark so they read on any map */
-export function drawGrid(g: CanvasRenderingContext2D, W: number, H: number, cell: number): void {
+export function drawGrid(g: Ctx2D, W: number, H: number, cell: number): void {
   if (!(cell >= 4)) return
   g.save()
   g.lineWidth = 1
@@ -131,19 +168,20 @@ export function drawGrid(g: CanvasRenderingContext2D, W: number, H: number, cell
  * leave the DM's browser. Light clears the fog where it reaches; the grid lies under the fog.
  */
 export async function renderPlayerImage(
-  base: HTMLCanvasElement,
+  base: CanvasImageSource,
   a: Analysis,
   fog: Set<number>,
   style: FogStyle,
   lit: Uint8Array | null = null,
   grid: { on: boolean; cell: number } | null = null
 ): Promise<Blob | null> {
-  const out = makeCanvas(a.W, a.H)
-  const g = out.getContext('2d')!
+  const out = makeAnyCanvas(a.W, a.H)
+  const g = ctx2d(out)
   g.drawImage(base, 0, 0)
   if (grid?.on) drawGrid(g, a.W, a.H, grid.cell)
-  const fogLayer = makeCanvas(a.W, a.H)
+  const fogLayer = makeAnyCanvas(a.W, a.H)
   paintFog(fogLayer, a, fog, style, true, lit)
   g.drawImage(fogLayer, 0, 0)
+  if ('convertToBlob' in out) return out.convertToBlob({ type: 'image/jpeg', quality: 0.8 })
   return new Promise((resolve) => out.toBlob(resolve, 'image/jpeg', 0.8))
 }

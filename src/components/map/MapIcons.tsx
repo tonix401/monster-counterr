@@ -175,6 +175,13 @@ export const SkullIcon = icon(
     <path d="M10.5 20v-2.5M13.5 20v-2.5" />
   </>
 )
+export const SolidWallIcon = icon(<path d="M4 20 20 4" strokeWidth="4" />)
+export const FurnitureIcon = icon(
+  <>
+    <rect x="4" y="9" width="16" height="6" rx="1" />
+    <path d="M6 15v5M18 15v5M6 9V5M18 9V5" />
+  </>
+)
 export const WindowIcon = icon(
   <>
     <rect x="4" y="3" width="16" height="18" rx="1" strokeDasharray="3 2" />

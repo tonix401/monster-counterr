@@ -11,8 +11,8 @@ export interface FogMapFile {
   height: number
   /** Corners and ends of walls, as [x, y] */
   nodes: [number, number][]
-  /** Walls, as pairs of indices into `nodes`; a third 1 marks a translucent wall */
-  edges: ([number, number] | [number, number, 1])[]
+  /** Walls, as pairs of indices into `nodes`; a third 1 marks a translucent wall, a 2 furniture */
+  edges: ([number, number] | [number, number, 1 | 2])[]
   fog: [number, number][]
   fogStyle?: FogStyle
   /** Placed monsters by monster id, in map pixels; missing in files made before tokens existed */
@@ -53,9 +53,10 @@ export function parseFogMap(text: string): FogMapFile | null {
         isPair(e) && Number.isInteger(e[0]) && Number.isInteger(e[1]) && e[0] !== e[1]
     )
     .filter(([i, j]) => isPair(nodes[i]) && isPair(nodes[j]))
-    .map((e): [number, number] | [number, number, 1] =>
-      (e as number[])[2] === 1 ? [e[0], e[1], 1] : [e[0], e[1]]
-    )
+    .map((e): [number, number] | [number, number, 1 | 2] => {
+      const k = (e as number[])[2]
+      return k === 1 || k === 2 ? [e[0], e[1], k] : [e[0], e[1]]
+    })
   const fog = (Array.isArray(data.fog) ? data.fog : [])
     .filter(isPair)
     .map((p): [number, number] => [p[0], p[1]])

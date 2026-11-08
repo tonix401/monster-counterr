@@ -31,6 +31,7 @@ import {
   type Graph,
   type MapMode,
   type Selection,
+  type WallKind,
   type WallSegment,
 } from './types'
 
@@ -122,12 +123,12 @@ interface MapState {
   /** Replaces the walls with the ones found in the picture */
   applyDetection: () => Promise<void>
   setMode: (mode: MapMode) => void
-  /** New walls from the drawing tools are translucent (windows) instead of solid */
-  drawClear: boolean
+  /** What the drawing tools make with the left button: solid walls, windows or furniture */
+  drawKind: WallKind
   /** What the DM's map shows; the players' picture is not affected */
   layers: MapLayers
   setLayer: (layer: keyof MapLayers, on: boolean) => void
-  setDrawClear: (on: boolean) => void
+  setDrawKind: (kind: WallKind) => void
   setShared: (on: boolean) => void
   /** Edits between begin and end (a drag) become one undo step */
   beginGesture: () => void
@@ -418,7 +419,7 @@ export const useMapStore = create<MapState>()((set, get) => {
     tokens: {},
     players: {},
     ranges: {},
-    drawClear: false,
+    drawKind: 'solid',
     layers: { lights: true, players: true, monsters: true, walls: true },
     grid: { on: false, cell: 40 },
     fogStyle: 'fog',
@@ -647,7 +648,7 @@ export const useMapStore = create<MapState>()((set, get) => {
       edit(ensureBorder(graphFromSegments(segs, Math.max(s.width, s.height)), s.width, s.height))
     },
     setMode: (mode) => set({ mode }),
-    setDrawClear: (drawClear) => set({ drawClear }),
+    setDrawKind: (drawKind) => set({ drawKind }),
     setLayer: (layer, on) => set({ layers: { ...get().layers, [layer]: on } }),
     setShared: (shared) => set({ shared }),
 

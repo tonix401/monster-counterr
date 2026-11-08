@@ -19,6 +19,7 @@ function planarize(g: Graph): { pts: Pt[]; segs: Seg[] } {
   }
   const base: Seg[] = []
   for (const e of g.edges) {
+    if (e.kind === 'furniture') continue // furniture is not a wall: it makes no rooms
     const a = at.get(e.a)
     const b = at.get(e.b)
     if (a !== undefined && b !== undefined && a !== b) base.push([a, b])
@@ -116,6 +117,26 @@ function inside(ring: Pt[], x: number, y: number): boolean {
 }
 
 /** Fills the pixels inside the rings (even-odd); reports the pixels it set */
+/**
+ * One pass over the pixels: those of folded rooms move over to the room that took them in, and the
+ * outside is counted. A function of its own so the engine compiles the loop on its own.
+ */
+function settle(
+  own: Int32Array,
+  remap: Int32Array | null,
+  OUT: number
+): { outside: number; sample: number } {
+  let outside = 0
+  let sample = -1
+  for (let p = 0; p < own.length; p++) {
+    const r = remap ? (own[p] = remap[own[p]]) : own[p]
+    if (r !== OUT) continue
+    outside++
+    if (sample < 0) sample = p
+  }
+  return { outside, sample }
+}
+
 function fillRings(
   own: Uint8Array | Int32Array,
   W: number,
@@ -293,6 +314,7 @@ export function analyzeGraph(g: Graph, W: number, H: number, minRoomPercent: num
     while (into[i] !== i) i = into[i] = into[into[i]]
     return i
   }
+  const bordered = g.edges.some((e) => e.border)
   const minA = Math.max(30, (M * M * minRoomPercent) / 100)
   const order = faces
     .map((_, i) => i)
@@ -318,6 +340,7 @@ export function analyzeGraph(g: Graph, W: number, H: number, minRoomPercent: num
     const R = faces[i]
     const T = faces[t]
     if (t === 0 || T.area < R.area) continue
+    if (bordered && contacts.get(t)?.has(0)) continue // a building standing outdoors is a room, not an island
     if (R.x0 >= T.x0 && R.x1 <= T.x1 && R.y0 >= T.y0 && R.y1 <= T.y1) into[i] = t
   }
 
@@ -380,18 +403,14 @@ export function analyzeGraph(g: Graph, W: number, H: number, minRoomPercent: num
     b.by1 = Math.max(b.by1, a.by1)
   }
   const remap = new Int32Array(rooms.length)
+  let folded = false
   for (let i = 0; i < remap.length; i++) remap[i] = i
-  for (let i = 1; i < faces.length; i++) remap[idOf[i]] = idOf[top(i)]
-  for (let p = 0; p < own.length; p++) own[p] = remap[own[p]]
+  for (let i = 1; i < faces.length; i++) {
+    remap[idOf[i]] = idOf[top(i)]
+    if (top(i) !== i) folded = true
+  }
 
-  // the outside: its size, and a pixel that really is outside
-  let outside = 0
-  let sample = -1
-  for (let p = 0; p < own.length; p++)
-    if (own[p] === OUT) {
-      outside++
-      if (sample < 0) sample = p
-    }
+  const { outside, sample } = settle(own, folded ? remap : null, OUT)
   rooms[OUT]!.area = outside
   rooms[OUT]!.sample = Math.max(0, sample)
   return { W, H, own, rooms }

@@ -37,7 +37,7 @@ describe('analyzeGraph', () => {
       ],
       false,
       0,
-      true
+      'clear'
     )
     expect(inner(analyzeGraph(g, W, H, 0.2))).toHaveLength(2)
   })
@@ -137,5 +137,43 @@ describe('analyzeGraph with the border', () => {
     const a = analyzeGraph(g, W, H, 0.2)
     expect(inner(a)).toHaveLength(4)
     expect(a.own[150 * W + 20]).not.toBe(a.own[150 * W + 380])
+  })
+})
+
+describe('a building standing alone on the border map', () => {
+  it('is a room of its own, not folded into the outdoors', () => {
+    const g = addPolyline(
+      ensureBorder(emptyGraph(), W, H),
+      [
+        [100, 100],
+        [200, 100],
+        [200, 200],
+        [100, 200],
+      ],
+      true
+    )
+    const a = analyzeGraph(g, W, H, 0.2)
+    expect(a.own[150 * W + 150]).not.toBe(a.own[10 * W + 10])
+    expect(a.rooms.filter((r) => r && r.alive && !r.ext)).toHaveLength(2)
+  })
+})
+
+describe('furniture', () => {
+  it('makes no rooms, even when it closes a shape', () => {
+    const table = addPolyline(
+      ensureBorder(emptyGraph(), W, H),
+      [
+        [100, 100],
+        [200, 100],
+        [200, 200],
+        [100, 200],
+      ],
+      true,
+      0,
+      'furniture'
+    )
+    const a = analyzeGraph(table, W, H, 0.2)
+    expect(a.rooms.filter((r) => r && r.alive && !r.ext)).toHaveLength(1)
+    expect(a.own[150 * W + 150]).toBe(a.own[10 * W + 10])
   })
 })

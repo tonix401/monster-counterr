@@ -1,8 +1,7 @@
 import { useMonsterStore } from '@/store/useMonsterStore'
 import { useMapStore } from './mapStore'
-import { renderPlayerImage } from './render'
 import type { TokensMessage } from './mapMessage'
-import { litForViewer } from './light'
+import { lightClient } from './lightClient'
 import {
   isLightTokenId,
   isPlayerTokenId,
@@ -129,15 +128,18 @@ async function publish(): Promise<void> {
   const mine = ++publishSeq
   const m = useMapStore.getState()
   if (m.shared && m.base && m.analysis) {
+    // the light, the fog and the JPEG are made in a worker, so the map stays responsive meanwhile
     const draw = async (
-      lit: Uint8Array | null
-    ): Promise<{ blob: Blob; image: ArrayBuffer } | null> => {
-      const blob = await renderPlayerImage(m.base!, m.analysis!, m.fog, m.fogStyle, lit, m.grid)
-      return blob ? { blob, image: await blob.arrayBuffer() } : null
+      playerId: string | null
+    ): Promise<{ lit: Uint8Array | null; blob: Blob; image: ArrayBuffer } | null> => {
+      const view = await lightClient().renderView(m, playerId)
+      return view?.blob
+        ? { lit: view.mask, blob: view.blob, image: await view.blob.arrayBuffer() }
+        : null
     }
-    const globalLit = litForViewer(m, null)
-    const shared = await draw(globalLit)
+    const shared = await draw(null)
     if (!shared || mine !== publishSeq) return
+    const globalLit = shared.lit
     const next = new Map<string, View>()
     // a player standing on the map sees their own sight on top of what everybody sees
     const standing = new Set(
@@ -147,10 +149,9 @@ async function publish(): Promise<void> {
         .filter((id) => playerTokenId(id) in m.tokens)
     )
     for (const id of standing) {
-      const lit = litForViewer(m, id)
-      const own = await draw(lit)
+      const own = await draw(id)
       if (!own || mine !== publishSeq) return
-      next.set(id, { lit, image: own.image, tokens: null })
+      next.set(id, { lit: own.lit, image: own.image, tokens: null })
     }
     globalView = { lit: globalLit, image: shared.image, tokens: null }
     playerViews = next
